@@ -1,6 +1,6 @@
 # NearJam — Technical Design Document
 
-**Version**: 0.3（2026-02-27）
+**Version**: 0.4（2026-02-27）
 **Status**: Draft
 **Corresponding PRD**: v0.3
 
@@ -53,6 +53,7 @@
 | ORM | Prisma v7 | Type-safe DB access, migration management |
 | Auth | NextAuth.js v5 | Google OAuth + magic link, no vendor lock-in |
 | Database | PostgreSQL 16 | Standard SQL, hosted on Azure DB for PostgreSQL Flexible |
+| i18n | next-intl | App Router–native i18n, locale routing, browser detection |
 | Maps | Google Maps Platform (JS API + Geocoding API) | Venue/studio map display and routing |
 | AI | Anthropic Claude API | Session combination suggestions, digest generation |
 | Bot | Azure Functions (Timer Trigger) | Periodic venue SNS/HP collection |
@@ -850,7 +851,160 @@ Upstash Ratelimit on mutation endpoints (session create, registration, kudos).
 
 ---
 
-## 6. Google Maps Integration
+## 6. Internationalization (i18n)
+
+### 6.1 Library: next-intl
+
+[next-intl](https://next-intl-docs.vercel.app/) is used for App Router–native internationalization.
+
+```
+npm install next-intl
+```
+
+### 6.2 Locale Routing
+
+URL-based routing with locale prefix:
+
+```
+/              → 301 redirect based on Accept-Language or NEXT_LOCALE cookie
+/en/           → English
+/en/venues     → English, venues page
+/ja/           → Japanese
+/ja/venues     → Japanese, venues page
+```
+
+Directory structure:
+
+```
+src/
+  app/
+    [locale]/                 ← dynamic segment for locale
+      layout.tsx              ← sets <html lang="...">
+      page.tsx
+      venues/
+        page.tsx
+  middleware.ts               ← locale detection and redirect
+  i18n/
+    routing.ts                ← locales: ['en', 'ja'], defaultLocale: 'en'
+    request.ts                ← getRequestConfig (loads messages)
+  messages/
+    en.json                   ← English strings
+    ja.json                   ← Japanese strings
+```
+
+### 6.3 Middleware: Language Detection
+
+```typescript
+// middleware.ts
+import createMiddleware from 'next-intl/middleware';
+import { routing } from './i18n/routing';
+
+export default createMiddleware(routing);
+
+export const config = {
+  matcher: ['/((?!api|_next|.*\\..*).*)']
+};
+```
+
+Detection priority (highest to lowest):
+
+1. `NEXT_LOCALE` cookie (user's manual selection — persists across visits)
+2. `Accept-Language` request header (browser language)
+3. Default locale (`en`)
+
+### 6.4 Language Switcher
+
+A `<LanguageSwitcher>` component in the site header:
+
+- Displays current locale label: `EN` / `JA`
+- On click: sets `NEXT_LOCALE` cookie + redirects to same path in target locale
+- Preserves query parameters on switch
+
+```typescript
+// Locale switch logic
+import { useRouter, usePathname } from 'next/navigation';
+import { useLocale } from 'next-intl';
+
+// Switch from /en/venues/123 → /ja/venues/123
+// Uses next-intl's Link component with locale override
+```
+
+### 6.5 Translation Files Structure
+
+```json
+// messages/en.json (excerpt)
+{
+  "nav": {
+    "home": "Home",
+    "venues": "Venues",
+    "studios": "Studios",
+    "sessions": "Sessions"
+  },
+  "venue": {
+    "verified": "Verified",
+    "unverified": "Unverified",
+    "sessionTendency": "Session Tendency",
+    "sourceTypes": {
+      "AUTO_COLLECTED": "🤖 Auto-collected",
+      "CROWDSOURCED": "👥 Community",
+      "OWNER_VERIFIED": "✅ Owner-verified"
+    }
+  },
+  "auth": {
+    "signIn": "Sign in",
+    "signOut": "Sign out",
+    "signInWithGoogle": "Sign in with Google"
+  }
+}
+```
+
+```json
+// messages/ja.json (excerpt)
+{
+  "nav": {
+    "home": "ホーム",
+    "venues": "セッション会場",
+    "studios": "練習スタジオ",
+    "sessions": "セッション"
+  },
+  "venue": {
+    "verified": "オーナー確認済み",
+    "unverified": "未確認",
+    "sessionTendency": "セッション傾向",
+    "sourceTypes": {
+      "AUTO_COLLECTED": "🤖 自動収集",
+      "CROWDSOURCED": "👥 コミュニティ",
+      "OWNER_VERIFIED": "✅ オーナー確認済み"
+    }
+  },
+  "auth": {
+    "signIn": "ログイン",
+    "signOut": "ログアウト",
+    "signInWithGoogle": "Googleでログイン"
+  }
+}
+```
+
+### 6.6 What Is NOT Translated
+
+| Content | Reason |
+|---------|--------|
+| User-entered text (venue names, session titles, bio, etc.) | Stored as-is; NearJam is not a translation service |
+| Auto-collected SNS/HP content | Scraped in source language |
+| Song titles and artist names | Canonical names regardless of locale |
+
+### 6.7 User Language Preference Storage
+
+| Storage | Value | Lifetime |
+|---------|-------|----------|
+| `NEXT_LOCALE` cookie | `"en"` or `"ja"` | 1 year |
+| User DB record | Not stored (Phase 1) | — |
+
+Phase 1: cookie only. Phase 2+: can persist locale in `User` DB record for cross-device consistency.
+
+---
+
+## 7. Google Maps Integration
 
 ### 6.1 API Keys
 
@@ -882,7 +1036,7 @@ No geocoding API calls at query time — uses cached `lat`/`lng` in DB.
 
 ---
 
-## 7. Auto-Collection Bot
+## 8. Auto-Collection Bot
 
 ### 7.1 Architecture
 
@@ -927,7 +1081,7 @@ Text:
 
 ---
 
-## 8. Azure Infrastructure
+## 9. Azure Infrastructure
 
 | Resource | SKU | Purpose |
 |---------|-----|---------|
@@ -950,7 +1104,7 @@ Text:
 
 ---
 
-## 9. Matching Algorithm
+## 10. Matching Algorithm
 
 ```
 # In-person session
@@ -976,7 +1130,7 @@ Notifications are batch-delivered once daily (morning digest) to prevent wishlis
 
 ---
 
-## 10. Phase 0 Status (Completed 2026-02-26)
+## 11. Phase 0 Status (Completed 2026-02-26)
 
 - [x] Next.js 16 project initialized
 - [x] Full Prisma schema (20+ tables)
@@ -989,15 +1143,15 @@ Notifications are batch-delivered once daily (morning digest) to prevent wishlis
 - [x] Seed data: 8 songs, 3 users, 1 venue, 2 musician profiles, 1 session
 - [x] Production deployment confirmed (HTTP 200)
 
-> **Note**: Schema in code is still v0.2. Phase 0.5 migration needed to add `Studio`, `StudioRoom`, `MusicianCoverageArea`, `SessionTendency` (refactored from `VenueProfile`), `AutoCollectionJob`, `VenuePost` — and Google Maps fields to `Venue`.
+> Phase 0.5 complete: Schema migrated to v0.3 (`Studio`, `StudioRoom`, `MusicianCoverageArea`, `SessionTendency`, `AutoCollectionJob`, `VenuePost`, Google Maps lat/lng on `Venue`). Migration `20260226232211_v0_3_venue_studio_coverage_area` applied to production.
 
 ---
 
-## 11. Next Steps
+## 12. Next Steps
 
 | Phase | Items |
 |-------|-------|
-| **Phase 0.5** (schema migration) | Migrate schema to v0.3: add Studio, StudioRoom, MusicianCoverageArea, SessionTendency, VenuePost, AutoCollectionJob. Add lat/lng to Venue. |
-| **Phase 1** | Auth UI, musician profile form, venue registration, basic session creation, Google Maps view |
+| ~~**Phase 0.5**~~ | ✅ Complete — v0.3 schema migration applied |
+| **Phase 1** | **i18n (next-intl, en/ja, browser detection, language switcher)**, Auth UI, musician profile form, venue registration, basic session creation, Google Maps view |
 | **Phase 1.5** | Auto-collection bot (Azure Functions), crowdsourced tendency submission UI |
-| **Phase 2** | Matching engine, notification system, in-session tools |
+| **Phase 2** | Matching engine, notification system, in-session tools, i18n notification emails |

@@ -1,6 +1,6 @@
 # NearJam — Product Requirements Document (PRD)
 
-**Version**: 0.3（2026-02-27）
+**Version**: 0.4（2026-02-27）
 **Status**: Draft
 
 ---
@@ -276,6 +276,55 @@ NearJam automatically collects session information from venue SNS accounts and w
 
 ---
 
+## 2.8 Internationalization (i18n)
+
+NearJam supports multiple display languages. English and Japanese are the initial pair.
+
+### Supported Languages
+
+| Code | Language | Status |
+|------|----------|--------|
+| `en` | English | ✅ Phase 1 |
+| `ja` | Japanese (日本語) | ✅ Phase 1 |
+
+### Language Detection and Selection
+
+| Mechanism | Behavior |
+|-----------|----------|
+| **Browser auto-detect** | On first visit, `Accept-Language` header is read. If a supported language is found, that locale is used. Otherwise falls back to `en`. |
+| **URL-based routing** | Locale prefix in URL: `/en/…` and `/ja/…`. Shareable and bookmarkable. |
+| **User override** | A language switcher (e.g., in the header) lets users manually select their language. Selection stored in a cookie (`NEXT_LOCALE`). |
+| **Cookie persistence** | Once the user has manually selected a language, the cookie overrides browser detection on all subsequent visits. |
+
+### URL Structure
+
+```
+https://neарjam.app/          → auto-redirect based on Accept-Language or cookie
+https://nearjam.app/en/       → English, all routes
+https://nearjam.app/ja/       → Japanese, all routes
+```
+
+Default locale: `en` (English is the canonical route; the site's primary content language is English).
+
+### Scope of Translation
+
+| Layer | Translatable | Notes |
+|-------|-------------|-------|
+| UI labels, buttons, navigation | ✅ | All static strings |
+| Error messages | ✅ | User-facing validation messages |
+| Content entered by users (venue names, session titles, etc.) | ❌ | Not translated — stored as-is |
+| Legal/copyright notices | ✅ | i18n required |
+| Notification emails | ✅ Phase 2 | Out of scope for Phase 1 |
+| Auto-collected content from SNS/HP | ❌ | Displayed as-is; no translation layer |
+
+### Language Switcher UX
+
+- Displayed in the site header at all times (logged in or not)
+- Shows current language with a flag or abbreviated label (e.g., `EN` / `JA`)
+- Switching preserves the current page path (e.g., `/en/venues/123` → `/ja/venues/123`)
+
+---
+
 ## 3. Core Concepts
 
 ### 3.1 Song Database
@@ -414,6 +463,12 @@ Others' records cannot be changed. **Your record is yours to log and delete.**
 
 ### Phase 1 — MVP
 
+**Internationalization (i18n)**
+- [ ] **Browser language auto-detection** — `Accept-Language` header detection on first visit
+- [ ] **URL-based locale routing** — `/en/` and `/ja/` prefixed routes via next-intl
+- [ ] **Language switcher** — header component, persists preference in `NEXT_LOCALE` cookie
+- [ ] Full UI translation coverage: labels, errors, navigation, legal notices
+
 **For Musicians**
 - [ ] Sign up / Login (email or Google OAuth)
 - [ ] Musician profile creation (nickname, instruments, genre, area, years played, skill/goal/style)
@@ -528,7 +583,7 @@ Others' records cannot be changed. **Your record is yours to log and delete.**
 - [ ] Paid event support (ticketed sessions)
 - [ ] Mobile app (PWA first, then native)
 - [ ] Studio booking integration (direct room reservation from NearJam)
-- [ ] Multi-language support (English UI)
+- [x] ~~Multi-language support~~ → Moved to Phase 1 (§2.8, §4 Phase 1)
 
 ---
 

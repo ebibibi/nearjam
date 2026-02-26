@@ -76,6 +76,17 @@ NearJam works on three layers:
 
 ---
 
+## Language Support
+
+NearJam is available in **English** and **Japanese (日本語)**.
+
+- Language is auto-detected from your browser settings on first visit
+- You can switch languages at any time using the language selector in the header
+- Your preference is saved for future visits
+- URLs are locale-prefixed: `/en/` and `/ja/`
+
+---
+
 ## Architecture Overview
 
 ```
@@ -85,6 +96,7 @@ NearJam works on three layers:
 ├─────────────────────────────────────────────────┤
 │  Auth: NextAuth.js v5 (Google OAuth + Magic Link)│
 │  DB:   Prisma v7 + PostgreSQL 16                 │
+│  i18n: next-intl (EN / JA, browser detection)   │
 │  Host: Azure Static Web Apps                     │
 │  CI:   GitHub Actions                            │
 └─────────────────────────────────────────────────┘
@@ -232,6 +244,17 @@ NearJam は3層で機能します。
 
 ---
 
+## 言語対応
+
+NearJam は**英語**と**日本語**に対応しています。
+
+- ブラウザの言語設定を自動検出して初回訪問時に表示言語を決定
+- ヘッダーの言語切り替えボタンでいつでも切り替え可能
+- 選択した言語はクッキーで次回以降も保持
+- URLにはロケールプレフィックスが付きます: `/en/` と `/ja/`
+
+---
+
 ## アーキテクチャ概要
 
 ```
@@ -241,6 +264,7 @@ NearJam は3層で機能します。
 ├─────────────────────────────────────────────────┤
 │  認証: NextAuth.js v5 (Google OAuth + マジックリンク) │
 │  DB:  Prisma v7 + PostgreSQL 16                  │
+│  i18n: next-intl（英語/日本語、ブラウザ自動検出）  │
 │  ホスト: Azure Static Web Apps                   │
 │  CI:  GitHub Actions                             │
 └─────────────────────────────────────────────────┘
