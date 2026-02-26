@@ -1,688 +1,1003 @@
-# NearJam — 技術設計書
+# NearJam — Technical Design Document
 
-**バージョン**: 0.2（2026-02-26）
-**ステータス**: ドラフト
-**対応PRD**: v0.2
+**Version**: 0.3（2026-02-27）
+**Status**: Draft
+**Corresponding PRD**: v0.3
 
 ---
 
-## 1. アーキテクチャ概要
+## 1. Architecture Overview
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                    ブラウザ / PWA                            │
-│               Next.js（App Router, SSR）                     │
+│                  Browser / PWA                               │
+│              Next.js (App Router, SSR)                       │
 └───────────────────────────┬─────────────────────────────────┘
                             │ HTTPS
 ┌───────────────────────────▼─────────────────────────────────┐
-│          Azure Static Web Apps（無料プラン）                  │
-│       Next.js フロントエンド + API Routes（Edge/Node）         │
-└──────┬────────────────────┬────────────────────────────────-┘
-       │                    │
-       │ 認証（NextAuth.js） │ DB クエリ（Prisma ORM）
-       │                    │
-┌──────▼──────┐   ┌─────────▼───────────────────────────────┐
-│  NextAuth   │   │  Azure Database for PostgreSQL            │
-│  (JWT/DB    │   │  Flexible Server — Burstable B1ms         │
-│   セッション) │   │  （標準 PostgreSQL — どこでも移行可能）     │
-└─────────────┘   └─────────────────────────────────────────-┘
+│         Azure Static Web Apps (Free plan)                    │
+│      Next.js Frontend + API Routes (Edge/Node)               │
+└──────┬────────────────────┬───────────────────┬─────────────┘
+       │                    │                   │
+       │ Auth (NextAuth.js)  │ DB (Prisma ORM)   │ Bot / Cron
+       │                    │                   │
+┌──────▼──────┐   ┌─────────▼──────────┐  ┌────▼───────────────┐
+│  NextAuth   │   │ Azure DB for        │  │ Collection Bot      │
+│  (JWT/DB    │   │ PostgreSQL 16       │  │ (Azure Functions    │
+│   session)  │   │ Flexible B1ms       │  │  Timer Trigger)     │
+└─────────────┘   └────────────────────┘  └────────────────────┘
                             │
-                  ┌─────────▼──────────┐
-                  │   Claude API       │
-                  │  （AI 提案機能）    │
-                  └────────────────────┘
+              ┌─────────────┼──────────────┐
+              │             │              │
+    ┌─────────▼────┐ ┌──────▼──────┐ ┌────▼────────────┐
+    │ Claude API   │ │ Google Maps │ │ SNS / HP Fetch  │
+    │ (AI suggest) │ │ Platform API│ │ (Bot targets)   │
+    └──────────────┘ └─────────────┘ └─────────────────┘
 ```
 
-### 設計原則
+### Design Principles
 
-1. **可搬性最優先** — アプリケーション層に Azure 固有のサービスを使わない。PostgreSQL・Next.js・NextAuth.js はどこでも動く。移行先の候補: Vercel + Railway / Supabase。
-2. **スケールゼロ** — Azure Static Web Apps + API Routes はアイドル時のコストがかからない。
-3. **標準 PostgreSQL** — Cosmos DB・Azure SQL 固有機能・独自拡張は使わない。Prisma ORM 経由で標準 SQL のみ使用。
+1. **Maximum portability** — No Azure-specific services at the application layer. PostgreSQL + Next.js + NextAuth.js run anywhere. Migration candidates: Vercel + Railway / Supabase.
+2. **Scale-to-zero** — Azure Static Web Apps + API Routes have no idle cost.
+3. **Standard PostgreSQL** — No Cosmos DB, Azure SQL-specific features, or proprietary extensions. Prisma ORM with standard SQL only.
+4. **Geocoding cached** — Google Maps API calls are rate-limited and billed. All geocode results stored in DB, refreshed only when address changes.
 
 ---
 
-## 2. 技術スタック
+## 2. Tech Stack
 
-| レイヤー | 技術 | 選定理由 |
-|---------|------|---------|
-| フロントエンド | Next.js 15（App Router）+ TypeScript | SSR/SSG・API Routes・可搬性 |
-| スタイリング | Tailwind CSS | ユーティリティファースト・実行時オーバーヘッドなし |
-| ORM | Prisma | 型安全な DB アクセス・マイグレーション管理・DB 非依存 |
-| 認証 | NextAuth.js v5 | Google OAuth + メールマジックリンク対応・ベンダーロックインなし |
-| データベース | PostgreSQL 16 | 標準 SQL・Azure DB for PostgreSQL Flexible でホスティング |
-| AI | Anthropic Claude API | セッション組み合わせ提案・ダイジェスト生成 |
-| ホスティング | Azure Static Web Apps | フロントエンド無料・API Routes は Azure Functions ランタイム |
-| CI/CD | GitHub Actions | `main` ブランチへのプッシュで自動デプロイ |
-| ローカル開発 | Docker Compose | PostgreSQL + アプリをコンテナで統合 |
+| Layer | Technology | Why |
+|-------|-----------|-----|
+| Frontend | Next.js 16 (App Router) + TypeScript | SSR/SSG, API Routes, portability |
+| Styling | Tailwind CSS | Utility-first, zero runtime overhead |
+| ORM | Prisma v7 | Type-safe DB access, migration management |
+| Auth | NextAuth.js v5 | Google OAuth + magic link, no vendor lock-in |
+| Database | PostgreSQL 16 | Standard SQL, hosted on Azure DB for PostgreSQL Flexible |
+| Maps | Google Maps Platform (JS API + Geocoding API) | Venue/studio map display and routing |
+| AI | Anthropic Claude API | Session combination suggestions, digest generation |
+| Bot | Azure Functions (Timer Trigger) | Periodic venue SNS/HP collection |
+| Hosting | Azure Static Web Apps | Free frontend hosting + Azure Functions runtime for APIs |
+| CI/CD | GitHub Actions | Auto-deploy on push to `main` |
+| Local dev | Docker Compose | PostgreSQL + app in container |
 
 ---
 
-## 3. データベーススキーマ
+## 3. Database Schema
 
-### 3.1 設計上の重要方針
+### 3.1 Key Design Decisions
 
-**AND-consentモデルの実装方針**:
-演奏ログの可視性は複数の主体が個別に制御する。「全員が同意した情報だけ公開」というAND結合ルールを、各主体のbooleanカラムで表現する。
+**AND-consent model implementation**:
+Performance log visibility is controlled independently by multiple parties. The AND-join rule ("only publish when everyone has consented") is expressed via boolean columns per party.
 
 ```
-# 「AさんがXXXを演奏した」が見えるかどうか
+# Whether "Person A played [song]" is visible:
 vis_musician = true
 AND vis_venue = true
 AND vis_session_admin = true
-→ 公開
+→ public
 
-# いずれか1つでもfalseなら非公開。即時反映。
+# If ANY is false → private. Instant effect.
 ```
 
-**会場認証の状態管理**:
-`verified_at` / `disputed_at` のNULL可timestampで状態を表現する。
+**Venue/Studio state management**:
+`verified_at` / `disputed_at` as nullable timestamps for state.
 
-| 状態 | 条件 |
-|------|------|
-| 未確認 | `verified_at IS NULL` |
-| 確認済み | `verified_at IS NOT NULL AND disputed_at IS NULL` |
-| 異議申し立て中 | `disputed_at IS NOT NULL` |
+| State | Condition |
+|-------|-----------|
+| Unverified | `verified_at IS NULL` |
+| Verified | `verified_at IS NOT NULL AND disputed_at IS NULL` |
+| Disputed | `disputed_at IS NOT NULL` |
+
+**Place entity split (v0.3 new)**:
+`VenueProfile` from v0.2 is split into `Venue` and `Studio`. Both share a `Place` base concept but have different sub-entities.
+
+**SessionTendency vs JamSession**:
+- `SessionTendency`: recurring pattern (e.g., "Every Thursday, jazz session") — crowdsourced/auto-collected
+- `JamSession`: a specific dated session event — created by users for registration and on-day tools
+
+**Geocoding cache**:
+Google Maps Geocoding API is called when address is first set or changes. Results (`lat`, `lng`) are stored in DB. Never call Geocoding API per-request.
 
 ---
 
-### 3.2 ER図
+### 3.2 Entity List
 
-```mermaid
-erDiagram
-    User {
-        uuid id PK
-        string nickname
-        string email
-        string role "musician|venue|both"
-        timestamp created_at
-    }
-
-    MusicianProfile {
-        uuid id PK
-        uuid user_id FK
-        text bio
-        string area_label
-        float area_lat
-        float area_lng
-        int travel_radius_km
-        string skill_level "beginner|intermediate|advanced|any"
-        string level_pref "same_level|join_better|either"
-        string session_goal "fun|improve|both"
-        string play_volume_pref "lots|specific_only|either"
-        string challenge_pref "known_only|challenge|either"
-        string feedback_pref "welcome|light|none"
-        string session_style "deep|variety|either"
-        string tempo_pref "slow|moderate|fast"
-        jsonb sns_links
-        string profile_visibility "private|logged_in|public"
-    }
-
-    MusicianInstrument {
-        uuid id PK
-        uuid musician_profile_id FK
-        string instrument
-        string proficiency
-    }
-
-    MusicianGenre {
-        uuid id PK
-        uuid musician_profile_id FK
-        string genre
-    }
-
-    VenueProfile {
-        uuid id PK
-        uuid user_id FK
-        string name
-        string address
-        float lat
-        float lng
-        string nearest_station
-        int walk_minutes
-        int capacity
-        string session_frequency
-        jsonb house_instruments
-        text equipment_details
-        text rules_markdown
-        string entrance_info
-        string booking_url
-        string booking_phone
-        timestamp verified_at
-        string verified_method "hp_email|sns_code|manual"
-        string verified_domain
-        timestamp disputed_at
-    }
-
-    Song {
-        uuid id PK
-        string title
-        string artist
-        string genre
-        string typical_key
-        int typical_bpm_min
-        int typical_bpm_max
-        string difficulty "easy|medium|hard|varies"
-        string[] tags
-        string chordwiki_url
-        int wishlist_count
-        uuid submitted_by FK
-    }
-
-    SongWish {
-        uuid id PK
-        uuid musician_profile_id FK
-        uuid song_id FK
-        string preferred_instrument
-        string preferred_key
-        text notes
-        timestamp added_at
-    }
-
-    Session {
-        uuid id PK
-        uuid venue_id FK
-        uuid session_admin_id FK
-        string title
-        timestamp starts_at
-        int duration_minutes
-        string format "open|invite|theme"
-        boolean is_syncroom
-        jsonb syncroom_info
-        string[] mood_flags
-        int max_participants
-        boolean registration_required
-        text description
-    }
-
-    SessionPrivacySettings {
-        uuid id PK
-        uuid session_id FK
-        uuid controlled_by FK
-        boolean vis_session_fact
-        boolean vis_datetime
-        boolean vis_session_name
-        boolean vis_song_list_venue
-        timestamp updated_at
-    }
-
-    SessionAdminConsent {
-        uuid id PK
-        uuid session_id FK
-        uuid session_admin_id FK
-        boolean vis_song_list
-        timestamp updated_at
-    }
-
-    SessionSong {
-        uuid id PK
-        uuid session_id FK
-        uuid song_id FK
-        string key_override
-        int bpm_override
-        int order_index
-    }
-
-    SessionInstrumentNeed {
-        uuid id PK
-        uuid session_id FK
-        string instrument
-        int count_needed
-    }
-
-    SessionRegistration {
-        uuid id PK
-        uuid session_id FK
-        uuid musician_profile_id FK
-        string status "interested|confirmed|attended"
-        timestamp registered_at
-    }
-
-    PerformanceLog {
-        uuid id PK
-        uuid session_id FK
-        uuid musician_profile_id FK
-        uuid song_id FK
-        uuid registered_by FK
-        string instrument_played
-        boolean was_soloist
-        int order_in_session
-        timestamp performed_at
-        boolean confirmed
-        timestamp confirmed_at
-        boolean vis_participation
-        boolean vis_instrument
-        boolean vis_song_performance
-        boolean vis_co_performers
-    }
-
-    Kudos {
-        uuid id PK
-        uuid session_id FK
-        uuid from_user_id FK
-        uuid to_user_id FK
-        uuid to_venue_id FK
-        string stamp
-        text message
-        timestamp created_at
-    }
-
-    AnonymousFeedback {
-        uuid id PK
-        uuid session_id FK
-        uuid to_user_id FK
-        uuid to_venue_id FK
-        text message
-        timestamp created_at
-    }
-
-    Connection {
-        uuid id PK
-        uuid from_user_id FK
-        uuid to_user_id FK
-        string status "pending|accepted"
-        timestamp requested_at
-        timestamp accepted_at
-        timestamp rejected_at
-        int reject_count
-    }
-
-    Block {
-        uuid id PK
-        uuid blocker_user_id FK
-        uuid blocked_user_id FK
-        timestamp created_at
-    }
-
-    Notification {
-        uuid id PK
-        uuid user_id FK
-        string type "match|connection|kudos|log_confirm"
-        jsonb payload
-        boolean sent
-        timestamp scheduled_for
-        timestamp sent_at
-    }
-
-    User ||--o| MusicianProfile : "持つ"
-    User ||--o| VenueProfile : "持つ"
-    MusicianProfile ||--o{ MusicianInstrument : "演奏する"
-    MusicianProfile ||--o{ MusicianGenre : "好きな"
-    MusicianProfile ||--o{ SongWish : "やりたい"
-    MusicianProfile ||--o{ SessionRegistration : "登録する"
-    MusicianProfile ||--o{ PerformanceLog : "演奏する"
-    VenueProfile ||--o{ Session : "開催する"
-    Session ||--o| SessionPrivacySettings : "公開設定"
-    Session ||--o{ SessionAdminConsent : "管理者同意"
-    Song ||--o{ SongWish : "希望される"
-    Song ||--o{ SessionSong : "含まれる"
-    Song ||--o{ PerformanceLog : "演奏される"
-    Session ||--o{ SessionSong : "含む"
-    Session ||--o{ SessionInstrumentNeed : "必要とする"
-    Session ||--o{ SessionRegistration : "持つ"
-    Session ||--o{ PerformanceLog : "記録する"
-    Session ||--o{ Kudos : "送られる"
-    Session ||--o{ AnonymousFeedback : "受け取る"
-    User ||--o{ Connection : "繋がる"
-    User ||--o{ Block : "ブロックする"
-    User ||--o{ Notification : "受け取る"
-```
+| Entity | Description |
+|--------|-------------|
+| `User` | Auth user (NextAuth base) |
+| `Account` | OAuth provider link (NextAuth) |
+| `Session` | Auth session (NextAuth) |
+| `VerificationToken` | Magic link token (NextAuth) |
+| `MusicianProfile` | Musician preferences and profile |
+| `MusicianInstrument` | Instruments a musician plays |
+| `MusicianGenre` | Genres a musician plays |
+| `MusicianCoverageArea` | Additional areas beyond home base + SYNCROOM availability |
+| `Venue` | Jam session venue (bar, live house, etc.) |
+| `SessionTendency` | Recurring session pattern at a venue (multiple per venue) |
+| `Studio` | Rehearsal studio |
+| `StudioRoom` | Individual room within a studio |
+| `Song` | Song database entry |
+| `SongWish` | Musician's wishlist entry (private by default) |
+| `JamSession` | A specific dated session event |
+| `JamSessionSong` | Song planned for a specific session |
+| `JamSessionInstrumentNeed` | Instruments needed at a session |
+| `JamSessionRegistration` | Registration of a musician for a session |
+| `JamSessionPrivacySettings` | Visibility settings for a session |
+| `JamSessionAdminConsent` | Session admin's consent for log publishing |
+| `PerformanceLog` | Who played what at a session |
+| `Kudos` | Post-session kudos from one user to another |
+| `AnonymousFeedback` | Anonymous feedback to venue/session admin |
+| `Connection` | Mutual-approval connection between musicians |
+| `Block` | Block relationship between users |
+| `Notification` | In-app notifications |
+| `AutoCollectionJob` | State tracker for bot collection jobs |
+| `VenuePost` | Crowdsourced info entry (either crowdsourced or auto-collected) |
 
 ---
 
-### 3.3 主要テーブルの補足説明
+### 3.3 Schema Definition (Prisma)
 
-#### `Session.session_admin_id`
+> Note: NextAuth.js requires `Session` model. NearJam jam sessions use `JamSession` to avoid collision.
 
-PRD v0.2でホスト役職を廃止。セッション作成者が自動的に管理者になるが、他の参加者に委譲可能。管理権限（参加者強制退出・セッション完了宣言・管理者委譲）はセッション管理者のみ。当日ツール（曲キュー・演奏ログ）は全参加者が使える。
+```prisma
+// ─────────────────────────────────────
+// NextAuth.js models (required)
+// ─────────────────────────────────────
 
-#### `Session.mood_flags`
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  role          UserRole  @default(MUSICIAN)
+  nickname      String?
+  bio           String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
-PostgreSQL の `text[]` 型で格納。有効値:
-
-| 値 | 表示ラベル |
-|----|---------|
-| `fun_allowed` | 🎉 失敗大歓迎 |
-| `beginner_welcome` | 🌱 初心者歓迎 |
-| `advanced` | 🔥 上級者向け |
-| `practice_focus` | 📚 練習重視 |
-| `theme_night` | 🎭 テーマナイト |
-| `quiet_listening` | 🤫 静聴系 |
-| `lively` | 🥳 ワイワイ系 |
-| `social` | 🤝 交流重視 |
-
-#### `SessionPrivacySettings`
-
-会場オーナーが制御するセッション単位の公開設定。1セッションに1レコード。
-
-| カラム | 制御対象 |
-|--------|---------|
-| `vis_session_fact` | セッションの存在自体を公開するか |
-| `vis_datetime` | 開催日時・時間帯を公開するか（⚠️ JASRAC警告対象） |
-| `vis_session_name` | セッション名を公開するか |
-| `vis_song_list_venue` | 曲リストを公開するか（会場側の同意。ホスト側は `SessionAdminConsent` で管理） |
-
-#### `PerformanceLog` のAND-consent実装
-
-`vis_*` カラムはミュージシャン本人が制御する自分のプライバシー設定。実際に情報が表示されるかは以下のAND結合で決まる:
-
-```
-# 「AさんがXXXセッションでギターを弾いた」が見えるか
-PerformanceLog.vis_participation = true       -- Aさんが参加公開 ON
-AND SessionPrivacySettings.vis_session_fact = true  -- 会場が公開 ON
-
-# 「Aさんが〇〇という曲を弾いた」が見えるか（曲名込み）
-PerformanceLog.vis_song_performance = true    -- Aさんが同意
-AND SessionPrivacySettings.vis_song_list_venue = true  -- 会場が同意
-AND SessionAdminConsent.vis_song_list = true  -- セッション管理者が同意
-
-# 会場名の表示（会場が未同意でもAさん自身の参加履歴は残せる）
-# → 会場名の部分だけ「非公開の会場」に差し替え
-```
-
-#### `Notification` テーブル
-
-マッチング通知はリアルタイム配信しない。`scheduled_for` に翌朝のダイジェスト時刻をセットしてバッチ送信。**ウィッシュリスト推測攻撃（セッション作成→即通知→ウィッシュリスト保有者特定）を時間的に崩すための設計。**
-
----
-
-## 4. 主要 API エンドポイント
-
-すべてのルートは `/api/` 配下の Next.js API Routes として実装します。
-
-### 認証
-| メソッド | パス | 説明 |
-|--------|------|------|
-| POST | `/api/auth/[...nextauth]` | NextAuth.js ハンドラ |
-
-### ミュージシャン
-| メソッド | パス | 説明 |
-|--------|------|------|
-| GET | `/api/musicians/me` | 自分のミュージシャンプロフィール取得 |
-| PUT | `/api/musicians/me` | 自分のミュージシャンプロフィール更新（10軸すべて） |
-| GET | `/api/musicians/[id]` | 公開ミュージシャンプロフィール取得 |
-| GET | `/api/musicians/me/wishlist` | 自分のウィッシュリスト取得 |
-| POST | `/api/musicians/me/wishlist` | ウィッシュリストに曲を追加 |
-| DELETE | `/api/musicians/me/wishlist/[songId]` | ウィッシュリストから曲を削除 |
-
-### 会場
-| メソッド | パス | 説明 |
-|--------|------|------|
-| GET | `/api/venues/[id]` | 会場プロフィール取得（未認証の場合は⚠️バッジ情報を含む） |
-| PUT | `/api/venues/me` | 自分の会場プロフィール更新 |
-| PUT | `/api/venues/me/rules` | ルール・マナーページ更新（確認済み会場のみ） |
-| GET | `/api/venues/me/sessions` | 自分の会場のセッション一覧 |
-| POST | `/api/venues/me/verification/start` | 会場認証開始（HPスクレイピング → メール候補返却） |
-| POST | `/api/venues/me/verification/confirm` | 確認コード入力 → 確認済みに昇格 |
-| POST | `/api/venues/me/verification/sns-start` | SNS確認コード生成・表示指示 |
-| POST | `/api/venues/me/verification/sns-check` | SNSページをチェックしてコード確認 |
-| POST | `/api/venues/[id]/dispute` | なりすまし異議申し立て |
-
-### セッション
-| メソッド | パス | 説明 |
-|--------|------|------|
-| GET | `/api/sessions` | セッション一覧（エリア・ジャンル・楽器・曲・ムードフラグでフィルタ） |
-| POST | `/api/sessions` | セッション作成（会場または任意のミュージシャン） |
-| GET | `/api/sessions/[id]` | セッション詳細取得 |
-| PUT | `/api/sessions/[id]` | セッション更新（セッション管理者のみ） |
-| POST | `/api/sessions/[id]/register` | 参加意思表明・参加登録 |
-| GET | `/api/sessions/[id]/attendees` | 参加者一覧取得（登録者のみ閲覧可） |
-| PUT | `/api/sessions/[id]/admin` | セッション管理者権限を他の参加者へ委譲（管理者のみ） |
-| DELETE | `/api/sessions/[id]/attendees/[userId]` | 参加者強制退出（管理者のみ） |
-| POST | `/api/sessions/[id]/complete` | セッション完了宣言・ログ公式確定（管理者のみ） |
-| GET | `/api/sessions/[id]/queue` | 曲キュー取得（当日ツール — 参加者全員） |
-| PUT | `/api/sessions/[id]/queue` | 曲キュー更新（参加者全員） |
-| GET | `/api/sessions/[id]/log` | 演奏ログ取得（AND-consent適用済み） |
-| POST | `/api/sessions/[id]/log` | 演奏ログ追加（**参加者全員**が自分または割り当て分を登録可） |
-| PUT | `/api/sessions/[id]/log/[logId]` | 演奏ログ更新（自分のログのみ） |
-| PUT | `/api/sessions/[id]/log/[logId]/confirm` | ホストが登録したログを対象者が確認・否定 |
-| PUT | `/api/sessions/[id]/privacy` | セッション公開設定更新（会場オーナーのみ） |
-| PUT | `/api/sessions/[id]/admin-consent` | セッション管理者の曲公開同意更新 |
-
-### 曲
-| メソッド | パス | 説明 |
-|--------|------|------|
-| GET | `/api/songs` | 曲検索（タイトル・アーティスト・ジャンル・タグ） |
-| POST | `/api/songs` | 曲の新規投稿（審査後に公開） |
-| GET | `/api/songs/[id]` | 曲詳細取得 |
-
-### マッチング
-| メソッド | パス | 説明 |
-|--------|------|------|
-| GET | `/api/matching/sessions` | ウィッシュリスト・スタイル・エリアに合うセッション一覧 |
-| GET | `/api/matching/musicians` | セッションの募集条件に合うミュージシャン一覧 |
-
-### ソーシャル
-| メソッド | パス | 説明 |
-|--------|------|------|
-| POST | `/api/connections` | コネクション申請を送る |
-| PUT | `/api/connections/[id]` | コネクション申請を承認・拒否 |
-| POST | `/api/blocks` | ユーザーをブロック |
-
-### いいね！・フィードバック
-| メソッド | パス | 説明 |
-|--------|------|------|
-| POST | `/api/kudos` | いいね！を送る（セッション終了後・参加者のみ） |
-| GET | `/api/kudos/received` | 自分が受け取ったいいね！一覧（本人のみ） |
-| POST | `/api/feedback/anonymous` | 会場・ホストへの匿名フィードバック送信 |
-| GET | `/api/feedback/anonymous/received` | 受け取った匿名フィードバック一覧（受信者のみ） |
-
-### AI
-| メソッド | パス | 説明 |
-|--------|------|------|
-| POST | `/api/ai/suggest-combinations` | 定期セッション向けの新しいミュージシャン組み合わせ提案 |
-| POST | `/api/ai/session-digest` | セッション後のサマリー生成 |
-
----
-
-## 5. マッチングアルゴリズム
-
-マッチングはオンデマンドでサーバーサイドで計算します（初期段階では事前計算なし）。
-
-```typescript
-// ミュージシャンに対するセッションのマッチングスコア（疑似コード）
-function scoreSessionForMusician(session: Session, musician: MusicianProfile): number {
-  // ウィッシュリストとセッション曲の重なり
-  const songOverlap = intersect(session.songs, musician.wishlist).length
-    / Math.max(musician.wishlist.length, 1)
-
-  // 移動可能距離内にあるか（SYNCROOMセッションは距離不問）
-  const locationFit = session.is_syncroom
-    ? 1.0
-    : distanceKm(musician.area, session.venue.location) <= musician.travel_radius_km ? 1 : 0
-
-  // 募集楽器を演奏できるか
-  const instrumentFit = session.instrumentNeeds.some(
-    n => musician.instruments.includes(n.instrument)
-  ) ? 1 : 0
-
-  // スタイル適合度（5軸の平均: レベル感・演奏量・チャレンジ姿勢・フィードバック・テンポ）
-  const styleFit = computeStyleCompatibility(session, musician)
-
-  // ムードフラグ適合度（例: 初心者が「上級者向け」に参加 → 警告）
-  const moodFit = computeMoodFlagCompatibility(session.mood_flags, musician)
-
-  if (session.is_syncroom) {
-    // SYNCROOMセッション: エリア不問なので曲・スタイル重視
-    return songOverlap * 0.5 + styleFit * 0.25 + moodFit * 0.15 + instrumentFit * 0.10
-  } else {
-    // 対面セッション
-    return songOverlap * 0.4 + locationFit * 0.25 + styleFit * 0.2 + moodFit * 0.1 + instrumentFit * 0.05
-  }
+  accounts          Account[]
+  sessions          Session[]
+  musicianProfile   MusicianProfile?
+  venueProfiles     Venue[]            @relation("VenueOwner")
+  studioProfiles    Studio[]           @relation("StudioOwner")
+  jamSessionsAdmin  JamSession[]       @relation("SessionAdmin")
+  registrations     JamSessionRegistration[]
+  performanceLogs   PerformanceLog[]
+  kudosSent         Kudos[]            @relation("KudosSender")
+  kudosReceived     Kudos[]            @relation("KudosReceiver")
+  connectionsA      Connection[]       @relation("ConnectionA")
+  connectionsB      Connection[]       @relation("ConnectionB")
+  blocksGiven       Block[]            @relation("Blocker")
+  blocksReceived    Block[]            @relation("Blocked")
+  notifications     Notification[]
+  venuePosts        VenuePost[]        @relation("PostAuthor")
 }
 
-// ミスマッチ警告（スコアとは独立して表示）
-function getMismatchWarnings(session: Session, musician: MusicianProfile): string[] {
-  const warnings: string[] = []
-  if (musician.play_volume_pref === 'lots' && session.max_participants > 8)
-    warnings.push('参加者が多く、演奏機会が分散する可能性があります')
-  if (musician.challenge_pref === 'known_only' && session.mood_flags.includes('fun_allowed'))
-    warnings.push('即興・初見曲が多いセッションかもしれません')
-  if (musician.skill_level === 'beginner' && session.mood_flags.includes('advanced'))
-    warnings.push('上級者向けのセッションです')
-  return warnings
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+  @@unique([identifier, token])
+}
+
+// ─────────────────────────────────────
+// Musician
+// ─────────────────────────────────────
+
+model MusicianProfile {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  homeArea        String?
+  travelRange     Int?     // km: 5 / 15 / 30 / null=unlimited
+  skillLevel      SkillLevel @default(BEGINNER)
+  levelPref       LevelPref  @default(ANY)
+  sessionGoal     SessionGoal @default(BOTH)
+  playVolumePref  PlayVolumePref @default(EITHER)
+  challengePref   ChallengePref @default(EITHER)
+  feedbackPref    FeedbackPref @default(LIGHT)
+  sessionStyle    SessionStyle @default(EITHER)
+  tempoPref       TempoPref @default(MODERATE)
+  profileVis      ProfileVisibility @default(LOGGED_IN)
+  historyVis      ProfileVisibility @default(PRIVATE)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  user            User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  instruments     MusicianInstrument[]
+  genres          MusicianGenre[]
+  coverageAreas   MusicianCoverageArea[]
+  songWishes      SongWish[]
+}
+
+model MusicianInstrument {
+  id        String @id @default(cuid())
+  profileId String
+  instrument String
+  isPrimary  Boolean @default(false)
+  profile   MusicianProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+}
+
+model MusicianGenre {
+  id        String @id @default(cuid())
+  profileId String
+  genre     String
+  profile   MusicianProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+}
+
+// New in v0.3: coverage areas + SYNCROOM
+model MusicianCoverageArea {
+  id              String  @id @default(cuid())
+  profileId       String
+  areaName        String  // e.g., "Kashiwa", "Akihabara"
+  isHome          Boolean @default(false)
+  isSyncroom      Boolean @default(false)  // true = this is the SYNCROOM availability entry
+  syncroomNotes   String? // room name, connection notes
+  isPublic        Boolean @default(false)  // visibility
+  profile         MusicianProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+}
+
+// ─────────────────────────────────────
+// Venue (jam session bars, live houses)
+// ─────────────────────────────────────
+
+model Venue {
+  id               String   @id @default(cuid())
+  name             String
+  address          String?
+  nearestStation   String?
+  walkingMinutes   Int?
+  lat              Float?   // cached from Geocoding API
+  lng              Float?   // cached from Geocoding API
+  websiteUrl       String?
+  instagramUrl     String?
+  xUrl             String?
+  facebookUrl      String?
+  bookingUrl       String?
+  phone            String?
+  ownerId          String?  // null = no verified owner yet
+  verifiedAt       DateTime?
+  verifiedMethod   VerificationMethod?
+  verifiedDomain   String?
+  disputedAt       DateTime?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  owner            User?     @relation("VenueOwner", fields: [ownerId], references: [id])
+  tendencies       SessionTendency[]
+  jamSessions      JamSession[]
+  posts            VenuePost[]
+  collectionJobs   AutoCollectionJob[]
+}
+
+// Session tendency: "what usually happens here" (not a specific event date)
+// Multiple per venue — because Thursday jazz and Saturday rock are different
+model SessionTendency {
+  id               String   @id @default(cuid())
+  venueId          String
+  name             String   // e.g., "Thursday Night Jazz Session"
+  typicalDayOfWeek Int?     // 0=Sun, 1=Mon, ..., 6=Sat (nullable = irregular)
+  typicalStartTime String?  // "19:00" format
+  typicalEndTime   String?  // "22:00" format
+  genres           String[] // ["Jazz", "Blues"]
+  atmosphere       String?  // free text
+  levelRange       String?  // "Beginner-friendly" / "Intermediate+" / etc.
+  entrySystem      String?  // "Free" / "¥500" / "One drink min"
+  capacity         Int?
+  houseEquipment   String?
+  equipmentDetails String?
+  sourceType       SourceType @default(CROWDSOURCED)
+  sourceUserId     String?  // who wrote this (null = auto-collected)
+  sourceUrl        String?  // URL of auto-collected source
+  isActive         Boolean  @default(true)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  venue            Venue    @relation(fields: [venueId], references: [id], onDelete: Cascade)
+  sourceUser       User?    @relation(fields: [sourceUserId], references: [id])
+}
+
+// ─────────────────────────────────────
+// Studio (rehearsal studios)
+// ─────────────────────────────────────
+
+model Studio {
+  id               String   @id @default(cuid())
+  name             String
+  address          String?
+  nearestStation   String?
+  walkingMinutes   Int?
+  lat              Float?
+  lng              Float?
+  websiteUrl       String?
+  phone            String?
+  openingHours     String?
+  bookingMethod    String?
+  ownerId          String?
+  verifiedAt       DateTime?
+  disputedAt       DateTime?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  owner            User?     @relation("StudioOwner", fields: [ownerId], references: [id])
+  rooms            StudioRoom[]
+  jamSessions      JamSession[]
+  collectionJobs   AutoCollectionJob[]
+}
+
+model StudioRoom {
+  id               String   @id @default(cuid())
+  studioId         String
+  name             String   // "Room A", "Studio 3"
+  capacityPersons  Int?
+  sizeSqm          Float?
+  hasDrums         Boolean  @default(false)
+  drumSpec         String?
+  hasPA            Boolean  @default(false)
+  paSpec           String?
+  hasPiano         Boolean  @default(false)
+  hasAmps          Boolean  @default(false)
+  hasMics          Boolean  @default(false)
+  otherEquipment   String?
+  hourlyRateYen    Int?
+  hourlyRatePeak   Int?     // peak-time rate
+  minBookingHours  Int?     @default(1)
+  notes            String?
+  createdAt        DateTime @default(now())
+
+  studio           Studio   @relation(fields: [studioId], references: [id], onDelete: Cascade)
+  jamSessions      JamSession[]
+}
+
+// ─────────────────────────────────────
+// Songs
+// ─────────────────────────────────────
+
+model Song {
+  id              String    @id @default(cuid())
+  title           String
+  artist          String?
+  genre           String?
+  standardKey     String?
+  tempoMin        Int?
+  tempoMax        Int?
+  difficulty      SongDifficulty @default(INTERMEDIATE)
+  tags            String[]
+  externalLinks   Json?     // {chordwiki: url, youtube: url}
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  wishes          SongWish[]
+  sessionSongs    JamSessionSong[]
+}
+
+model SongWish {
+  id              String   @id @default(cuid())
+  userId          String
+  songId          String
+  preferredKey    String?
+  createdAt       DateTime @default(now())
+
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  song            Song     @relation(fields: [songId], references: [id], onDelete: Cascade)
+  @@unique([userId, songId])
+}
+
+// ─────────────────────────────────────
+// Jam Sessions (specific dated events)
+// ─────────────────────────────────────
+
+model JamSession {
+  id              String        @id @default(cuid())
+  title           String
+  sessionAdminId  String
+  venueId         String?
+  studioId        String?
+  studioRoomId    String?
+  isSyncroom      Boolean       @default(false)
+  syncroomInfo    String?
+  format          SessionFormat @default(OPEN)
+  scheduledAt     DateTime?
+  endsAt          DateTime?
+  maxParticipants Int?
+  registrationRequired Boolean @default(false)
+  moodFlags       String[]      // mood flag keys
+  notes           String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  sessionAdmin    User          @relation("SessionAdmin", fields: [sessionAdminId], references: [id])
+  venue           Venue?        @relation(fields: [venueId], references: [id])
+  studio          Studio?       @relation(fields: [studioId], references: [id])
+  studioRoom      StudioRoom?   @relation(fields: [studioRoomId], references: [id])
+  songs           JamSessionSong[]
+  instrumentNeeds JamSessionInstrumentNeed[]
+  registrations   JamSessionRegistration[]
+  privacySettings JamSessionPrivacySettings?
+  adminConsent    JamSessionAdminConsent?
+  performanceLogs PerformanceLog[]
+  kudos           Kudos[]
+  feedback        AnonymousFeedback[]
+  notifications   Notification[]
+}
+
+model JamSessionSong {
+  id          String  @id @default(cuid())
+  sessionId   String
+  songId      String?
+  freeText    String? // for songs not in DB
+  suggestedKey String?
+  order       Int     @default(0)
+  session     JamSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  song        Song?   @relation(fields: [songId], references: [id])
+  @@unique([sessionId, songId])
+}
+
+model JamSessionInstrumentNeed {
+  id          String  @id @default(cuid())
+  sessionId   String
+  instrument  String
+  count       Int     @default(1)
+  session     JamSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+}
+
+model JamSessionRegistration {
+  id            String             @id @default(cuid())
+  sessionId     String
+  userId        String
+  instrument    String?
+  status        RegistrationStatus @default(REGISTERED)
+  createdAt     DateTime           @default(now())
+  session       JamSession         @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  user          User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@unique([sessionId, userId])
+}
+
+model JamSessionPrivacySettings {
+  id              String  @id @default(cuid())
+  sessionId       String  @unique
+  visExistence    Boolean @default(false) // show that this session existed
+  visDateTime     Boolean @default(false)
+  visSessionName  Boolean @default(false)
+  visSongList     Boolean @default(false)
+  session         JamSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+}
+
+model JamSessionAdminConsent {
+  id              String  @id @default(cuid())
+  sessionId       String  @unique
+  consentSongList Boolean @default(false)
+  consentDateTime Boolean @default(false)
+  session         JamSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+}
+
+// ─────────────────────────────────────
+// Performance Logs
+// ─────────────────────────────────────
+
+model PerformanceLog {
+  id              String  @id @default(cuid())
+  sessionId       String
+  userId          String
+  songId          String?
+  songFreeText    String?
+  instrument      String?
+  confirmedAt     DateTime?
+  deniedAt        DateTime?
+  // AND-consent visibility columns
+  vis_participation   Boolean @default(false) // "I was there"
+  vis_instrument      Boolean @default(false) // "I played X instrument"
+  vis_song_performance Boolean @default(false) // "I played this song"
+  vis_co_performers   Boolean @default(false) // "I played with these people"
+  createdAt       DateTime @default(now())
+
+  session         JamSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  user            User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// ─────────────────────────────────────
+// Social
+// ─────────────────────────────────────
+
+model Kudos {
+  id          String  @id @default(cuid())
+  fromUserId  String
+  toUserId    String
+  sessionId   String
+  stamp       String? // emoji key
+  message     String?
+  createdAt   DateTime @default(now())
+  sender      User @relation("KudosSender", fields: [fromUserId], references: [id], onDelete: Cascade)
+  receiver    User @relation("KudosReceiver", fields: [toUserId], references: [id], onDelete: Cascade)
+  session     JamSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+}
+
+model AnonymousFeedback {
+  id          String  @id @default(cuid())
+  sessionId   String
+  toUserId    String  // venue owner or session admin
+  content     String
+  createdAt   DateTime @default(now())
+  session     JamSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+}
+
+model Connection {
+  id          String           @id @default(cuid())
+  userAId     String
+  userBId     String
+  status      ConnectionStatus @default(PENDING)
+  rejectedAt  DateTime?
+  rejectCount Int              @default(0)
+  createdAt   DateTime         @default(now())
+  userA       User @relation("ConnectionA", fields: [userAId], references: [id], onDelete: Cascade)
+  userB       User @relation("ConnectionB", fields: [userBId], references: [id], onDelete: Cascade)
+  @@unique([userAId, userBId])
+}
+
+model Block {
+  id         String   @id @default(cuid())
+  blockerId  String
+  blockedId  String
+  createdAt  DateTime @default(now())
+  blocker    User @relation("Blocker", fields: [blockerId], references: [id], onDelete: Cascade)
+  blocked    User @relation("Blocked", fields: [blockedId], references: [id], onDelete: Cascade)
+  @@unique([blockerId, blockedId])
+}
+
+model Notification {
+  id          String           @id @default(cuid())
+  userId      String
+  type        NotificationType
+  sessionId   String?
+  payload     Json?
+  readAt      DateTime?
+  createdAt   DateTime         @default(now())
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  session     JamSession? @relation(fields: [sessionId], references: [id], onDelete: SetNull)
+}
+
+// ─────────────────────────────────────
+// Crowdsourced / Auto-collected content
+// ─────────────────────────────────────
+
+// General posts about a venue (separate from session tendencies)
+model VenuePost {
+  id          String     @id @default(cuid())
+  venueId     String
+  authorId    String?    // null = auto-collected
+  sourceType  SourceType @default(CROWDSOURCED)
+  sourceUrl   String?
+  content     String     // free text
+  isActive    Boolean    @default(true)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  venue       Venue      @relation(fields: [venueId], references: [id], onDelete: Cascade)
+  author      User?      @relation("PostAuthor", fields: [authorId], references: [id])
+}
+
+// Tracks the state of bot collection jobs per venue/studio
+model AutoCollectionJob {
+  id             String        @id @default(cuid())
+  venueId        String?
+  studioId       String?
+  sourceType     String        // "instagram", "x", "hp", "facebook", "connpass"
+  sourceUrl      String
+  lastFetchedAt  DateTime?
+  lastStatus     String?       // "success" | "error" | "pending_review"
+  nextFetchAt    DateTime?
+  errorMessage   String?
+  createdAt      DateTime      @default(now())
+  venue          Venue?        @relation(fields: [venueId], references: [id])
+  studio         Studio?       @relation(fields: [studioId], references: [id])
+}
+
+// ─────────────────────────────────────
+// Enums
+// ─────────────────────────────────────
+
+enum UserRole {
+  MUSICIAN
+  VENUE
+  BOTH
+  ADMIN
+}
+
+enum SkillLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+  ANY
+}
+
+enum LevelPref {
+  SAME_LEVEL
+  BETTER_PLAYERS
+  ANY
+}
+
+enum SessionGoal {
+  FUN
+  IMPROVE
+  BOTH
+}
+
+enum PlayVolumePref {
+  LOTS
+  FEW_SONGS
+  EITHER
+}
+
+enum ChallengePref {
+  KNOWN_ONLY
+  CHALLENGER
+  EITHER
+}
+
+enum FeedbackPref {
+  DETAILED
+  LIGHT
+  NONE
+}
+
+enum SessionStyle {
+  DEEP
+  WIDE
+  EITHER
+}
+
+enum TempoPref {
+  RELAXED
+  MODERATE
+  INTENSE
+}
+
+enum ProfileVisibility {
+  PRIVATE
+  LOGGED_IN
+  PUBLIC
+}
+
+enum VerificationMethod {
+  HP_EMAIL
+  SNS_CODE
+  MANUAL
+}
+
+enum SongDifficulty {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+  DEPENDS
+}
+
+enum SessionFormat {
+  OPEN
+  INVITE_ONLY
+  THEME_NIGHT
+}
+
+enum RegistrationStatus {
+  REGISTERED
+  WAITLISTED
+  CANCELLED
+  REMOVED
+}
+
+enum ConnectionStatus {
+  PENDING
+  CONNECTED
+  REJECTED
+}
+
+enum NotificationType {
+  WISHLIST_MATCH
+  INSTRUMENT_MATCH
+  NEW_SESSION_NEARBY
+  KUDOS_RECEIVED
+  CONNECTION_REQUEST
+  CONNECTION_ACCEPTED
+  PERFORMANCE_LOG_CONFIRM
+}
+
+enum SourceType {
+  AUTO_COLLECTED
+  CROWDSOURCED
+  OWNER_VERIFIED
 }
 ```
 
 ---
 
-## 6. セキュリティ設計
+## 4. API Design
 
-### 認証
-- Google OAuth（NextAuth.js 経由、主要方法）
-- メールマジックリンク（パスワード不要、フォールバック）
-- JWT セッショントークン（ステートレス）、有効期限 30 日
+### 4.1 Conventions
 
-### 認可ルール
+- All routes under `/api/v1/`
+- Authentication via NextAuth.js session (cookie)
+- JSON request/response
+- Rate limiting on mutation endpoints (Upstash Ratelimit)
+- Input validation via Zod schemas
 
-| リソース | ルール |
-|---------|--------|
-| ミュージシャンプロフィール（公開フィールド） | ログイン済みユーザーなら誰でも |
-| セッション参加者一覧 | 当該セッションに登録したユーザーのみ |
-| 演奏ログ（AND-consent適用後） | ログイン済みユーザー（会場が設定した公開範囲に従う） |
-| 演奏ログ（未ログイン） | 表示しない（`noindex` + 認証ガード） |
-| 会場管理・公開設定 | 会場の所有者アカウントのみ |
-| 曲リストを含む統計 | API からの一括取得を禁止（スクレイピング対策） |
-| いいね！受信ボックス | 受け取った本人のみ |
-| 匿名フィードバック受信 | 会場オーナー / ホストのみ |
-| ブロックリスト | 非公開 — ブロックした本人のみ確認可能 |
-| セッション管理操作 | セッション管理者のみ（当日ツールの読み書きは全参加者） |
+### 4.2 Core Endpoints
 
-### プライバシー
+#### Auth
+| Method | Path | Description |
+|--------|------|-------------|
+| GET/POST | `/api/auth/[...nextauth]` | NextAuth.js handler |
 
-- `area_lat` / `area_lng` は DB に保存するが、**API からは絶対に返さない** — クライアントには `area_label`（地区名の文字列）のみを返す
-- 会場の住所は会場ページとセッション詳細ページにのみ表示；ミュージシャンプロフィールには埋め込まない
-- メールアドレスは API から絶対に返さない
-- **演奏ログは未ログインユーザーに表示しない（`noindex` + 認証ガード）** — 検索エンジンに曲名が渡らないようにする
-- 会場の曲統計・演奏ログはページネーションなし一括取得 API を提供しない（スクレイピング防止）
+#### Musicians
+| Method | Path | Description |
+|--------|------|-------------|
+| GET | `/api/v1/musicians/me` | My profile |
+| PUT | `/api/v1/musicians/me` | Update profile |
+| GET | `/api/v1/musicians/me/coverage-areas` | Coverage areas + SYNCROOM status |
+| PUT | `/api/v1/musicians/me/coverage-areas` | Update coverage areas |
+| GET | `/api/v1/musicians/me/wishlist` | My wishlist |
+| POST | `/api/v1/musicians/me/wishlist` | Add song to wishlist |
+| DELETE | `/api/v1/musicians/me/wishlist/:songId` | Remove song |
+| GET | `/api/v1/musicians/:id` | Public profile |
 
-### JASRAC リスク対応（§3.5 準拠）
+#### Venues
+| Method | Path | Description |
+|--------|------|-------------|
+| GET | `/api/v1/venues` | List venues (with filters, geo) |
+| POST | `/api/v1/venues` | Create venue (any user) |
+| GET | `/api/v1/venues/:id` | Venue detail |
+| PUT | `/api/v1/venues/:id` | Update (owner only) |
+| POST | `/api/v1/venues/:id/verify` | Initiate verification |
+| GET | `/api/v1/venues/:id/tendencies` | Session tendencies |
+| POST | `/api/v1/venues/:id/tendencies` | Add tendency (any logged-in user) |
+| PUT | `/api/v1/venues/:id/tendencies/:tendencyId` | Update tendency |
+| POST | `/api/v1/venues/:id/posts` | Add crowdsourced post |
 
-- 日時公開 ON 時に警告UI表示（操作はブロックしない）
-- 曲リスト公開 ON 時に警告UI表示
-- 曲名を含む情報は認証済みユーザーにのみ返す
+#### Studios
+| Method | Path | Description |
+|--------|------|-------------|
+| GET | `/api/v1/studios` | List studios (with filters, geo) |
+| POST | `/api/v1/studios` | Create studio |
+| GET | `/api/v1/studios/:id` | Studio detail with rooms |
+| PUT | `/api/v1/studios/:id` | Update (owner only) |
+| GET | `/api/v1/studios/:id/rooms` | List rooms |
+| POST | `/api/v1/studios/:id/rooms` | Add room (owner only) |
 
-### 接続申請クールダウン（§5.2 準拠）
+#### Maps
+| Method | Path | Description |
+|--------|------|-------------|
+| GET | `/api/v1/map/places` | Venues + studios within bounding box |
 
-```
-拒否された場合: Connection.rejected_at を記録
-  → 同じ相手への再申請は rejected_at から 30 日間ブロック
+#### Songs
+| Method | Path | Description |
+|--------|------|-------------|
+| GET | `/api/v1/songs` | Search songs |
+| POST | `/api/v1/songs` | Add song to DB |
+| GET | `/api/v1/songs/:id` | Song detail |
 
-Connection.reject_count >= 3:
-  → 自動的に Block レコードを作成（ソフトブロック）
-  → 「申請を受け取らない」設定と同等の状態になる
-```
-
-### マッチング通知のバッチ配信（プライバシー対策）
-
-マッチング通知はリアルタイム送信しない。`Notification` テーブルに `scheduled_for = 翌朝7:00` で登録し、バッチジョブが1日1回送信する。
-
-**理由**: セッション作成 → 即座に通知が届く設計にすると、「セッション A を作成した直後に通知が届いた人 B は、A の曲をウィッシュリストに持っている」という時間相関攻撃が成立する。バッチ化することでウィッシュリスト保有者の特定を困難にする。
-
-### 入力バリデーション
-- すべての API 入力をルート境界で [Zod](https://zod.dev) スキーマによりバリデーション
-- SQL インジェクション: Prisma（パラメータ化クエリ）により防止
-- XSS: Next.js が JSX を自動エスケープ；フリーテキスト入力は保存前に DOMPurify でサニタイズ
-- `rules_markdown` フィールドはサーバーサイドで許可タグのみに制限（危険な HTML を除去）
-
-### レート制限
-- API ルートは `@upstash/ratelimit`（または MVP 向けのシンプルなインメモリリミッター）でレート制限
-- マッチング・AI エンドポイントはより厳しい制限（ユーザーごとに 10 リクエスト/分）
-- 会場認証エンドポイント（HPスクレイピング）は 1 アカウントにつき 5 回/日
-
----
-
-## 7. ローカル開発環境
-
-```bash
-# PostgreSQL + アプリを起動
-docker compose up
-
-# DB マイグレーション適用
-npx prisma migrate dev
-
-# サンプルデータのシード
-npx prisma db seed
-
-# 開発サーバー起動
-npm run dev
-```
-
-`docker-compose.yml`:
-```yaml
-services:
-  db:
-    image: postgres:16
-    environment:
-      POSTGRES_DB: nearjam
-      POSTGRES_USER: nearjam
-      POSTGRES_PASSWORD: dev_password
-    ports:
-      - "5432:5432"
-  app:
-    build: .
-    depends_on: [db]
-    environment:
-      DATABASE_URL: postgresql://nearjam:dev_password@db:5432/nearjam
-    ports:
-      - "3000:3000"
-```
+#### Sessions
+| Method | Path | Description |
+|--------|------|-------------|
+| GET | `/api/v1/sessions` | List sessions (with filters) |
+| POST | `/api/v1/sessions` | Create session |
+| GET | `/api/v1/sessions/:id` | Session detail |
+| PUT | `/api/v1/sessions/:id` | Update (admin only) |
+| POST | `/api/v1/sessions/:id/register` | Register for session |
+| DELETE | `/api/v1/sessions/:id/register` | Cancel registration |
+| GET | `/api/v1/sessions/:id/queue` | Song queue |
+| POST | `/api/v1/sessions/:id/queue` | Add to queue |
+| PUT | `/api/v1/sessions/:id/queue/:songId` | Update order / key |
+| POST | `/api/v1/sessions/:id/performance-logs` | Log performance |
+| PUT | `/api/v1/sessions/:id/privacy` | Update privacy settings |
+| POST | `/api/v1/sessions/:id/kudos` | Send kudos |
+| POST | `/api/v1/sessions/:id/feedback` | Send anonymous feedback |
 
 ---
 
-## 8. Azure へのデプロイ
+## 5. Security
 
-```
-GitHub main ブランチ
-      │
-      ▼ GitHub Actions
-Azure Static Web Apps
-  ├── Next.js 静的ページ（CDN 配信）
-  ├── API Routes → Azure Functions（Node.js ランタイム）
-  └── マネージド ID → Azure DB for PostgreSQL
-```
+### 5.1 Authentication & Authorization
 
-### 環境変数（GitHub Secrets / Azure App Settings に登録）
+- All API routes require NextAuth.js session
+- Venue/Studio mutations require `ownerId == session.user.id` check
+- Session admin mutations require `sessionAdminId == session.user.id` check
+- Performance log mutations only by the log's `userId`
 
-```env
-DATABASE_URL=postgresql://...
-NEXTAUTH_SECRET=...
-NEXTAUTH_URL=https://nearjam.app
-GOOGLE_CLIENT_ID=...
-GOOGLE_CLIENT_SECRET=...
-ANTHROPIC_API_KEY=...
-```
+### 5.2 Input Validation
 
-### Azure リソース構成
+All inputs validated with Zod at API route level before reaching DB.
 
-| リソース | SKU | 月額推定コスト |
-|---------|-----|-------------|
-| Azure Static Web Apps | 無料プラン | ¥0 |
-| Azure DB for PostgreSQL Flexible | Burstable B1ms（1 vCore, 2GB） | 約 ¥2,500 |
-| **合計** | | **約 ¥2,500/月** |
+### 5.3 Rate Limiting
 
-> Claude API の利用費は従量課金。MVP 規模では最小限の見込み。
+Upstash Ratelimit on mutation endpoints (session create, registration, kudos).
 
----
+### 5.4 Data Isolation
 
-## 9. 移行手順（MVP 特典終了時）
+- Wishlist queries always scoped to `userId = session.user.id`
+- Participant lists only returned when requester is registered for the session
+- Notifications only returned for `userId = session.user.id`
 
-Microsoft MVP 特典が終了した場合の移行先:
+### 5.5 JASRAC Risk Mitigation
 
-| コンポーネント | 現状 | 移行先候補 |
-|-------------|------|----------|
-| フロントエンド | Azure Static Web Apps | Vercel（無料枠あり・同じ Next.js） |
-| データベース | Azure DB for PostgreSQL | Railway / Supabase / Render（すべて標準 PostgreSQL） |
-| CI/CD | GitHub Actions | 変更不要 |
-
-**移行工数の見積もり: 1日未満。** 全インフラは可搬性を前提に設計されています。
+| Measure | Implementation |
+|---------|---------------|
+| Performance log pages: `noindex` | `X-Robots-Tag: noindex` header + robots.txt |
+| Auth gate on performance logs | Middleware: redirect to login if unauthenticated |
+| Song titles not in public API | `/api/v1/songs` requires auth |
+| Bulk export disabled | No endpoint returns full performance log dump |
 
 ---
 
-## 10. 技術的な未決定事項
+## 6. Google Maps Integration
 
-- [ ] Next.js の Server Actions を使うか、従来の REST API ルートにするか
-- [ ] 曲の全文検索: PostgreSQL の `tsvector` か、外部検索インデックスか
-- [ ] プッシュ通知: Web Push API（PWA）か、MVP はメールのみか
-- [ ] セッションのリアルタイム更新（曲キュー・演奏ログ）: ポーリング vs WebSocket vs Server-Sent Events
-- [ ] AI 提案: 同期的な API 呼び出しか、非同期ジョブキューか
-- [ ] 会場認証のSNSチェック: cron（Azure Functions Timer Trigger）で定期チェックか、会場が手動で「確認しました」ボタンを押すか
+### 6.1 API Keys
+
+- `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` — frontend JS API (Maps display)
+- `GOOGLE_MAPS_GEOCODING_API_KEY` — server-side only (Geocoding)
+
+Restrict Maps JS API key to referer (domain) in Google Cloud Console.
+Restrict Geocoding API key to server IP or no HTTP referer restriction (server-side only).
+
+### 6.2 Geocoding Flow
+
+```
+1. User submits venue/studio address
+2. Server calls Geocoding API: GET https://maps.googleapis.com/maps/api/geocode/json
+3. Store lat/lng in Venue.lat / Venue.lng
+4. On subsequent page loads, use cached lat/lng — NO API call
+5. Only re-geocode if address field changes
+```
+
+### 6.3 Map View API
+
+```
+GET /api/v1/map/places?swLat=X&swLng=Y&neLat=A&neLng=B&type=venue,studio
+```
+
+Returns venues and studios within the bounding box. Pagination for large result sets.
+
+No geocoding API calls at query time — uses cached `lat`/`lng` in DB.
+
+---
+
+## 7. Auto-Collection Bot
+
+### 7.1 Architecture
+
+Azure Functions Timer Trigger — runs on a schedule (e.g., daily at 03:00 JST).
+
+```
+AutoCollectionJob table → pending jobs
+  ↓
+For each job where nextFetchAt <= now():
+  1. Fetch source URL (HP, Instagram, X, etc.)
+  2. Extract text content (HTML → text, or API response)
+  3. Send to Claude API with extraction prompt
+  4. Parse JSON response → map to SessionTendency / VenuePost schema
+  5. Insert as sourceType=AUTO_COLLECTED, isActive=false (pending review)
+  6. Notify operators of new pending items
+  7. Update lastFetchedAt, nextFetchAt (+7 days), lastStatus
+```
+
+### 7.2 Extraction Prompt (Claude API)
+
+```
+Given the following text from a venue's website/SNS, extract session information.
+Return a JSON array of session tendencies with fields:
+- name: string (session name or "Unknown")
+- typicalDayOfWeek: number (0-6) or null
+- typicalStartTime: string (HH:MM) or null
+- genres: string[]
+- atmosphere: string or null
+- entrySystem: string or null
+
+Text:
+[VENUE_TEXT]
+```
+
+### 7.3 Review Flow
+
+1. Auto-collected items have `isActive = false`
+2. Operator reviews at `/admin/collection-queue`
+3. Approve → `isActive = true, sourceType = AUTO_COLLECTED`
+4. Reject → delete or mark as spam
+5. Edit before approval → `sourceType = CROWDSOURCED` (human touched)
+
+---
+
+## 8. Azure Infrastructure
+
+| Resource | SKU | Purpose |
+|---------|-----|---------|
+| Azure Static Web Apps | Free | Frontend + API Routes |
+| Azure DB for PostgreSQL Flexible | Standard_B1ms (Burstable) | Database |
+| Azure Functions | Consumption | Auto-collection bot |
+
+### Environment Variables
+
+| Variable | Where used | Notes |
+|----------|-----------|-------|
+| `DATABASE_URL` | Server | PostgreSQL connection string |
+| `AUTH_SECRET` | Server | NextAuth.js secret |
+| `AUTH_URL` | Server | Public URL of the app |
+| `AUTH_GOOGLE_ID` | Server | Google OAuth client ID |
+| `AUTH_GOOGLE_SECRET` | Server | Google OAuth client secret |
+| `ANTHROPIC_API_KEY` | Server | Claude API for AI features + bot |
+| `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` | Client | Maps JS API |
+| `GOOGLE_MAPS_GEOCODING_API_KEY` | Server | Geocoding API (server-side only) |
+
+---
+
+## 9. Matching Algorithm
+
+```
+# In-person session
+score = song_overlap × 0.4 + area_fit × 0.3 + style_fit × 0.2 + instrument_fit × 0.1
+
+# SYNCROOM session
+score = song_overlap × 0.5 + style_fit × 0.35 + instrument_fit × 0.15
+```
+
+**area_fit** now considers `MusicianCoverageArea`:
+- If venue is within `travelRange` of `homeArea` → 1.0
+- If venue is in any of the musician's `coverageAreas` → 0.8
+- Otherwise → 0.0
+
+**style_fit** components:
+- Skill level match
+- Play volume preference
+- Challenge attitude
+- Feedback preference
+- Session style (deep vs broad)
+
+Notifications are batch-delivered once daily (morning digest) to prevent wishlist timing-correlation attacks.
+
+---
+
+## 10. Phase 0 Status (Completed 2026-02-26)
+
+- [x] Next.js 16 project initialized
+- [x] Full Prisma schema (20+ tables)
+- [x] Docker Compose local dev environment
+- [x] Azure PostgreSQL Flexible Server created (`psql-nearjam`, japaneast)
+- [x] Azure Static Web Apps created (`swa-nearjam`)
+- [x] GitHub Actions CI/CD pipeline (npm ci → prisma generate → migrate deploy → build → SWA deploy)
+- [x] GitHub Secrets configured
+- [x] Initial migration applied (local + production)
+- [x] Seed data: 8 songs, 3 users, 1 venue, 2 musician profiles, 1 session
+- [x] Production deployment confirmed (HTTP 200)
+
+> **Note**: Schema in code is still v0.2. Phase 0.5 migration needed to add `Studio`, `StudioRoom`, `MusicianCoverageArea`, `SessionTendency` (refactored from `VenueProfile`), `AutoCollectionJob`, `VenuePost` — and Google Maps fields to `Venue`.
+
+---
+
+## 11. Next Steps
+
+| Phase | Items |
+|-------|-------|
+| **Phase 0.5** (schema migration) | Migrate schema to v0.3: add Studio, StudioRoom, MusicianCoverageArea, SessionTendency, VenuePost, AutoCollectionJob. Add lat/lng to Venue. |
+| **Phase 1** | Auth UI, musician profile form, venue registration, basic session creation, Google Maps view |
+| **Phase 1.5** | Auto-collection bot (Azure Functions), crowdsourced tendency submission UI |
+| **Phase 2** | Matching engine, notification system, in-session tools |
