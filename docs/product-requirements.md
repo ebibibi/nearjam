@@ -1,262 +1,268 @@
-# NearJam — Product Requirements Document (PRD)
+# NearJam — プロダクト要件定義書（PRD）
 
-**Version**: 0.1 (2026-02-26)
-**Status**: Draft
-
----
-
-## 1. Vision
-
-> *"The right musicians, the right songs, the right place — before you even walk in the door."*
-
-NearJam solves the coordination problem in amateur jam sessions by making pre-session planning effortless and post-session history meaningful. It also solves a discovery problem: musicians who want to play specific music can find events and venues they didn't know existed.
+**バージョン**: 0.1（2026-02-26）
+**ステータス**: ドラフト
 
 ---
 
-## 2. Users
+## 1. ビジョン
 
-### 2.1 User Types
+> *「ドアを開ける前から、正しいミュージシャンが・正しい曲を・正しい場所でやっている」*
 
-| Type | Description |
-|------|-------------|
-| **Musician** | An individual who participates in jam sessions. Registers songs they want to play, instruments they play, their session style preferences, and their area. |
-| **Venue** | A bar, live house, or community space that hosts jam sessions. Registers their event schedule, the genres/songs they cover, and the instruments they need. |
-| **Host** (subset of Venue) | The person who runs a specific session (MC/facilitator). May be the venue owner or a regular musician. Has extra in-session tools. |
+NearJam は、アマチュアのジャムセッションが抱える2つの問題を解決します。
 
-> Note: One person can hold both Musician and Venue roles (e.g., a bar owner who also plays).
+1. **調整コスト問題** — 事前準備を簡単にすることで、当日の無駄な時間を減らす
+2. **発見問題** — やりたい曲・ジャンルのセッションを知らないまま終わることをなくす
 
 ---
 
-### 2.2 Musician Profile
+## 2. ユーザー定義
 
-#### Identity
-- Nickname (required, public)
-- Real name (optional, private — never shown publicly)
-- Profile photo (optional)
-- Bio / free text (optional)
+### 2.1 ユーザー種別
 
-#### Playing Profile
-| Field | Options | Purpose |
-|-------|---------|---------|
-| **Instruments** | Guitar, Bass, Drums, Keys, Vocals, Sax, Trumpet, Violin, etc. (multi-select) | Matching with sessions that need your instrument |
-| **Genres** | Jazz, J-Pop, Rock, Funk, Blues, Classical, etc. (multi-select + free tag) | Surface relevant sessions |
-| **Skill level** | Beginner / Intermediate / Advanced / "Just for fun, level doesn't matter" | Style matching |
-| **Session goals** | Have fun / Improve my playing / Both | Style matching |
-| **Feedback style** | Welcome detailed feedback / Light feedback OK / No feedback please | Style matching — prevents friction |
-| **Session style** | Practice one song deeply / Play many different songs / Either | Match with session format |
-| **Preferred tempo** | Relaxed / Moderate / Driving | Soft matching signal |
+| 種別 | 説明 |
+|------|------|
+| **ミュージシャン** | ジャムセッションに参加する個人。やりたい曲・楽器・スタイルの好み・エリアを登録する。 |
+| **会場** | ジャムセッションを開催するバー・ライブハウス・コミュニティスペース等。イベントスケジュール・対応ジャンル・曲・必要楽器を登録する。 |
+| **ホスト**（会場の部分集合） | 特定のセッションを仕切る人（MC・ファシリテーター）。会場オーナーの場合も、常連ミュージシャンの場合もある。当日ツールの追加権限を持つ。 |
 
-#### Discovery
-| Field | Description |
-|-------|-------------|
-| **Home area** | Nearest major station or neighborhood (not precise address) |
-| **Willing to travel** | 5 km / 15 km / 30 km / Any |
-| **Song wishlist** | List of songs the musician wants to play (linked to Song DB) |
-
-#### Social
-| Field | Description |
-|-------|-------------|
-| **SNS links** | Optional: YouTube, Instagram, SoundCloud, X/Twitter, TikTok |
-| **Connections** | Mutual opt-in follows (required before DM is unlocked) |
+> 1人がミュージシャンと会場の両方のロールを持てる（例: 演奏もするバーのオーナー）。
 
 ---
 
-### 2.3 Venue Profile
+### 2.2 ミュージシャンプロフィール
 
-| Field | Description |
-|-------|-------------|
-| **Venue name** | Public |
-| **Address** | Full address (shown on venue page; not embedded in musician matching results) |
-| **Access** | Nearest station + walk time |
-| **Capacity** | Max musicians per session |
-| **Session frequency** | Weekly / Monthly / Irregular |
-| **Genres** | What genres the venue focuses on |
-| **House instruments** | What's available on-site (PA, drums, piano, etc.) |
-| **Entrance fee / system** | Free / Charge / 1-drink minimum / etc. |
-| **Contact / reservation** | URL or phone (optional) |
+#### アイデンティティ
+- ニックネーム（必須・公開）
+- 本名（任意・非公開 — 公開プロフィールには表示されない）
+- プロフィール写真（任意）
+- 自己紹介テキスト（任意）
+
+#### 演奏プロフィール
+
+| 項目 | 選択肢 | 目的 |
+|------|--------|------|
+| **楽器** | ギター、ベース、ドラム、キーボード、ボーカル、サックス、トランペット、バイオリン等（複数選択可） | 楽器が必要なセッションとのマッチング |
+| **ジャンル** | ジャズ、J-Pop、ロック、ファンク、ブルース、クラシック等（複数選択 + フリーテキストタグ） | 関連するセッションの表示 |
+| **スキルレベル** | 初心者 / 中級者 / 上級者 / 「楽しければレベル不問」 | スタイルマッチング |
+| **セッションの目標** | 楽しみたい / 上手くなりたい / 両方 | スタイルマッチング |
+| **フィードバックへの姿勢** | 詳細なフィードバック歓迎 / 軽めで OK / フィードバック不要 | スタイルマッチング — 摩擦の予防 |
+| **セッションスタイル** | 1曲を繰り返し深く練習したい / 色々な曲を幅広く経験したい / どちらでも | セッション形式とのマッチング |
+| **好みのテンポ感** | ゆったり / ほどほど / ガシガシ | ソフトなマッチングシグナル |
+
+#### 発見設定
+
+| 項目 | 説明 |
+|------|------|
+| **拠点エリア** | 最寄り駅または地区名（精密な住所は不要） |
+| **移動可能距離** | 5km / 15km / 30km / 距離不問 |
+| **やりたい曲リスト** | 演奏したい曲のリスト（曲データベースからリンク） |
+
+#### ソーシャル
+
+| 項目 | 説明 |
+|------|------|
+| **SNSリンク** | 任意: YouTube、Instagram、SoundCloud、X（旧Twitter）、TikTok |
+| **コネクション** | 相互承認制のフォロー（承認後にのみDMが解放される） |
 
 ---
 
-## 3. Core Concepts
+### 2.3 会場プロフィール
 
-### 3.1 Song Database
+| 項目 | 説明 |
+|------|------|
+| **会場名** | 公開情報 |
+| **住所** | 会場ページに表示（ミュージシャンの検索結果には埋め込まない） |
+| **アクセス** | 最寄り駅 + 徒歩時間 |
+| **定員** | 1セッションの最大参加人数 |
+| **開催頻度** | 毎週 / 毎月 / 不定期 |
+| **対応ジャンル** | 会場が主にカバーするジャンル |
+| **ハウス楽器** | 当日使える機材（PA、ドラム、ピアノ等） |
+| **参加費・システム** | 無料 / 有料 / ワンドリンク制 等 |
+| **予約・問い合わせ先** | URL または電話番号（任意） |
 
-A community-maintained catalog of songs.
+---
 
-| Field | Description |
-|-------|-------------|
-| Title | Song name |
-| Artist / Band | Original artist |
-| Genre | Jazz / Rock / J-Pop / etc. |
-| Typical key | Most common session key (editable per event) |
-| Typical tempo | BPM range |
-| Difficulty | Easy / Medium / Hard / "Varies" |
-| Tags | e.g., "Tokyo Jihen", "Carpenters", "Hard Bop", "12-bar blues" |
-| Wishlist count | How many users have added this to their wishlist (popularity signal) |
+## 3. コア概念
 
-### 3.2 Session / Event
+### 3.1 曲データベース
 
-Created by a Venue (or Host):
+コミュニティで育てるセッション定番曲のカタログ。
 
-| Field | Description |
-|-------|-------------|
-| Title | e.g., "Thursday Night Open Session" |
-| Date & time | |
-| Venue | Linked to venue profile |
-| Song list | Planned songs for the night (from Song DB or free text) |
-| Instruments needed | Drums? Vocalist? Bass? |
-| Format | Open session / Invitation only / Theme night (e.g., "J-Pop only") |
-| Max participants | |
-| Registration required | Yes / No |
+| 項目 | 説明 |
+|------|------|
+| 曲名 | |
+| アーティスト / バンド | 原曲アーティスト |
+| ジャンル | ジャズ / ロック / J-Pop 等 |
+| 標準キー | よく使われるセッションキー（イベントごとに変更可） |
+| 標準テンポ | BPM範囲 |
+| 難易度 | 初級 / 中級 / 上級 / 「場合による」 |
+| タグ | 例: 「東京事変」「カーペンターズ」「Hard Bop」「12小節ブルース」 |
+| ウィッシュリスト登録数 | 何人がやりたいと登録しているか（人気度シグナル） |
 
-### 3.3 Matching
+### 3.2 セッション / イベント
 
-Matching is **non-exclusive and notification-based** (not a gating mechanism).
+会場またはホストが作成するもの。
 
-**Song-based match**: A musician's song wishlist intersects with a session's song list → notification sent.
+| 項目 | 説明 |
+|------|------|
+| タイトル | 例: 「木曜夜のオープンセッション」 |
+| 日時 | |
+| 会場 | 会場プロフィールにリンク |
+| 曲リスト | その夜に予定している曲（曲DBから選択、またはフリーテキスト） |
+| 募集楽器 | ドラム? ボーカル? ベース? |
+| 形式 | オープン / 招待制 / テーマナイト（例: 「J-Popオンリー」） |
+| 最大参加人数 | |
+| 事前登録の要否 | 必要 / 不要 |
 
-**Instrument match**: A session is looking for a specific instrument the musician plays → notification sent.
+### 3.3 マッチングの仕組み
 
-**Style match**: Session format, goals, and feedback culture align with musician's profile → surface in "Recommended sessions".
+マッチングは**非排他的・通知ベース**（参加できないようにする仕組みではなく、知らせる仕組み）。
 
-**Location match**: Session is within the musician's willing-to-travel radius.
+**曲ベースマッチ**: ミュージシャンのウィッシュリストとセッションの曲リストが重なる → 通知。
 
-Matching score (internal, not shown to user):
+**楽器マッチ**: セッションが募集している楽器をミュージシャンが演奏できる → 通知。
+
+**スタイルマッチ**: セッションの形式・目標・フィードバック文化がミュージシャンのプロフィールと合う → 「おすすめセッション」に表示。
+
+**エリアマッチ**: セッション会場がミュージシャンの移動可能距離内にある。
+
+マッチングスコア（内部計算値・ユーザーには非表示）:
 
 ```
-score = song_overlap * 0.4 + location_fit * 0.3 + style_fit * 0.2 + instrument_fit * 0.1
+スコア = 曲の重なり × 0.4 + エリア適合度 × 0.3 + スタイル適合度 × 0.2 + 楽器適合度 × 0.1
 ```
 
-> This formula is a starting point and will be tuned with real data.
+> この係数は初期値であり、実際のデータをもとに調整する。
 
 ---
 
-## 4. Feature List by Phase
+## 4. フェーズ別機能一覧
 
 ### Phase 1 — MVP
 
-**Musician**
-- [ ] Sign up / login (email or Google OAuth)
-- [ ] Create musician profile (nickname, instruments, genres, area, skill/goals/style)
-- [ ] Add songs to wishlist
-- [ ] Browse nearby sessions
-- [ ] Register interest in / attendance to a session
-- [ ] Add SNS links to profile
-- [ ] Connect with another musician (mutual opt-in)
+**ミュージシャン向け**
+- [ ] サインアップ / ログイン（メールアドレスまたは Google OAuth）
+- [ ] ミュージシャンプロフィールの作成（ニックネーム・楽器・ジャンル・エリア・スキル/目標/スタイル）
+- [ ] 曲をウィッシュリストに追加
+- [ ] 近くのセッションを探す
+- [ ] セッションへの参加意思表明 / 参加登録
+- [ ] プロフィールへの SNS リンク追加
+- [ ] 他のミュージシャンとコネクション（相互承認）
 
-**Venue**
-- [ ] Sign up / login
-- [ ] Create venue profile
-- [ ] Create a session event with song list and instrument needs
-- [ ] View registered musicians for a session
-- [ ] Manage recurring sessions
+**会場向け**
+- [ ] サインアップ / ログイン
+- [ ] 会場プロフィールの作成
+- [ ] 曲リスト・募集楽器つきのセッションイベント作成
+- [ ] 参加登録したミュージシャンの一覧確認
+- [ ] 定期セッションの管理
 
-**In-Session Tools (Host)**
-- [ ] Song queue management (add/reorder songs during session)
-- [ ] Part assignment per song (who plays what instrument)
-- [ ] Key / tempo notes per song
-- [ ] Live log: record each performance (musician × song × instrument)
-- [ ] Performance balance dashboard (who's played how many times)
+**当日ツール（ホスト向け）**
+- [ ] 曲キュー管理（セッション中に曲を追加・並び替え）
+- [ ] 曲ごとのパート割り当て（誰がどの楽器を担当するか）
+- [ ] 曲ごとのキー・テンポメモ
+- [ ] 演奏ログ記録（参加者 × 曲 × 楽器）
+- [ ] 演奏バランスダッシュボード（誰が何回演奏したか）
 
-**Notifications**
-- [ ] "A session near you is planning a song from your wishlist"
-- [ ] "A session near you needs your instrument"
-- [ ] "A new session has been posted near you"
+**通知**
+- [ ] 「ウィッシュリストの曲を予定しているセッションが近くにあります」
+- [ ] 「あなたの楽器を募集しているセッションが近くにあります」
+- [ ] 「近くで新しいセッションが開催されます」
 
-### Phase 2 — Growth
+### Phase 2 — 成長フェーズ
 
-- [ ] AI-assisted combination suggestions ("You and these 3 people have never played together and share 5 songs in common")
-- [ ] Session history per musician and per venue
-- [ ] Monthly digest for recurring sessions ("Last month you played X songs, here are new suggestions")
-- [ ] Repeat-session memory: "You played this song 3 months ago — ready to try it again?"
-- [ ] Venue analytics: attendance trends, popular songs, instrument gaps
-- [ ] Community song submissions and voting
+- [ ] AI による組み合わせ提案（「この3人はまだ一緒にやったことがなく、5曲共通の曲があります」）
+- [ ] ミュージシャン別・会場別のセッション履歴
+- [ ] 定期セッション向けの月次ダイジェスト（「先月やった曲はこれ。新しいおすすめはこちら」）
+- [ ] 繰り返しセッションの記憶（「この曲は3ヶ月前にやっています。もう一度やる準備は？」）
+- [ ] 会場向け分析（参加者数の推移、人気曲、不足楽器の傾向）
+- [ ] コミュニティによる曲の投稿・投票
 
-### Phase 3 — Expansion
+### Phase 3 — 発展フェーズ
 
-- [ ] QR code check-in on the night
-- [ ] Post-session thank-you notes (musician to musician)
-- [ ] Session recording log (optional: link to a recording or video)
-- [ ] Paid event support (ticketed sessions)
-- [ ] Multi-venue discovery map
-- [ ] Mobile app (PWA first, then native)
-
----
-
-## 5. Safety & Privacy
-
-### 5.1 Identity Protection
-
-| Principle | Implementation |
-|-----------|---------------|
-| Nicknames only | Real name never displayed publicly; optional for trust verification |
-| Location privacy | Only area/neighborhood shown, never home address |
-| Attendance privacy | Attendee list visible only to other registered attendees |
-| Profile visibility | Musician profile visible to public by default; full details only to logged-in users (configurable) |
-
-### 5.2 Anti-Stalking Measures
-
-The following design choices are specifically intended to prevent harassment and stalking:
-
-1. **No location pinpointing** — "Kashiwa area" not "3-chome, Kashiwa". Home/base location is area-level only.
-2. **Attendance gating** — You can only see who's attending a session if you yourself have registered interest in it. Voyeuristic browsing of attendee lists is blocked.
-3. **Mutual-only messaging** — No direct messages until both users have explicitly connected. No cold DMs.
-4. **Block & report** — Any user can block another user. Blocked users cannot see your profile, wishlist, or attendance. Reports are reviewed by venue and platform admins.
-5. **No session-as-dating-app pattern** — Style matching surfaces compatibility for *music*, not personal relationships. The UI avoids dating-app language and patterns (no "swipe", no "like").
-6. **Venue as mediator** — Venues are verified. Introductions happen in the context of a real event at a real place, not anonymously online.
-7. **Opt-out of discovery** — Musicians can set their profile to "private" (not surfaced in venue searches or recommendations). They can still find and attend sessions manually.
-
-### 5.3 Trust & Verification
-
-- Venues go through a lightweight verification step (link to their existing social media or website)
-- Abuse reports are triaged by venue owners first, then platform admins
-- Repeat offenders can be platform-banned
+- [ ] QRコードによる当日受付
+- [ ] セッション後のお礼メッセージ機能（ミュージシャン間）
+- [ ] セッション録音ログ（任意: 録音や動画のリンクを残す）
+- [ ] 有料イベント対応（チケット制セッション）
+- [ ] 複数会場のマップ表示
+- [ ] モバイルアプリ（まず PWA、その後ネイティブ）
 
 ---
 
-## 6. SNS Integration
+## 5. 安全・プライバシー設計
 
-Musicians can optionally link external profiles. These are **display-only** (no OAuth login with these services — just a URL):
+### 5.1 個人情報の保護
 
-| Platform | Use case |
-|----------|----------|
-| YouTube | Share a performance video so others can hear you play |
-| Instagram | General profile link |
-| SoundCloud | Share recordings |
-| X / Twitter | General social presence |
-| TikTok | Short-form performance clips |
+| 原則 | 実装方針 |
+|------|---------|
+| ニックネームのみ | 本名は公開プロフィールに表示しない |
+| 位置情報の抽象化 | エリア・地区名のみ表示。自宅住所は一切使わない |
+| 参加者リストの保護 | 参加登録した人のみ他の参加者名を確認できる |
+| プロフィールの公開範囲 | デフォルトはログイン済みユーザーのみ閲覧可（変更可能） |
 
-**SNS links as trust signals**: A linked YouTube channel with real videos makes a profile feel more credible and reduces anonymous bad behavior.
+### 5.2 ストーキング・ハラスメント対策
 
----
+以下の設計は、特にストーキングや嫌がらせを防ぐことを目的としています:
 
-## 7. Non-Goals (Out of Scope)
+1. **位置情報の抽象化** — 「柏エリア」であり「柏市〇丁目」ではない。拠点の位置はエリアレベルのみ。
+2. **参加者リストのゲーティング** — セッションに参加登録した人だけが他の参加者を確認できる。観覧目的のブラウズは不可。
+3. **相互承認後のみDM可能** — 両方がコネクション申請を承認するまでダイレクトメッセージは送れない。一方的なDMは不可。
+4. **ブロック＆通報** — どのユーザーも他のユーザーをブロック可能。ブロックされたユーザーはプロフィール・ウィッシュリスト・参加状況を確認できない。通報は会場管理者・プラットフォーム管理者がレビュー。
+5. **マッチング機能は音楽のため** — スタイルマッチングは「音楽の相性」のためのもの。マッチングアプリ的な UI パターン（スワイプ・いいね等）は使わない。
+6. **会場が仲介者** — 認証済みの会場が場を提供する。実際のイベントの文脈でしか出会いが発生しないようにする。
+7. **発見からの離脱オプション** — プロフィールを「非公開」に設定すれば、会場検索やおすすめには表示されない。手動でセッションを探して参加することは引き続き可能。
 
-- Booking professional session musicians for recording work (that's Supreme Tracks)
-- Online/remote jam sessions (that's SYNCROOM)
-- Teaching or lesson matching
-- Paid session tracking or royalty management
-- Band/group formation for original music (that's BandMix)
+### 5.3 信頼性・認証
 
----
-
-## 8. Success Metrics (Initial)
-
-| Metric | Target (6 months) |
-|--------|-------------------|
-| Registered musicians | 50 |
-| Registered venues | 5 |
-| Sessions created | 20 |
-| Song wishlist items | 300 |
-| Notifications sent with match | 100 |
-| Musicians who attended a session they found via NearJam | 10 |
+- 会場は軽いベリフィケーションを経る（既存の SNS やウェブサイトとのリンク確認）
+- 通報はまず会場オーナーがトリアージし、次にプラットフォーム管理者が対応
+- 悪質な行動を繰り返すユーザーはプラットフォームBANの対象
 
 ---
 
-## 9. Open Questions
+## 6. SNS 連携
 
-- [ ] Should venue profiles be free, or is there a paid tier for venues?
-- [ ] How do we handle songs not in the DB yet? (Free-text entry vs. "request to add")
-- [ ] What's the minimum viable Song DB to launch? (Seed with J-Pop/Jazz top 200?)
-- [ ] Should matching notifications be push (PWA) or email only?
-- [ ] Should sessions have a public page shareable on SNS?
+ミュージシャンは任意で外部プロフィールをリンクできます。これは**表示のみ**（これらのサービスでのOAuthログインではなく、URLを表示するだけ）。
+
+| プラットフォーム | 用途 |
+|----------------|------|
+| YouTube | 演奏動画を共有して、事前に演奏を聴いてもらう |
+| Instagram | 一般的なプロフィールリンク |
+| SoundCloud | 録音を共有 |
+| X（旧Twitter） | 一般的なソーシャルプレゼンス |
+| TikTok | ショート演奏クリップ |
+
+**SNSリンクは信頼シグナルとしても機能します**: 実際の演奏動画が載ったYouTubeチャンネルへのリンクがあるプロフィールは、匿名での悪質行動が起きにくくなります。
+
+---
+
+## 7. スコープ外（対象外）
+
+- レコーディング用のプロのセッションミュージシャンの手配（それは Supreme Tracks の役割）
+- オンライン・リモートでのジャムセッション（それは SYNCROOM の役割）
+- 音楽レッスン・先生のマッチング
+- 演奏に関する報酬・著作権管理
+- オリジナル曲制作のためのバンドメンバー募集（それは BandMix の役割）
+
+---
+
+## 8. 成功指標（初期）
+
+| 指標 | 目標（6ヶ月） |
+|------|-------------|
+| 登録ミュージシャン数 | 50名 |
+| 登録会場数 | 5会場 |
+| 作成されたセッション数 | 20件 |
+| ウィッシュリスト登録数（曲） | 300件 |
+| マッチング通知の送信数 | 100件 |
+| NearJam 経由でセッションに参加したミュージシャン数 | 10名 |
+
+---
+
+## 9. 未決定事項
+
+- [ ] 会場プロフィールは無料のみ？会場向けの有料プランを設ける？
+- [ ] DBにない曲が入力された場合の扱い（フリーテキスト入力 vs「追加申請」）
+- [ ] ローンチ時の最低限の曲データベースは何曲か（J-Pop / ジャズ上位200曲でシードする？）
+- [ ] マッチング通知はプッシュ通知（PWA）かメールのみか
+- [ ] セッションに SNS でシェアできる公開ページを用意するか

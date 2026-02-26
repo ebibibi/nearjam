@@ -1,64 +1,64 @@
-# NearJam — Technical Design Document
+# NearJam — 技術設計書
 
-**Version**: 0.1 (2026-02-26)
-**Status**: Draft
+**バージョン**: 0.1（2026-02-26）
+**ステータス**: ドラフト
 
 ---
 
-## 1. Architecture Overview
+## 1. アーキテクチャ概要
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                        Browser / PWA                        │
-│                  Next.js (App Router, SSR)                  │
+│                    ブラウザ / PWA                            │
+│               Next.js（App Router, SSR）                     │
 └───────────────────────────┬─────────────────────────────────┘
                             │ HTTPS
 ┌───────────────────────────▼─────────────────────────────────┐
-│              Azure Static Web Apps (Free Tier)              │
-│         Next.js frontend + API Routes (Edge/Node)           │
+│          Azure Static Web Apps（無料プラン）                  │
+│       Next.js フロントエンド + API Routes（Edge/Node）         │
 └──────┬────────────────────┬────────────────────────────────-┘
        │                    │
-       │ Auth (NextAuth.js) │ DB queries (Prisma ORM)
+       │ 認証（NextAuth.js） │ DB クエリ（Prisma ORM）
        │                    │
 ┌──────▼──────┐   ┌─────────▼───────────────────────────────┐
-│  NextAuth   │   │  Azure Database for PostgreSQL           │
-│  (JWT/DB    │   │  Flexible Server — Burstable B1ms        │
-│   session)  │   │  (portable standard PostgreSQL)          │
+│  NextAuth   │   │  Azure Database for PostgreSQL            │
+│  (JWT/DB    │   │  Flexible Server — Burstable B1ms         │
+│   セッション) │   │  （標準 PostgreSQL — どこでも移行可能）     │
 └─────────────┘   └─────────────────────────────────────────-┘
                             │
                   ┌─────────▼──────────┐
                   │   Claude API       │
-                  │  (AI suggestions)  │
+                  │  （AI 提案機能）    │
                   └────────────────────┘
 ```
 
-### Key Design Principles
+### 設計原則
 
-1. **Portability first** — No Azure-specific services in the application layer. PostgreSQL, Next.js, and NextAuth.js run anywhere. Migration path: Vercel + Railway/Supabase.
-2. **Scale to zero** — Azure Static Web Apps with API Routes has no idle cost.
-3. **Standard PostgreSQL** — Avoid Cosmos DB, Azure SQL-specific features, or any proprietary extension. Use vanilla SQL / Prisma ORM.
-
----
-
-## 2. Tech Stack
-
-| Layer | Technology | Reason |
-|-------|-----------|--------|
-| Frontend | Next.js 15 (App Router) + TypeScript | SSR/SSG, API Routes, portable |
-| Styling | Tailwind CSS | Utility-first, no runtime overhead |
-| ORM | Prisma | Type-safe DB access, migration support, DB-agnostic |
-| Auth | NextAuth.js v5 | Supports Google OAuth + email magic link; no vendor lock-in |
-| Database | PostgreSQL 16 | Standard SQL, hosted on Azure DB for PostgreSQL Flexible |
-| AI | Anthropic Claude API | Session combination suggestions, digest generation |
-| Hosting | Azure Static Web Apps | Free tier for frontend; API Routes via Azure Functions runtime |
-| CI/CD | GitHub Actions | Automatic deploy on push to `main` |
-| Local dev | Docker Compose | PostgreSQL + app in containers |
+1. **可搬性最優先** — アプリケーション層に Azure 固有のサービスを使わない。PostgreSQL・Next.js・NextAuth.js はどこでも動く。移行先の候補: Vercel + Railway / Supabase。
+2. **スケールゼロ** — Azure Static Web Apps + API Routes はアイドル時のコストがかからない。
+3. **標準 PostgreSQL** — Cosmos DB・Azure SQL 固有機能・独自拡張は使わない。Prisma ORM 経由で標準 SQL のみ使用。
 
 ---
 
-## 3. Database Schema
+## 2. 技術スタック
 
-### Entity Relationship Diagram
+| レイヤー | 技術 | 選定理由 |
+|---------|------|---------|
+| フロントエンド | Next.js 15（App Router）+ TypeScript | SSR/SSG・API Routes・可搬性 |
+| スタイリング | Tailwind CSS | ユーティリティファースト・実行時オーバーヘッドなし |
+| ORM | Prisma | 型安全な DB アクセス・マイグレーション管理・DB 非依存 |
+| 認証 | NextAuth.js v5 | Google OAuth + メールマジックリンク対応・ベンダーロックインなし |
+| データベース | PostgreSQL 16 | 標準 SQL・Azure DB for PostgreSQL Flexible でホスティング |
+| AI | Anthropic Claude API | セッション組み合わせ提案・ダイジェスト生成 |
+| ホスティング | Azure Static Web Apps | フロントエンド無料・API Routes は Azure Functions ランタイム |
+| CI/CD | GitHub Actions | `main` ブランチへのプッシュで自動デプロイ |
+| ローカル開発 | Docker Compose | PostgreSQL + アプリをコンテナで統合 |
+
+---
+
+## 3. データベーススキーマ
+
+### ER図
 
 ```mermaid
 erDiagram
@@ -201,103 +201,110 @@ erDiagram
         timestamp created_at
     }
 
-    User ||--o| MusicianProfile : "has"
-    User ||--o| VenueProfile : "has"
-    MusicianProfile ||--o{ MusicianInstrument : "plays"
-    MusicianProfile ||--o{ MusicianGenre : "likes"
-    MusicianProfile ||--o{ SongWish : "wishes"
-    MusicianProfile ||--o{ SessionRegistration : "registers"
-    MusicianProfile ||--o{ PerformanceLog : "performs"
-    VenueProfile ||--o{ Session : "hosts"
-    Song ||--o{ SongWish : "wished by"
-    Song ||--o{ SessionSong : "included in"
-    Song ||--o{ PerformanceLog : "played as"
-    Session ||--o{ SessionSong : "contains"
-    Session ||--o{ SessionInstrumentNeed : "needs"
-    Session ||--o{ SessionRegistration : "has"
-    Session ||--o{ PerformanceLog : "logs"
-    User ||--o{ Connection : "connects from"
-    User ||--o{ Block : "blocks"
+    User ||--o| MusicianProfile : "持つ"
+    User ||--o| VenueProfile : "持つ"
+    MusicianProfile ||--o{ MusicianInstrument : "演奏する"
+    MusicianProfile ||--o{ MusicianGenre : "好きな"
+    MusicianProfile ||--o{ SongWish : "やりたい"
+    MusicianProfile ||--o{ SessionRegistration : "登録する"
+    MusicianProfile ||--o{ PerformanceLog : "演奏する"
+    VenueProfile ||--o{ Session : "開催する"
+    Song ||--o{ SongWish : "希望される"
+    Song ||--o{ SessionSong : "含まれる"
+    Song ||--o{ PerformanceLog : "演奏される"
+    Session ||--o{ SessionSong : "含む"
+    Session ||--o{ SessionInstrumentNeed : "必要とする"
+    Session ||--o{ SessionRegistration : "持つ"
+    Session ||--o{ PerformanceLog : "記録する"
+    User ||--o{ Connection : "繋がる"
+    User ||--o{ Block : "ブロックする"
 ```
 
 ---
 
-## 4. Key API Endpoints
+## 4. 主要 API エンドポイント
 
-All routes are Next.js API Routes under `/api/`.
+すべてのルートは `/api/` 配下の Next.js API Routes として実装します。
 
-### Auth
-| Method | Path | Description |
-|--------|------|-------------|
-| POST | `/api/auth/[...nextauth]` | NextAuth.js handler |
+### 認証
+| メソッド | パス | 説明 |
+|--------|------|------|
+| POST | `/api/auth/[...nextauth]` | NextAuth.js ハンドラ |
 
-### Musicians
-| Method | Path | Description |
-|--------|------|-------------|
-| GET | `/api/musicians/me` | Get own musician profile |
-| PUT | `/api/musicians/me` | Update own musician profile |
-| GET | `/api/musicians/[id]` | Get public musician profile |
-| GET | `/api/musicians/me/wishlist` | Get own song wishlist |
-| POST | `/api/musicians/me/wishlist` | Add song to wishlist |
-| DELETE | `/api/musicians/me/wishlist/[songId]` | Remove from wishlist |
+### ミュージシャン
+| メソッド | パス | 説明 |
+|--------|------|------|
+| GET | `/api/musicians/me` | 自分のミュージシャンプロフィール取得 |
+| PUT | `/api/musicians/me` | 自分のミュージシャンプロフィール更新 |
+| GET | `/api/musicians/[id]` | 公開ミュージシャンプロフィール取得 |
+| GET | `/api/musicians/me/wishlist` | 自分のウィッシュリスト取得 |
+| POST | `/api/musicians/me/wishlist` | ウィッシュリストに曲を追加 |
+| DELETE | `/api/musicians/me/wishlist/[songId]` | ウィッシュリストから曲を削除 |
 
-### Venues
-| Method | Path | Description |
-|--------|------|-------------|
-| GET | `/api/venues/[id]` | Get venue profile |
-| PUT | `/api/venues/me` | Update own venue profile |
-| GET | `/api/venues/me/sessions` | List own sessions |
+### 会場
+| メソッド | パス | 説明 |
+|--------|------|------|
+| GET | `/api/venues/[id]` | 会場プロフィール取得 |
+| PUT | `/api/venues/me` | 自分の会場プロフィール更新 |
+| GET | `/api/venues/me/sessions` | 自分の会場のセッション一覧 |
 
-### Sessions
-| Method | Path | Description |
-|--------|------|-------------|
-| GET | `/api/sessions` | List sessions (with filter: area, genre, instrument, song) |
-| POST | `/api/sessions` | Create a session (venue/host only) |
-| GET | `/api/sessions/[id]` | Get session details |
-| PUT | `/api/sessions/[id]` | Update session |
-| POST | `/api/sessions/[id]/register` | Register interest/attendance |
-| GET | `/api/sessions/[id]/attendees` | Get attendees (only if registered) |
-| GET | `/api/sessions/[id]/log` | Get performance log |
-| POST | `/api/sessions/[id]/log` | Add performance log entry (host only) |
+### セッション
+| メソッド | パス | 説明 |
+|--------|------|------|
+| GET | `/api/sessions` | セッション一覧（エリア・ジャンル・楽器・曲でフィルタ） |
+| POST | `/api/sessions` | セッション作成（会場・ホストのみ） |
+| GET | `/api/sessions/[id]` | セッション詳細取得 |
+| PUT | `/api/sessions/[id]` | セッション更新 |
+| POST | `/api/sessions/[id]/register` | 参加意思表明・参加登録 |
+| GET | `/api/sessions/[id]/attendees` | 参加者一覧取得（登録者のみ） |
+| GET | `/api/sessions/[id]/log` | 演奏ログ取得 |
+| POST | `/api/sessions/[id]/log` | 演奏ログ追加（ホストのみ） |
 
-### Songs
-| Method | Path | Description |
-|--------|------|-------------|
-| GET | `/api/songs` | Search songs (title, artist, genre, tag) |
-| POST | `/api/songs` | Submit new song (reviewed before publishing) |
-| GET | `/api/songs/[id]` | Get song details |
+### 曲
+| メソッド | パス | 説明 |
+|--------|------|------|
+| GET | `/api/songs` | 曲検索（タイトル・アーティスト・ジャンル・タグ） |
+| POST | `/api/songs` | 曲の新規投稿（審査後に公開） |
+| GET | `/api/songs/[id]` | 曲詳細取得 |
 
-### Matching
-| Method | Path | Description |
-|--------|------|-------------|
-| GET | `/api/matching/sessions` | Sessions matching my wishlist + style + location |
-| GET | `/api/matching/musicians` | Musicians matching a session's needs |
+### マッチング
+| メソッド | パス | 説明 |
+|--------|------|------|
+| GET | `/api/matching/sessions` | ウィッシュリスト・スタイル・エリアに合うセッション一覧 |
+| GET | `/api/matching/musicians` | セッションの募集条件に合うミュージシャン一覧 |
 
-### Social
-| Method | Path | Description |
-|--------|------|-------------|
-| POST | `/api/connections` | Send connection request |
-| PUT | `/api/connections/[id]` | Accept/decline connection |
-| POST | `/api/blocks` | Block a user |
+### ソーシャル
+| メソッド | パス | 説明 |
+|--------|------|------|
+| POST | `/api/connections` | コネクション申請を送る |
+| PUT | `/api/connections/[id]` | コネクション申請を承認・拒否 |
+| POST | `/api/blocks` | ユーザーをブロック |
 
 ### AI
-| Method | Path | Description |
-|--------|------|-------------|
-| POST | `/api/ai/suggest-combinations` | Suggest new musician combos for a recurring session |
-| POST | `/api/ai/session-digest` | Generate a post-session summary |
+| メソッド | パス | 説明 |
+|--------|------|------|
+| POST | `/api/ai/suggest-combinations` | 定期セッション向けの新しいミュージシャン組み合わせ提案 |
+| POST | `/api/ai/session-digest` | セッション後のサマリー生成 |
 
 ---
 
-## 5. Matching Algorithm
+## 5. マッチングアルゴリズム
 
-Matching runs server-side on demand (not precomputed initially).
+マッチングはオンデマンドでサーバーサイドで計算します（初期段階では事前計算なし）。
 
 ```typescript
-// Pseudocode for session matching score
+// ミュージシャンに対するセッションのマッチングスコア（疑似コード）
 function scoreSessionForMusician(session: Session, musician: MusicianProfile): number {
+  // ウィッシュリストとセッション曲の重なり
   const songOverlap = intersect(session.songs, musician.wishlist).length / musician.wishlist.length
+
+  // 移動可能距離内にあるか
   const locationFit = distanceKm(musician.area, session.venue.location) <= musician.travel_radius_km ? 1 : 0
+
+  // 募集楽器を演奏できるか
   const instrumentFit = session.instrumentNeeds.some(n => musician.instruments.includes(n.instrument)) ? 1 : 0
+
+  // セッションスタイルの相性
   const styleFit = computeStyleCompatibility(session.format, musician.preferences)
 
   return songOverlap * 0.4 + locationFit * 0.3 + instrumentFit * 0.2 + styleFit * 0.1
@@ -306,51 +313,52 @@ function scoreSessionForMusician(session: Session, musician: MusicianProfile): n
 
 ---
 
-## 6. Security Design
+## 6. セキュリティ設計
 
-### Authentication
-- Google OAuth via NextAuth.js (primary)
-- Email magic link as fallback (no password storage)
-- JWT session tokens (stateless) with 30-day expiry
+### 認証
+- Google OAuth（NextAuth.js 経由、主要方法）
+- メールマジックリンク（パスワード不要、フォールバック）
+- JWT セッショントークン（ステートレス）、有効期限 30 日
 
-### Authorization
-| Resource | Rule |
-|----------|------|
-| Musician profile (public fields) | Any authenticated user |
-| Session attendee list | Only users registered for that session |
-| Performance log | Only session host and registered attendees |
-| Venue management | Only the venue's own user account |
-| Block list | Private — only the blocker can see it |
+### 認可ルール
 
-### Privacy
-- `area_lat` / `area_lng` stored in DB but **never returned in API** — only `area_label` (neighborhood string) is returned to clients
-- Venue address returned for venue pages and sessions; never embedded in musician profiles
-- Email address never returned via API
+| リソース | ルール |
+|---------|--------|
+| ミュージシャンプロフィール（公開フィールド） | ログイン済みユーザーなら誰でも |
+| セッション参加者一覧 | 当該セッションに登録したユーザーのみ |
+| 演奏ログ | セッションホストと登録済み参加者のみ |
+| 会場管理 | 会場の所有者アカウントのみ |
+| ブロックリスト | 非公開 — ブロックした本人のみ確認可能 |
 
-### Input Validation
-- All API inputs validated with [Zod](https://zod.dev) schemas at the route boundary
-- SQL injection: impossible via Prisma (parameterized queries)
-- XSS: Next.js auto-escapes JSX; free-text fields sanitized with DOMPurify before storage
+### プライバシー
+- `area_lat` / `area_lng` は DB に保存するが、**API からは絶対に返さない** — クライアントには `area_label`（地区名の文字列）のみを返す
+- 会場の住所は会場ページとセッション詳細ページにのみ表示；ミュージシャンプロフィールには埋め込まない
+- メールアドレスは API から絶対に返さない
 
-### Rate Limiting
-- API routes rate-limited via `@upstash/ratelimit` (or simple in-memory limiter for MVP)
-- Match and AI endpoints: stricter limits (10 req/min per user)
+### 入力バリデーション
+- すべての API 入力をルート境界で [Zod](https://zod.dev) スキーマによりバリデーション
+- SQL インジェクション: Prisma（パラメータ化クエリ）により防止
+- XSS: Next.js が JSX を自動エスケープ；フリーテキスト入力は保存前に DOMPurify でサニタイズ
+
+### レート制限
+- API ルートは `@upstash/ratelimit`（または MVP 向けのシンプルなインメモリリミッター）でレート制限
+- マッチング・AI エンドポイントはより厳しい制限（ユーザーごとに 10 リクエスト/分）
 
 ---
 
-## 7. Local Development
+## 7. ローカル開発環境
 
 ```bash
-# Start PostgreSQL + app
+# PostgreSQL + アプリを起動
 docker compose up
 
-# Apply DB migrations
+# DB マイグレーション適用
 npx prisma migrate dev
 
-# Seed sample data
+# サンプルデータのシード
 npx prisma db seed
 
-# Run dev server
+# 開発サーバー起動
 npm run dev
 ```
 
@@ -376,19 +384,19 @@ services:
 
 ---
 
-## 8. Deployment (Azure)
+## 8. Azure へのデプロイ
 
 ```
-GitHub main branch
+GitHub main ブランチ
       │
       ▼ GitHub Actions
 Azure Static Web Apps
-  ├── Next.js static pages (CDN)
-  ├── API Routes → Azure Functions (Node.js runtime)
-  └── Managed identity → Azure DB for PostgreSQL
+  ├── Next.js 静的ページ（CDN 配信）
+  ├── API Routes → Azure Functions（Node.js ランタイム）
+  └── マネージド ID → Azure DB for PostgreSQL
 ```
 
-### Environment Variables (secrets in GitHub / Azure App Settings)
+### 環境変数（GitHub Secrets / Azure App Settings に登録）
 
 ```env
 DATABASE_URL=postgresql://...
@@ -399,36 +407,36 @@ GOOGLE_CLIENT_SECRET=...
 ANTHROPIC_API_KEY=...
 ```
 
-### Azure Resources
+### Azure リソース構成
 
-| Resource | SKU | Est. Monthly Cost |
-|----------|-----|------------------|
-| Azure Static Web Apps | Free | ¥0 |
-| Azure DB for PostgreSQL Flexible | Burstable B1ms (1 vCore, 2GB) | ~¥2,500 |
-| **Total** | | **~¥2,500/month** |
+| リソース | SKU | 月額推定コスト |
+|---------|-----|-------------|
+| Azure Static Web Apps | 無料プラン | ¥0 |
+| Azure DB for PostgreSQL Flexible | Burstable B1ms（1 vCore, 2GB） | 約 ¥2,500 |
+| **合計** | | **約 ¥2,500/月** |
 
-> Claude API usage is pay-per-use; expected minimal at MVP scale.
-
----
-
-## 9. Migration Path (If MVP Ends)
-
-If Microsoft MVP benefits are discontinued:
-
-| Component | Current | Migration target |
-|-----------|---------|-----------------|
-| Frontend | Azure Static Web Apps | Vercel (free tier, same Next.js) |
-| Database | Azure DB for PostgreSQL | Railway / Supabase / Render (all standard PostgreSQL) |
-| CI/CD | GitHub Actions | No change needed |
-
-**Estimated migration effort: < 1 day.** All infrastructure is portable by design.
+> Claude API の利用費は従量課金。MVP 規模では最小限の見込み。
 
 ---
 
-## 10. Open Technical Questions
+## 9. 移行手順（MVP 特典終了時）
 
-- [ ] Should we use Server Actions (Next.js) or traditional REST API routes?
-- [ ] Full-text search for songs: PostgreSQL `tsvector` or an external search index?
-- [ ] Push notifications: Web Push API (PWA) or email only at MVP?
-- [ ] Session real-time updates (performance log): polling vs. WebSockets vs. Server-Sent Events?
-- [ ] AI suggestions: synchronous API call or async job queue?
+Microsoft MVP 特典が終了した場合の移行先:
+
+| コンポーネント | 現状 | 移行先候補 |
+|-------------|------|----------|
+| フロントエンド | Azure Static Web Apps | Vercel（無料枠あり・同じ Next.js） |
+| データベース | Azure DB for PostgreSQL | Railway / Supabase / Render（すべて標準 PostgreSQL） |
+| CI/CD | GitHub Actions | 変更不要 |
+
+**移行工数の見積もり: 1日未満。** 全インフラは可搬性を前提に設計されています。
+
+---
+
+## 10. 技術的な未決定事項
+
+- [ ] Next.js の Server Actions を使うか、従来の REST API ルートにするか
+- [ ] 曲の全文検索: PostgreSQL の `tsvector` か、外部検索インデックスか
+- [ ] プッシュ通知: Web Push API（PWA）か、MVP はメールのみか
+- [ ] セッションのリアルタイム更新（演奏ログ）: ポーリング vs WebSocket vs Server-Sent Events
+- [ ] AI 提案: 同期的な API 呼び出しか、非同期ジョブキューか

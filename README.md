@@ -1,78 +1,78 @@
 # NearJam 🎸
 
-> **Find jam sessions near you — and the right people to play with.**
+> **近くのジャムセッションを見つけよう — そして一緒に演奏できる人を探そう。**
 
-NearJam is a two-sided platform that connects **musicians** who want to jam with **venues** that host sessions. Whether you're looking for a place to play Tokyo Jihen covers or a bar trying to fill a Thursday night session, NearJam brings the right people together.
-
----
-
-## The Problem
-
-- You want to play a specific song or style, but you don't know where to go
-- A great session venue near you is struggling to fill seats — you've never heard of it
-- When you *do* find a session, you spend 30 minutes on the night deciding who plays what
-- You've played with the same 5 people at the same place for 3 years
-
-## The Solution
-
-NearJam works on two levels:
-
-**Before the session** — Match musicians to venues and sessions based on songs, instruments, genre, location, and playing style. Both sides register what they want; NearJam finds the overlap.
-
-**During the session** — A lightweight live tool for managing song queues, part assignments (who plays what), and a running log of who's played how many times — so no one gets left out.
+NearJam は、**ミュージシャン**（演奏したい個人）と**会場**（セッションを開催するお店）の両方が登録できる二面型マッチングプラットフォームです。東京事変のカバーをやれる場所を探していても、木曜夜のセッション枠を埋めたいバーのオーナーも、NearJam が橋渡しをします。
 
 ---
 
-## Who Is It For?
+## 課題
 
-| User Type | What They Get |
-|-----------|---------------|
-| 🎸 **Musician** | Find sessions nearby that match your style. Register songs you want to play. Get notified when a matching event opens up. Connect with like-minded players. |
-| 🏠 **Venue** | List your sessions and the songs/genres you cover. Attract musicians who match your vibe. Manage the night with live session tools. |
+- 特定の曲やジャンルをやりたいのに、どこへ行けばいいかわからない
+- 近くに素晴らしいセッション会場があるのに、その存在を知らない
+- セッションを見つけても、当日30分かけて「誰が何を弾くか」を決める羽目になる
+- 3年間、同じ5人と同じ場所でしか演奏していない
 
----
+## 解決策
 
-## Key Features
+NearJam は2つのレイヤーで機能します。
 
-### Discovery & Matching
-- **Song-based matching** — Register songs you want to play; get notified when a nearby session is planning that song
-- **Style matching** — Set your profile: skill level, goals (fun vs. improvement), feedback preference, session style (practice-focused vs. variety-focused)
-- **Location matching** — Set your range; discover sessions you'd actually travel to
-- **SNS links** — Optionally share your YouTube, Instagram, or SoundCloud for others to hear you before the night
+**セッション前** — 曲・楽器・ジャンル・場所・演奏スタイルをもとに、ミュージシャンと会場をマッチング。お互いが「欲しいもの」を登録すれば、NearJam が重なりを見つけます。
 
-### Session Management
-- Pre-session song list and part requests (who wants to play what)
-- Key/tempo preferences per song
-- Live log during the session: who played, what song, what part
-- Balance tracker — real-time count of performances per person, so everyone gets a fair share
-
-### History & Suggestions
-- Session history per venue and per musician
-- AI-assisted suggestions: "You haven't played with these people yet — here's what you have in common"
-- Monthly session digest for recurring events
-
-### Safety
-- Nickname-only profiles — real name never required
-- Location shown as area/neighborhood only (not precise address)
-- No direct messaging until mutual opt-in ("connect")
-- Block and report any user
-- Venue-verified attendance — you can only see who's coming if you're also registered
+**セッション当日** — 曲のキュー管理、パート割り当て（誰が何を弾くか）、演奏ログの記録まで、当日のMCをシンプルなツールでサポート。
 
 ---
 
-## Docs
+## 誰のためのサービスか
 
-- [Product Requirements (PRD)](./docs/product-requirements.md)
-- [Technical Design](./docs/technical-design.md)
-
----
-
-## Status
-
-🚧 Early planning stage. First beta target: [Kesara Bar, Kashiwa](https://www.instagram.com/kesera_kashiwa/) (a real jazz/pop session bar in Chiba, Japan).
+| ユーザー種別 | 得られるもの |
+|------------|------------|
+| 🎸 **ミュージシャン** | 自分のスタイルに合ったセッションを近くで見つける。やりたい曲を登録して、そのイベントが開催されたら通知を受け取る。同じ志向を持つ演奏仲間と繋がる。 |
+| 🏠 **会場（お店）** | セッションのイベントと対応曲・ジャンルを登録して、マッチするミュージシャンを引き寄せる。当日はライブ管理ツールで進行をサポート。 |
 
 ---
 
-## License
+## 主な機能
+
+### 発見・マッチング
+- **曲ベースのマッチング** — やりたい曲を登録すると、近くのセッションがその曲を予定したときに通知が届く
+- **スタイルマッチング** — スキルレベル・目標（楽しみたい / 上達したい）・フィードバックへの姿勢・セッションスタイル（1曲を深く / 色々な曲を）でプロフィールを設定
+- **エリアマッチング** — 行動範囲を設定して、実際に行ける距離のセッションだけを探す
+- **SNSリンク** — YouTube・Instagram・SoundCloud を任意でプロフィールに追加。当日前にお互いの演奏を確認できる
+
+### セッション管理
+- 事前の曲リスト・パート希望（誰がどの楽器を弾くか）の登録
+- 曲ごとのキー・テンポのメモ
+- 当日の演奏ログ記録（誰が・何の曲を・どのパートで）
+- 演奏バランスダッシュボード — 参加者ごとの演奏回数をリアルタイムで確認
+
+### 履歴・提案
+- 会場別・ミュージシャン別のセッション履歴
+- AI による組み合わせ提案「この3人はまだ一緒にやったことがなく、5曲共通の曲があります」
+- 毎月定例セッション向けの月次ダイジェスト
+
+### 安全設計
+- ニックネームのみのプロフィール（本名は不要）
+- 位置情報はエリア・最寄り駅レベルのみ（精密な住所は非公開）
+- 相互承認後のみDM可能（一方的なメッセージは不可）
+- ブロック・通報機能
+- 参加者リストは登録者のみ閲覧可能
+
+---
+
+## ドキュメント
+
+- [プロダクト要件定義書（PRD）](./docs/product-requirements.md)
+- [技術設計書](./docs/technical-design.md)
+
+---
+
+## ステータス
+
+🚧 初期企画段階。最初のβテスト会場候補: ケサラ（千葉県柏市のジャズ・ポップスセッションバー）
+
+---
+
+## ライセンス
 
 MIT
