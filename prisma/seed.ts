@@ -1,4 +1,14 @@
-import { PrismaClient, UserRole, SkillLevel, SessionGoal, FeedbackPref, SessionStyle, SongDifficulty, SessionFormat } from "@prisma/client";
+import {
+  PrismaClient,
+  UserRole,
+  SkillLevel,
+  SessionGoal,
+  FeedbackPref,
+  SessionStyle,
+  SongDifficulty,
+  SessionFormat,
+  SourceType,
+} from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { config } from "dotenv";
 config({ path: ".env.local" });
@@ -194,28 +204,136 @@ async function main() {
 
   console.log("  ✓ 3 test users seeded");
 
-  // ─── 会場プロフィール ───────────────────────────────────────────────────────
+  // ─── 会場（v0.3: VenueProfile → Venue。誰でも作成可・オーナーが認証） ────────
 
-  const venueProfile = await prisma.venueProfile.upsert({
-    where: { userId: venueUser.id },
+  const venue = await prisma.venue.upsert({
+    where: { id: "venue-kashiwa-bar" },
     update: {},
     create: {
-      userId: venueUser.id,
+      id: "venue-kashiwa-bar",
       name: "カシワバー（テスト会場）",
       address: "千葉県柏市柏1-1-1",
       nearestStation: "柏駅",
       walkMinutes: 5,
-      capacity: 20,
-      sessionFrequency: "毎週木曜日",
-      houseInstruments: ["ドラム", "ピアノ", "PA"],
-      equipmentDetails: "ドラム: Pearl Masters Custom / シンバル: Zildjian A Custom 14HH, 16C, 20R\nアンプ: Fender Blues Junior (ギター用), Markbass Mini CMD 121P (ベース用)\nPA: Yamaha EMX5 + JBL EON615 x2",
+      lat: 35.8677,
+      lng: 139.9750,
       rulesMarkdown: "# カシワバーへようこそ！\n\n## 基本ルール\n- 1曲につき演奏時間は5〜7分を目安に\n- 知らない曲でも歓迎。できる範囲でOK\n- 演奏中はおしゃべり控えめで\n\n## 初参加の方へ\n参加費500円（ワンドリンク込み）。まず受付でお声がけください！",
-      entranceInfo: "参加費500円（ワンドリンク込み）",
+      ownerId: venueUser.id,
       verifiedAt: null, // テスト会場は未確認
     },
   });
 
-  console.log("  ✓ 1 venue profile seeded");
+  // v0.3: セッション傾向（口コミ投稿モデル — 複数登録可）
+  await prisma.sessionTendency.upsert({
+    where: { id: "tendency-kashiwa-thu-jazz" },
+    update: {},
+    create: {
+      id: "tendency-kashiwa-thu-jazz",
+      venueId: venue.id,
+      name: "木曜夜のジャズセッション",
+      typicalDayOfWeek: 4, // 木曜
+      typicalStartTime: "19:00",
+      typicalEndTime: "22:00",
+      genres: ["Jazz", "ボサノバ"],
+      atmosphere: "初心者歓迎。ジャズスタンダード中心。知らない曲でも歓迎の雰囲気。",
+      levelRange: "初心者歓迎",
+      entrySystem: "500円（ワンドリンク込み）",
+      capacity: 20,
+      houseEquipment: "ドラム、ピアノ、PA",
+      equipmentDetails:
+        "ドラム: Pearl Masters Custom / シンバル: Zildjian A Custom 14HH, 16C, 20R\n" +
+        "アンプ: Fender Blues Junior (ギター用), Markbass Mini CMD 121P (ベース用)\n" +
+        "PA: Yamaha EMX5 + JBL EON615 x2",
+      sourceType: SourceType.OWNER_VERIFIED,
+      sourceUserId: venueUser.id,
+      isActive: true,
+    },
+  });
+
+  // 口コミ投稿例（ミュージシャンが追加したセッション傾向）
+  await prisma.sessionTendency.upsert({
+    where: { id: "tendency-kashiwa-sat-rock" },
+    update: {},
+    create: {
+      id: "tendency-kashiwa-sat-rock",
+      venueId: venue.id,
+      name: "土曜ロックセッション",
+      typicalDayOfWeek: 6, // 土曜
+      typicalStartTime: "20:00",
+      typicalEndTime: "23:00",
+      genres: ["Rock", "J-Pop"],
+      atmosphere: "ロック・ポップ系。ビートルズからYOASOBIまで幅広くやってる印象。",
+      levelRange: "中級以上",
+      entrySystem: "ワンドリンク制",
+      sourceType: SourceType.CROWDSOURCED,
+      sourceUserId: musician1.id, // ミュージシャン田中が口コミ投稿
+      isActive: true,
+    },
+  });
+
+  console.log("  ✓ 1 venue + 2 session tendencies seeded");
+
+  // ─── スタジオ（v0.3 新規）──────────────────────────────────────────────────
+
+  const studio = await prisma.studio.upsert({
+    where: { id: "studio-kashiwa-music" },
+    update: {},
+    create: {
+      id: "studio-kashiwa-music",
+      name: "柏ミュージックスタジオ（テスト）",
+      address: "千葉県柏市柏2-2-2",
+      nearestStation: "柏駅",
+      walkMinutes: 8,
+      lat: 35.8680,
+      lng: 139.9760,
+      websiteUrl: "https://example.com/kashiwa-studio",
+      openingHours: "10:00〜22:00（年中無休）",
+      bookingMethod: "online",
+    },
+  });
+
+  await prisma.studioRoom.upsert({
+    where: { id: "room-kashiwa-a" },
+    update: {},
+    create: {
+      id: "room-kashiwa-a",
+      studioId: studio.id,
+      name: "Room A（バンド練習室）",
+      capacityPersons: 6,
+      sizeSqm: 20,
+      hasDrums: true,
+      drumSpec: "Yamaha DTX6K3-X（電子ドラム）",
+      hasPA: true,
+      paSpec: "Yamaha EMX5 + JBL EON615",
+      hasAmps: true,
+      hasMics: true,
+      hourlyRateYen: 2000,
+      hourlyRatePeak: 2500,
+      minBookingHours: 1,
+      notes: "最大6名まで。ドラムは電子ドラムのみ。",
+    },
+  });
+
+  await prisma.studioRoom.upsert({
+    where: { id: "room-kashiwa-b" },
+    update: {},
+    create: {
+      id: "room-kashiwa-b",
+      studioId: studio.id,
+      name: "Room B（小編成向け）",
+      capacityPersons: 3,
+      sizeSqm: 12,
+      hasDrums: false,
+      hasPA: true,
+      hasAmps: true,
+      hasMics: true,
+      hourlyRateYen: 1200,
+      minBookingHours: 1,
+      notes: "ドラム不可。アコースティック・デュオ・トリオ向け。",
+    },
+  });
+
+  console.log("  ✓ 1 studio + 2 rooms seeded");
 
   // ─── ミュージシャンプロフィール ─────────────────────────────────────────────
 
@@ -255,6 +373,47 @@ async function main() {
       { musicianProfileId: musicianProfile1.id, genre: "ボサノバ" },
     ],
     skipDuplicates: true,
+  });
+
+  // v0.3: 対応エリア（複数）+ SYNCROOM
+  await prisma.musicianCoverageArea.upsert({
+    where: { id: "area-tanaka-home" },
+    update: {},
+    create: {
+      id: "area-tanaka-home",
+      musicianProfileId: musicianProfile1.id,
+      areaLabel: "柏エリア",
+      areaLat: 35.8677,
+      areaLng: 139.9750,
+      isHome: true,
+      isPublic: true,
+    },
+  });
+
+  await prisma.musicianCoverageArea.upsert({
+    where: { id: "area-tanaka-akiba" },
+    update: {},
+    create: {
+      id: "area-tanaka-akiba",
+      musicianProfileId: musicianProfile1.id,
+      areaLabel: "秋葉原・上野エリア",
+      isHome: false,
+      isPublic: true,
+    },
+  });
+
+  await prisma.musicianCoverageArea.upsert({
+    where: { id: "area-tanaka-syncroom" },
+    update: {},
+    create: {
+      id: "area-tanaka-syncroom",
+      musicianProfileId: musicianProfile1.id,
+      areaLabel: "SYNCROOM",
+      isHome: false,
+      isSyncroom: true,
+      syncroomNotes: "光回線（有線）接続。平日夜・土日昼対応可。",
+      isPublic: true,
+    },
   });
 
   // ウィッシュリスト
@@ -318,7 +477,22 @@ async function main() {
     },
   });
 
-  console.log("  ✓ 2 musician profiles seeded");
+  // v0.3: 対応エリア（鈴木は柏のみ・SYNCROOMなし）
+  await prisma.musicianCoverageArea.upsert({
+    where: { id: "area-suzuki-home" },
+    update: {},
+    create: {
+      id: "area-suzuki-home",
+      musicianProfileId: musicianProfile2.id,
+      areaLabel: "柏エリア",
+      areaLat: 35.8680,
+      areaLng: 139.9755,
+      isHome: true,
+      isPublic: false, // プライベート設定
+    },
+  });
+
+  console.log("  ✓ 2 musician profiles + coverage areas seeded");
 
   // ─── テストセッション ───────────────────────────────────────────────────────
 
@@ -327,7 +501,7 @@ async function main() {
     update: {},
     create: {
       id: "session-test-001",
-      venueId: venueProfile.id,
+      venueId: venue.id,
       sessionAdminId: venueUser.id,
       title: "木曜夜のジャズセッション",
       startsAt: new Date("2026-03-06T19:00:00+09:00"),
@@ -376,14 +550,14 @@ async function main() {
     },
   });
 
-  // プライバシー設定（全て非公開がデフォルト）
+  // プライバシー設定
   await prisma.jamSessionPrivacySettings.upsert({
     where: { jamSessionId: testSession.id },
     update: {},
     create: {
       jamSessionId: testSession.id,
       controlledById: venueUser.id,
-      visSessionFact: true,   // テスト用に会場の存在は公開
+      visSessionFact: true,
       visDatetime: false,
       visSessionName: true,
       visSongListVenue: false,
@@ -421,8 +595,9 @@ async function main() {
   console.log("\n✅ Seeding complete!");
   console.log("\n📋 Test data summary:");
   console.log("  - Songs: 8 (jazz standards + rock + J-Pop)");
-  console.log("  - Venue: カシワバー (unverified)");
-  console.log("  - Musicians: ジャズギタリスト田中, ベーシスト鈴木");
+  console.log("  - Venue: カシワバー (unverified) + 2 session tendencies");
+  console.log("  - Studio: 柏ミュージックスタジオ + 2 rooms");
+  console.log("  - Musicians: ジャズギタリスト田中 (coverage: 柏・秋葉原・SYNCROOM), ベーシスト鈴木");
   console.log("  - Session: 木曜夜のジャズセッション (2026-03-06)");
 }
 

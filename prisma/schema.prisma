@@ -54,12 +54,13 @@ enum UserRole {
   MUSICIAN
   VENUE
   BOTH
+  ADMIN
 }
 
 model User {
   id            String    @id @default(cuid())
-  nickname      String
-  email         String    @unique
+  nickname      String?
+  email         String?   @unique
   emailVerified DateTime?
   image         String?
   role          UserRole  @default(MUSICIAN)
@@ -72,19 +73,20 @@ model User {
 
   // アプリ relations
   musicianProfile  MusicianProfile?
-  venueProfile     VenueProfile?
-  connectionsFrom  Connection[]       @relation("ConnectionFrom")
-  connectionsTo    Connection[]       @relation("ConnectionTo")
-  blocksBy         Block[]            @relation("BlockedBy")
-  blocksAgainst    Block[]            @relation("BlockedAgainst")
+  ownedVenues      Venue[]             @relation("VenueOwner")
+  ownedStudios     Studio[]            @relation("StudioOwner")
+  connectionsFrom  Connection[]        @relation("ConnectionFrom")
+  connectionsTo    Connection[]        @relation("ConnectionTo")
+  blocksBy         Block[]             @relation("BlockedBy")
+  blocksAgainst    Block[]             @relation("BlockedAgainst")
   notifications    Notification[]
-  kudosSent        Kudos[]            @relation("KudosSender")
-  kudosReceived    Kudos[]            @relation("KudosReceiver")
+  kudosSent        Kudos[]             @relation("KudosSender")
+  kudosReceived    Kudos[]             @relation("KudosReceiver")
   feedbackReceived AnonymousFeedback[] @relation("FeedbackReceiver")
-  // セッション管理者として作成したセッション
-  adminSessions    JamSession[]       @relation("SessionAdmin")
-  // 演奏ログ登録者
-  registeredLogs   PerformanceLog[]   @relation("LogRegistrar")
+  adminSessions    JamSession[]        @relation("SessionAdmin")
+  registeredLogs   PerformanceLog[]    @relation("LogRegistrar")
+  venuePosts       VenuePost[]         @relation("PostAuthor")
+  tendencyPosts    SessionTendency[]   @relation("TendencyAuthor")
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -150,7 +152,7 @@ model MusicianProfile {
   id                String            @id @default(cuid())
   userId            String            @unique
   bio               String?           @db.Text
-  areaLabel         String            // 表示用（例: 「柏エリア」）
+  areaLabel         String?           // 表示用（例: 「柏エリア」）
   areaLat           Float?            // 内部のみ — API から返却しない
   areaLng           Float?            // 内部のみ — API から返却しない
   travelRadiusKm    Int               @default(15)
@@ -162,15 +164,16 @@ model MusicianProfile {
   feedbackPref      FeedbackPref      @default(LIGHT)
   sessionStyle      SessionStyle      @default(EITHER)
   tempoPref         TempoPref         @default(MODERATE)
-  yearsPlaying      Int?              // 演奏歴（年数）
+  yearsPlaying      Int?
   snsLinks          Json              @default("{}")
   profileVisibility ProfileVisibility @default(LOGGED_IN)
   createdAt         DateTime          @default(now())
   updatedAt         DateTime          @updatedAt
 
-  user          User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user          User                    @relation(fields: [userId], references: [id], onDelete: Cascade)
   instruments   MusicianInstrument[]
   genres        MusicianGenre[]
+  coverageAreas MusicianCoverageArea[]  // v0.3: 対応エリア + SYNCROOM
   wishlist      SongWish[]
   registrations JamSessionRegistration[]
   performanceLogs PerformanceLog[]
@@ -197,8 +200,28 @@ model MusicianGenre {
   @@index([musicianProfileId])
 }
 
+// v0.3: 対応エリア（複数登録可）& SYNCROOM 対応フラグ
+// isSyncroom=true のレコードが SYNCROOM エントリ（エリア名は「SYNCROOM」等に）
+model MusicianCoverageArea {
+  id              String          @id @default(cuid())
+  musicianProfileId String
+  areaLabel       String          // 表示用エリア名（例: 「秋葉原」「柏」）
+  areaLat         Float?
+  areaLng         Float?
+  isHome          Boolean         @default(false) // 拠点エリアかどうか
+  isSyncroom      Boolean         @default(false) // SYNCROOM 対応エントリかどうか
+  syncroomNotes   String?         // ルーム名・接続環境メモ（任意）
+  isPublic        Boolean         @default(false) // 公開可否
+  createdAt       DateTime        @default(now())
+
+  musicianProfile MusicianProfile @relation(fields: [musicianProfileId], references: [id], onDelete: Cascade)
+
+  @@index([musicianProfileId])
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
-// 会場プロフィール
+// 会場（セッション会場 — バー・ライブハウス等）
+// v0.3: VenueProfile を Venue に変更。誰でも登録可・オーナーは後から認証
 // ─────────────────────────────────────────────────────────────────────────────
 
 enum VerificationMethod {
@@ -207,35 +230,169 @@ enum VerificationMethod {
   MANUAL
 }
 
-model VenueProfile {
-  id               String              @id @default(cuid())
-  userId           String              @unique
-  name             String
-  address          String?
-  lat              Float?
-  lng              Float?
-  nearestStation   String?
-  walkMinutes      Int?
-  capacity         Int?
-  sessionFrequency String?
-  houseInstruments Json                @default("[]")
-  equipmentDetails String?             @db.Text  // 機材詳細（自由テキスト）
-  rulesMarkdown    String?             @db.Text  // ルール・マナーページ（確認済み会場のみ公開）
-  entranceInfo     String?
-  bookingUrl       String?
-  bookingPhone     String?
-  // 認証状態（verified_at IS NOT NULL AND disputed_at IS NULL = 確認済み）
-  verifiedAt       DateTime?
-  verifiedMethod   VerificationMethod?
-  verifiedDomain   String?
-  disputedAt       DateTime?
-  createdAt        DateTime            @default(now())
-  updatedAt        DateTime            @updatedAt
+// v0.3: 情報ソース種別
+enum SourceType {
+  AUTO_COLLECTED  // Botが自動収集
+  CROWDSOURCED    // ミュージシャンが口コミ投稿
+  OWNER_VERIFIED  // オーナーが認証・編集
+}
 
-  user       User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  sessions   JamSession[]
-  kudos      Kudos[]      @relation("KudosVenueReceiver")
-  feedback   AnonymousFeedback[] @relation("FeedbackVenueReceiver")
+model Venue {
+  id              String              @id @default(cuid())
+  name            String
+  address         String?
+  lat             Float?              // Geocoding APIからキャッシュ
+  lng             Float?
+  nearestStation  String?
+  walkMinutes     Int?
+  websiteUrl      String?
+  instagramUrl    String?
+  xUrl            String?
+  facebookUrl     String?
+  bookingUrl      String?
+  bookingPhone    String?
+  rulesMarkdown   String?             @db.Text // オーナー確認済みのみ公開
+  // オーナー認証（ownerId=null = まだ誰もオーナーを主張していない）
+  ownerId         String?
+  verifiedAt      DateTime?
+  verifiedMethod  VerificationMethod?
+  verifiedDomain  String?
+  disputedAt      DateTime?
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+
+  owner           User?               @relation("VenueOwner", fields: [ownerId], references: [id])
+  tendencies      SessionTendency[]
+  venuePosts      VenuePost[]
+  jamSessions     JamSession[]
+  kudos           Kudos[]             @relation("KudosVenueReceiver")
+  feedback        AnonymousFeedback[] @relation("FeedbackVenueReceiver")
+  collectionJobs  AutoCollectionJob[]
+
+  @@index([lat, lng])
+}
+
+// v0.3: セッション傾向（1会場に複数登録可。特定日時ではなく曜日・傾向で記述）
+model SessionTendency {
+  id               String     @id @default(cuid())
+  venueId          String
+  name             String     // 例: 「木曜ジャズセッション」
+  typicalDayOfWeek Int?       // 0=日〜6=土。null=不定期
+  typicalStartTime String?    // "19:00" 形式
+  typicalEndTime   String?    // "22:00" 形式
+  genres           String[]   // ["Jazz", "Blues"]
+  atmosphere       String?    @db.Text
+  levelRange       String?    // "初心者歓迎" / "中級以上" 等
+  entrySystem      String?    // "無料" / "500円" / "ワンドリンク制" 等
+  capacity         Int?
+  houseEquipment   String?
+  equipmentDetails String?    @db.Text
+  sourceType       SourceType @default(CROWDSOURCED)
+  sourceUserId     String?    // 口コミ投稿者（auto-collected の場合は null）
+  sourceUrl        String?    // Bot収集元URL
+  isActive         Boolean    @default(true)
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+
+  venue            Venue      @relation(fields: [venueId], references: [id], onDelete: Cascade)
+  sourceUser       User?      @relation("TendencyAuthor", fields: [sourceUserId], references: [id])
+
+  @@index([venueId])
+}
+
+// v0.3: 会場への口コミ投稿（傾向以外の自由テキスト情報）
+model VenuePost {
+  id         String     @id @default(cuid())
+  venueId    String
+  authorId   String?    // null = auto-collected
+  sourceType SourceType @default(CROWDSOURCED)
+  sourceUrl  String?
+  content    String     @db.Text
+  isActive   Boolean    @default(true)
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+
+  venue      Venue      @relation(fields: [venueId], references: [id], onDelete: Cascade)
+  author     User?      @relation("PostAuthor", fields: [authorId], references: [id])
+
+  @@index([venueId])
+}
+
+// v0.3: Bot 収集ジョブの状態管理
+model AutoCollectionJob {
+  id            String   @id @default(cuid())
+  venueId       String?
+  studioId      String?
+  sourceType    String   // "instagram" | "x" | "hp" | "facebook" | "connpass"
+  sourceUrl     String
+  lastFetchedAt DateTime?
+  lastStatus    String?  // "success" | "error" | "pending_review"
+  nextFetchAt   DateTime?
+  errorMessage  String?  @db.Text
+  createdAt     DateTime @default(now())
+
+  venue  Venue?  @relation(fields: [venueId], references: [id])
+  studio Studio? @relation(fields: [studioId], references: [id])
+
+  @@index([nextFetchAt])
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// スタジオ（練習スタジオ）— v0.3 新規追加
+// ─────────────────────────────────────────────────────────────────────────────
+
+model Studio {
+  id             String    @id @default(cuid())
+  name           String
+  address        String?
+  lat            Float?
+  lng            Float?
+  nearestStation String?
+  walkMinutes    Int?
+  websiteUrl     String?
+  phone          String?
+  openingHours   String?
+  bookingMethod  String?   // "online" | "phone" | "walk-in"
+  ownerId        String?
+  verifiedAt     DateTime?
+  disputedAt     DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  owner          User?             @relation("StudioOwner", fields: [ownerId], references: [id])
+  rooms          StudioRoom[]
+  jamSessions    JamSession[]
+  collectionJobs AutoCollectionJob[]
+
+  @@index([lat, lng])
+}
+
+// スタジオの部屋（1スタジオに複数部屋）
+model StudioRoom {
+  id              String   @id @default(cuid())
+  studioId        String
+  name            String   // "Room A" / "スタジオ3" 等
+  capacityPersons Int?
+  sizeSqm         Float?
+  hasDrums        Boolean  @default(false)
+  drumSpec        String?
+  hasPA           Boolean  @default(false)
+  paSpec          String?
+  hasPiano        Boolean  @default(false)
+  hasAmps         Boolean  @default(false)
+  hasMics         Boolean  @default(false)
+  otherEquipment  String?  @db.Text
+  hourlyRateYen   Int?     // 通常時間帯
+  hourlyRatePeak  Int?     // ピーク時間帯
+  minBookingHours Int?     @default(1)
+  notes           String?  @db.Text
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  studio      Studio       @relation(fields: [studioId], references: [id], onDelete: Cascade)
+  jamSessions JamSession[]
+
+  @@index([studioId])
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -265,8 +422,8 @@ model Song {
   approved      Boolean        @default(false)
   createdAt     DateTime       @default(now())
 
-  wishes       SongWish[]
-  sessionSongs JamSessionSong[]
+  wishes          SongWish[]
+  sessionSongs    JamSessionSong[]
   performanceLogs PerformanceLog[]
 
   @@index([title])
@@ -274,13 +431,13 @@ model Song {
 }
 
 model SongWish {
-  id                String   @id @default(cuid())
-  musicianProfileId String
-  songId            String
+  id                  String   @id @default(cuid())
+  musicianProfileId   String
+  songId              String
   preferredInstrument String?
-  preferredKey      String?
-  notes             String?  @db.Text
-  addedAt           DateTime @default(now())
+  preferredKey        String?
+  notes               String?  @db.Text
+  addedAt             DateTime @default(now())
 
   musicianProfile MusicianProfile @relation(fields: [musicianProfileId], references: [id], onDelete: Cascade)
   song            Song            @relation(fields: [songId], references: [id], onDelete: Cascade)
@@ -289,8 +446,8 @@ model SongWish {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// セッション / イベント
-// Session モデル名は NextAuth の Session と競合するため JamSession とする
+// セッション / イベント（特定日時のイベント）
+// v0.3: studioId / studioRoomId を追加（スタジオ開催に対応）
 // ─────────────────────────────────────────────────────────────────────────────
 
 enum SessionFormat {
@@ -299,37 +456,37 @@ enum SessionFormat {
   THEME
 }
 
-// mood_flags の有効値（DB では String[] として保存）
-// "fun_allowed" | "beginner_welcome" | "advanced" | "practice_focus"
-// | "theme_night" | "quiet_listening" | "lively" | "social"
-
 model JamSession {
-  id                   String         @id @default(cuid())
-  venueId              String?
+  id                   String        @id @default(cuid())
   sessionAdminId       String
+  venueId              String?
+  studioId             String?       // v0.3: スタジオ開催の場合
+  studioRoomId         String?       // v0.3: 部屋指定
   title                String
   startsAt             DateTime
   durationMinutes      Int?
-  format               SessionFormat  @default(OPEN)
-  isSyncroom           Boolean        @default(false)
-  syncroomInfo         Json?          // ルーム名・接続方法
-  moodFlags            String[]       // "fun_allowed" | "beginner_welcome" | ...
+  format               SessionFormat @default(OPEN)
+  isSyncroom           Boolean       @default(false)
+  syncroomInfo         Json?
+  moodFlags            String[]
   maxParticipants      Int?
-  registrationRequired Boolean        @default(false)
-  description          String?        @db.Text
-  createdAt            DateTime       @default(now())
-  updatedAt            DateTime       @updatedAt
+  registrationRequired Boolean       @default(false)
+  description          String?       @db.Text
+  createdAt            DateTime      @default(now())
+  updatedAt            DateTime      @updatedAt
 
-  venue          VenueProfile?         @relation(fields: [venueId], references: [id])
-  sessionAdmin   User                  @relation("SessionAdmin", fields: [sessionAdminId], references: [id])
-  songs          JamSessionSong[]
+  sessionAdmin    User                       @relation("SessionAdmin", fields: [sessionAdminId], references: [id])
+  venue           Venue?                     @relation(fields: [venueId], references: [id])
+  studio          Studio?                    @relation(fields: [studioId], references: [id])
+  studioRoom      StudioRoom?                @relation(fields: [studioRoomId], references: [id])
+  songs           JamSessionSong[]
   instrumentNeeds JamSessionInstrumentNeed[]
-  registrations  JamSessionRegistration[]
+  registrations   JamSessionRegistration[]
   performanceLogs PerformanceLog[]
   privacySettings JamSessionPrivacySettings?
-  adminConsent   JamSessionAdminConsent?
-  kudos          Kudos[]
-  feedback       AnonymousFeedback[]
+  adminConsent    JamSessionAdminConsent?
+  kudos           Kudos[]
+  feedback        AnonymousFeedback[]
 
   @@index([startsAt])
   @@index([venueId])
@@ -378,19 +535,17 @@ model JamSessionRegistration {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// AND-consent モデル（§3.4 演奏ログ公開コントロール）
+// AND-consent モデル（演奏ログ公開コントロール）
 // ─────────────────────────────────────────────────────────────────────────────
 
-/// 会場オーナーが制御するセッション単位の公開設定
 model JamSessionPrivacySettings {
-  id               String  @id @default(cuid())
-  jamSessionId     String  @unique
-  controlledById   String  // venue owner の userId
-  // 各軸の公開フラグ（全てデフォルト false = 非公開）
-  visSessionFact   Boolean @default(false)  // セッションの存在自体
-  visDatetime      Boolean @default(false)  // 開催日時（JASRAC警告対象）
-  visSessionName   Boolean @default(false)  // セッション名
-  visSongListVenue Boolean @default(false)  // 曲リスト（会場側同意）
+  id               String   @id @default(cuid())
+  jamSessionId     String   @unique
+  controlledById   String
+  visSessionFact   Boolean  @default(false)
+  visDatetime      Boolean  @default(false)
+  visSessionName   Boolean  @default(false)
+  visSongListVenue Boolean  @default(false)
   updatedAt        DateTime @updatedAt
 
   jamSession JamSession @relation(fields: [jamSessionId], references: [id], onDelete: Cascade)
@@ -398,12 +553,11 @@ model JamSessionPrivacySettings {
   @@index([jamSessionId])
 }
 
-/// セッション管理者の曲公開同意（曲リスト公開には会場+管理者両方の同意が必要）
 model JamSessionAdminConsent {
-  id             String  @id @default(cuid())
-  jamSessionId   String  @unique
+  id             String   @id @default(cuid())
+  jamSessionId   String   @unique
   sessionAdminId String
-  visSongList    Boolean @default(false)
+  visSongList    Boolean  @default(false)
   updatedAt      DateTime @updatedAt
 
   jamSession JamSession @relation(fields: [jamSessionId], references: [id], onDelete: Cascade)
@@ -418,19 +572,17 @@ model PerformanceLog {
   jamSessionId      String
   musicianProfileId String
   songId            String?
-  registeredById    String    // 登録者（本人 or 管理者 or 会場）
+  registeredById    String
   instrumentPlayed  String?
   wasSoloist        Boolean   @default(false)
   orderInSession    Int?
   performedAt       DateTime?
-  // 確認フロー（管理者が登録した場合、本人の確認が必要）
   confirmed         Boolean   @default(false)
   confirmedAt       DateTime?
-  // per-axis プライバシー設定（ミュージシャン本人が制御）
-  visParticipation  Boolean   @default(false)  // 「参加した」事実
-  visInstrument     Boolean   @default(false)  // 楽器・パート
-  visSongPerformance Boolean  @default(false)  // 曲名込みの演奏（AND条件あり）
-  visCoPerformers   Boolean   @default(false)  // 共演者情報
+  visParticipation  Boolean   @default(false)
+  visInstrument     Boolean   @default(false)
+  visSongPerformance Boolean  @default(false)
+  visCoPerformers   Boolean   @default(false)
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
 
@@ -448,21 +600,20 @@ model PerformanceLog {
 // ─────────────────────────────────────────────────────────────────────────────
 
 model Kudos {
-  id          String   @id @default(cuid())
+  id           String   @id @default(cuid())
   jamSessionId String
-  fromUserId  String
-  toUserId    String?  // ミュージシャン・ホスト宛
-  toVenueId   String?  // 会場宛
-  stamp       String   // "thumbs_up" | "great_music" | "play_again" | "learned" | "great_vibe"
-  message     String?  @db.Text
-  createdAt   DateTime @default(now())
+  fromUserId   String
+  toUserId     String?
+  toVenueId    String?
+  stamp        String
+  message      String?  @db.Text
+  createdAt    DateTime @default(now())
 
-  jamSession JamSession    @relation(fields: [jamSessionId], references: [id], onDelete: Cascade)
-  fromUser   User          @relation("KudosSender", fields: [fromUserId], references: [id])
-  toUser     User?         @relation("KudosReceiver", fields: [toUserId], references: [id])
-  toVenue    VenueProfile? @relation("KudosVenueReceiver", fields: [toVenueId], references: [id])
+  jamSession JamSession @relation(fields: [jamSessionId], references: [id], onDelete: Cascade)
+  fromUser   User       @relation("KudosSender", fields: [fromUserId], references: [id])
+  toUser     User?      @relation("KudosReceiver", fields: [toUserId], references: [id])
+  toVenue    Venue?     @relation("KudosVenueReceiver", fields: [toVenueId], references: [id])
 
-  // 1セッション・1送り先につき1回まで
   @@unique([jamSessionId, fromUserId, toUserId])
   @@unique([jamSessionId, fromUserId, toVenueId])
   @@index([toUserId])
@@ -472,14 +623,14 @@ model Kudos {
 model AnonymousFeedback {
   id           String   @id @default(cuid())
   jamSessionId String
-  toUserId     String?  // ホスト宛
-  toVenueId    String?  // 会場宛
+  toUserId     String?
+  toVenueId    String?
   message      String   @db.Text
   createdAt    DateTime @default(now())
 
-  jamSession JamSession    @relation(fields: [jamSessionId], references: [id], onDelete: Cascade)
-  toUser     User?         @relation("FeedbackReceiver", fields: [toUserId], references: [id])
-  toVenue    VenueProfile? @relation("FeedbackVenueReceiver", fields: [toVenueId], references: [id])
+  jamSession JamSession @relation(fields: [jamSessionId], references: [id], onDelete: Cascade)
+  toUser     User?      @relation("FeedbackReceiver", fields: [toUserId], references: [id])
+  toVenue    Venue?     @relation("FeedbackVenueReceiver", fields: [toVenueId], references: [id])
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -525,21 +676,21 @@ model Block {
 // ─────────────────────────────────────────────────────────────────────────────
 
 enum NotificationType {
-  MATCH_SESSION   // ウィッシュリスト曲のセッションが見つかった
-  MATCH_INSTRUMENT // 楽器募集マッチ
+  MATCH_SESSION
+  MATCH_INSTRUMENT
   CONNECTION_REQUEST
   CONNECTION_ACCEPTED
   KUDOS_RECEIVED
-  LOG_CONFIRM_REQUEST  // ホストが自分の演奏ログを登録した
+  LOG_CONFIRM_REQUEST
 }
 
 model Notification {
   id           String           @id @default(cuid())
   userId       String
   type         NotificationType
-  payload      Json             // 通知に応じた詳細データ
+  payload      Json
   sent         Boolean          @default(false)
-  scheduledFor DateTime         // バッチ送信予定時刻（翌朝7:00など）
+  scheduledFor DateTime
   sentAt       DateTime?
   createdAt    DateTime         @default(now())
 
