@@ -17,7 +17,9 @@
     "seed": "ts-node --compiler-options '{\"module\":\"CommonJS\"}' prisma/seed.ts"
   },
   "dependencies": {
-    "next": "16.1.6"
+    "next": "16.1.6",
+    "react": "19.2.3",
+    "react-dom": "19.2.3"
   },
   "devDependencies": {
     "@auth/prisma-adapter": "^2.11.1",
@@ -38,8 +40,6 @@
     "next-intl": "^4.8.3",
     "pg": "^8.19.0",
     "prisma": "^7.4.1",
-    "react": "19.2.3",
-    "react-dom": "19.2.3",
     "swr": "^2.4.0",
     "tailwindcss": "^4",
     "ts-node": "^10.9.2",
