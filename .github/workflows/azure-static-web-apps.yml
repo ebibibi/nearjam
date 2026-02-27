@@ -46,11 +46,15 @@ jobs:
           AUTH_GOOGLE_SECRET: ${{ secrets.AUTH_GOOGLE_SECRET }}
         run: npm run build
 
-      - name: Copy Prisma generated client into standalone output
-        # standalone mode traces dependencies and creates .next/standalone/node_modules/
-        # but does not include the generated .prisma/client/ WASM files.
-        # Copy them so Prisma can resolve the adapter at runtime.
-        run: cp -r node_modules/.prisma .next/standalone/node_modules/.prisma
+      - name: Copy Prisma generated client for runtime
+        # 'prisma generate' creates .prisma/client/query_compiler_fast_bg.wasm
+        # which is NOT included in npm package and NOT created by npm install.
+        # Two copies needed:
+        # 1) .next/node_modules/.prisma — used by Oryx's function handler build
+        # 2) .next/standalone/node_modules/.prisma — used by standalone server.js
+        run: |
+          cp -r node_modules/.prisma .next/node_modules/.prisma
+          cp -r node_modules/.prisma .next/standalone/node_modules/.prisma
 
       - name: Deploy to Azure Static Web Apps
         uses: Azure/static-web-apps-deploy@v1
