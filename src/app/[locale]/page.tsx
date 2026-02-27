@@ -15,23 +15,28 @@ export default async function HomePage({
   setRequestLocale(locale);
   const t = await getTranslations();
 
-  // SSRで直接Prismaを呼ぶ — DB 接続失敗時は空配列にフォールバック
+  // SSRで直接Prismaを呼ぶ — DB 接続失敗・タイムアウト時は空配列にフォールバック
+  const withTimeout = <T,>(p: Promise<T>, ms: number): Promise<T | []> =>
+    Promise.race([p, new Promise<[]>((resolve) => setTimeout(() => resolve([]), ms))]);
+
   const [venues, sessions] = await Promise.all([
-    prisma.venue.findMany({
-      take: 3,
-      orderBy: { createdAt: 'desc' },
-      include: {
-        tendencies: { where: { isActive: true }, take: 1 },
-      },
-    }).catch(() => []),
-    prisma.jamSession.findMany({
-      take: 4,
-      where: { startsAt: { gte: new Date() } },
-      orderBy: { startsAt: 'asc' },
-      include: {
-        venue: { select: { name: true, nearestStation: true } },
-      },
-    }).catch(() => []),
+    withTimeout(
+      prisma.venue.findMany({
+        take: 3,
+        orderBy: { createdAt: 'desc' },
+        include: { tendencies: { where: { isActive: true }, take: 1 } },
+      }),
+      4000
+    ).catch(() => []),
+    withTimeout(
+      prisma.jamSession.findMany({
+        take: 4,
+        where: { startsAt: { gte: new Date() } },
+        orderBy: { startsAt: 'asc' },
+        include: { venue: { select: { name: true, nearestStation: true } } },
+      }),
+      4000
+    ).catch(() => []),
   ]);
 
   return (
