@@ -9,7 +9,7 @@ export const CreateSessionSchema = z.object({
   durationMinutes: z.number().int().min(30).max(480).optional(),
   format: z.enum(['OPEN', 'INVITE', 'THEME']).default('OPEN'),
   isSyncroom: z.boolean().default(false),
-  syncroomInfo: z.record(z.unknown()).optional(),
+  syncroomInfo: z.record(z.string(), z.unknown()).optional(),
   moodFlags: z.array(z.string()).default([]),
   maxParticipants: z.number().int().min(1).max(200).optional(),
   registrationRequired: z.boolean().default(false),

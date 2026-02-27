@@ -288,7 +288,7 @@ async function main() {
       lng: 139.9760,
       websiteUrl: "https://example.com/kashiwa-studio",
       openingHours: "10:00〜22:00（年中無休）",
-      bookingMethod: "online",
+      bookingMethod: "ONLINE",
     },
   });
 

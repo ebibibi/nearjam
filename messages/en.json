@@ -111,18 +111,18 @@
       "BOTH": "Fun & improvement"
     },
     "levelPrefs": {
-      "SAME": "Same level",
-      "BETTER": "Play with better musicians",
-      "ANY": "No preference"
+      "SAME_LEVEL": "Same level",
+      "JOIN_BETTER": "Play with better musicians",
+      "EITHER": "No preference"
     },
     "feedbackPrefs": {
-      "DETAILED": "Detailed feedback welcome",
+      "WELCOME": "Detailed feedback welcome",
       "LIGHT": "Light feedback OK",
       "NONE": "No feedback please"
     },
     "sessionStyles": {
       "DEEP": "Go deep on one song",
-      "BROAD": "Experience many songs",
+      "VARIETY": "Experience many songs",
       "EITHER": "No preference"
     },
     "travelRanges": {
@@ -201,6 +201,8 @@
     "hourlyRatePeak": "Peak rate",
     "minBooking": "Min. booking",
     "minBookingHours": "{n}hr minimum",
+    "website": "Website",
+    "phone": "Phone",
     "viewDetails": "View details",
     "directions": "Get directions"
   },

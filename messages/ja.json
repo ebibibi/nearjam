@@ -111,18 +111,18 @@
       "BOTH": "楽しみながら上達"
     },
     "levelPrefs": {
-      "SAME": "同じレベルと演りたい",
-      "BETTER": "上手い人と演りたい",
-      "ANY": "どちらでもOK"
+      "SAME_LEVEL": "同じレベルと演りたい",
+      "JOIN_BETTER": "上手い人と演りたい",
+      "EITHER": "どちらでもOK"
     },
     "feedbackPrefs": {
-      "DETAILED": "詳しいフィードバック歓迎",
+      "WELCOME": "詳しいフィードバック歓迎",
       "LIGHT": "軽いフィードバックはOK",
       "NONE": "フィードバック不要"
     },
     "sessionStyles": {
       "DEEP": "1曲を深く掘り下げる",
-      "BROAD": "いろんな曲を幅広く",
+      "VARIETY": "いろんな曲を幅広く",
       "EITHER": "どちらでもOK"
     },
     "travelRanges": {
@@ -201,6 +201,8 @@
     "hourlyRatePeak": "ピーク時料金",
     "minBooking": "最低予約時間",
     "minBookingHours": "{n}時間から",
+    "website": "ウェブサイト",
+    "phone": "電話番号",
     "viewDetails": "詳細を見る",
     "directions": "経路案内"
   },
