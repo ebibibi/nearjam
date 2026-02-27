@@ -15,7 +15,7 @@ export default async function HomePage({
   setRequestLocale(locale);
   const t = await getTranslations();
 
-  // SSRで直接Prismaを呼ぶ — API Route 経由不要
+  // SSRで直接Prismaを呼ぶ — DB 接続失敗時は空配列にフォールバック
   const [venues, sessions] = await Promise.all([
     prisma.venue.findMany({
       take: 3,
@@ -23,7 +23,7 @@ export default async function HomePage({
       include: {
         tendencies: { where: { isActive: true }, take: 1 },
       },
-    }),
+    }).catch(() => []),
     prisma.jamSession.findMany({
       take: 4,
       where: { startsAt: { gte: new Date() } },
@@ -31,7 +31,7 @@ export default async function HomePage({
       include: {
         venue: { select: { name: true, nearestStation: true } },
       },
-    }),
+    }).catch(() => []),
   ]);
 
   return (
