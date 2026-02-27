@@ -46,12 +46,11 @@ jobs:
           AUTH_GOOGLE_SECRET: ${{ secrets.AUTH_GOOGLE_SECRET }}
         run: npm run build
 
-      - name: Copy Prisma generated client into .next for Azure Functions
-        # Next.js extracts @prisma/client to .next/node_modules/ with a symlink
-        # .prisma -> ../../.prisma, but does not copy the generated .prisma/client/
-        # directory. Azure Functions starts from .next so the symlink is broken.
-        # Copy the generated client so the symlink resolves correctly at runtime.
-        run: cp -r node_modules/.prisma .next/node_modules/.prisma
+      - name: Copy Prisma generated client into standalone output
+        # standalone mode traces dependencies and creates .next/standalone/node_modules/
+        # but does not include the generated .prisma/client/ WASM files.
+        # Copy them so Prisma can resolve the adapter at runtime.
+        run: cp -r node_modules/.prisma .next/standalone/node_modules/.prisma
 
       - name: Deploy to Azure Static Web Apps
         uses: Azure/static-web-apps-deploy@v1
@@ -60,7 +59,7 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           action: "upload"
           app_location: "/"
-          output_location: ".next"
+          output_location: ".next/standalone"
           skip_app_build: "true"
 
   close_pull_request:
