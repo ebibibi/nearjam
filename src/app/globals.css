@@ -10,6 +10,23 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  /* NearJam ブランドカラー */
+  --color-brand: #7c3aed;
+  --color-brand-light: #a78bfa;
+  --color-brand-dark: #5b21b6;
+  --color-brand-50: #f5f3ff;
+  --color-brand-100: #ede9fe;
+
+  /* Surface */
+  --color-surface: #f9fafb;
+  --color-surface-elevated: #ffffff;
+  --color-border: #e5e7eb;
+
+  /* Status */
+  --color-verified: #059669;
+  --color-unverified: #d97706;
+  --color-disputed: #dc2626;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -22,5 +39,5 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
 }

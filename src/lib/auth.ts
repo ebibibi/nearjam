@@ -32,7 +32,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     },
   },
   pages: {
-    signIn: "/auth/signin",
-    error: "/auth/error",
+    // next-intl のデフォルトロケール (en) を明示
+    // middleware が /en/auth/signin → ロケール付きパスに解決する
+    signIn: "/en/auth/signin",
+    error: "/en/auth/error",
   },
 });
