@@ -54,6 +54,19 @@ export default async function LocaleLayout({
             <main className="mx-auto max-w-6xl px-4 py-6">
               {children}
             </main>
+            <footer className="mt-16 border-t border-gray-200 bg-white">
+              <div className="mx-auto max-w-6xl px-4 py-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-gray-500">
+                <span>© {new Date().getFullYear()} NearJam</span>
+                <nav className="flex gap-4">
+                  <a href={`/${locale}/privacy`} className="hover:text-gray-700 hover:underline">
+                    {locale === 'ja' ? 'プライバシーポリシー' : 'Privacy Policy'}
+                  </a>
+                  <a href={`/${locale}/terms`} className="hover:text-gray-700 hover:underline">
+                    {locale === 'ja' ? '利用規約' : 'Terms of Service'}
+                  </a>
+                </nav>
+              </div>
+            </footer>
           </SessionProvider>
         </NextIntlClientProvider>
       </body>
