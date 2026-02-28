@@ -5,6 +5,12 @@ import { test, expect } from '@playwright/test';
 // DB の中身に依存しない（空でも OK）テストのみ記述する
 // ────────────────────────────────────────────────
 
+// ヘッダーロゴを一意に特定するヘルパー
+// フッターに「© NearJam」が追加されたため getByText('NearJam') は複数マッチする。
+// ロール + 名前で header のロゴリンクだけを特定する。
+const headerLogo = (page: Parameters<Parameters<typeof test>[1]>[0]) =>
+  page.getByRole('link', { name: /🎸 NearJam/i });
+
 test.describe('トップページ', () => {
   test('ページタイトルと主要要素が表示される', async ({ page }) => {
     await page.goto('/');
@@ -15,7 +21,7 @@ test.describe('トップページ', () => {
     await expect(page).toHaveTitle(/NearJam/);
 
     // ヘッダーロゴ
-    await expect(page.getByText('NearJam')).toBeVisible();
+    await expect(headerLogo(page)).toBeVisible();
   });
 
   test('ヒーローセクションのテキストとボタンが表示される', async ({ page }) => {
@@ -44,8 +50,7 @@ test.describe('会場ページ', () => {
   test('ページが正常に表示される', async ({ page }) => {
     await page.goto('/en/venues');
     await expect(page).toHaveTitle(/NearJam/);
-    // ヘッダーが表示されていれば最低限 OK
-    await expect(page.getByText('NearJam')).toBeVisible();
+    await expect(headerLogo(page)).toBeVisible();
   });
 
   test('会場追加ボタンが存在する', async ({ page }) => {
@@ -59,7 +64,7 @@ test.describe('スタジオページ', () => {
   test('ページが正常に表示される', async ({ page }) => {
     await page.goto('/en/studios');
     await expect(page).toHaveTitle(/NearJam/);
-    await expect(page.getByText('NearJam')).toBeVisible();
+    await expect(headerLogo(page)).toBeVisible();
   });
 });
 
@@ -67,7 +72,7 @@ test.describe('セッションページ', () => {
   test('ページが正常に表示される', async ({ page }) => {
     await page.goto('/en/sessions');
     await expect(page).toHaveTitle(/NearJam/);
-    await expect(page.getByText('NearJam')).toBeVisible();
+    await expect(headerLogo(page)).toBeVisible();
   });
 });
 
@@ -75,7 +80,7 @@ test.describe('曲ページ', () => {
   test('ページが正常に表示される', async ({ page }) => {
     await page.goto('/en/songs');
     await expect(page).toHaveTitle(/NearJam/);
-    await expect(page.getByText('NearJam')).toBeVisible();
+    await expect(headerLogo(page)).toBeVisible();
   });
 });
 
@@ -83,7 +88,7 @@ test.describe('日本語ロケール', () => {
   test('/ja でも正常に表示される', async ({ page }) => {
     await page.goto('/ja');
     await expect(page).toHaveTitle(/NearJam/);
-    await expect(page.getByText('NearJam')).toBeVisible();
+    await expect(headerLogo(page)).toBeVisible();
   });
 });
 
@@ -104,7 +109,7 @@ test.describe('ナビゲーション', () => {
 
   test('ロゴクリックでトップページに戻る', async ({ page }) => {
     await page.goto('/en/sessions');
-    await page.getByRole('link', { name: /NearJam/i }).click();
+    await headerLogo(page).click();
     await expect(page).toHaveURL(/\/en\/?$/);
   });
 });
