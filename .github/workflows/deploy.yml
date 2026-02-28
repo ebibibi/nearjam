@@ -103,15 +103,23 @@ jobs:
 
       - name: Sync Google OAuth secrets to Container App
         # GitHub Secrets (AUTH_GOOGLE_ID / AUTH_GOOGLE_SECRET) を Container App のシークレットに反映する。
-        # 未設定の場合は空文字がセットされ Google ログインは無効になるが、アプリ起動は継続する。
+        # 未設定の場合はスキップ（Azure は空のシークレット値を拒否するため）。
         # Google Cloud Console でクライアントIDを作成後に GitHub Secrets を設定すること。
+        env:
+          AUTH_GOOGLE_ID: ${{ secrets.AUTH_GOOGLE_ID }}
+          AUTH_GOOGLE_SECRET: ${{ secrets.AUTH_GOOGLE_SECRET }}
         run: |
-          az containerapp secret set \
-            --name ca-nearjam \
-            --resource-group rg-nearjam \
-            --secrets \
-              "auth-google-id=${{ secrets.AUTH_GOOGLE_ID }}" \
-              "auth-google-secret=${{ secrets.AUTH_GOOGLE_SECRET }}"
+          if [ -n "$AUTH_GOOGLE_ID" ] && [ -n "$AUTH_GOOGLE_SECRET" ]; then
+            az containerapp secret set \
+              --name ca-nearjam \
+              --resource-group rg-nearjam \
+              --secrets \
+                "auth-google-id=${AUTH_GOOGLE_ID}" \
+                "auth-google-secret=${AUTH_GOOGLE_SECRET}"
+            echo "✅ Google OAuth secrets synced"
+          else
+            echo "⚠️ AUTH_GOOGLE_ID / AUTH_GOOGLE_SECRET not set in GitHub Secrets — skipping"
+          fi
 
       - name: Deploy new revision (0% traffic)
         id: deploy
