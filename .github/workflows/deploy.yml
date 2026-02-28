@@ -113,7 +113,7 @@ jobs:
         run: |
           echo "Waiting for deployment at $APP_URL ..."
           for i in $(seq 1 12); do
-            STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$APP_URL" --max-time 10 || true)
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" -L "$APP_URL" --max-time 15 || true)
             echo "  attempt $i: HTTP $STATUS"
             if [ "$STATUS" = "200" ]; then
               echo "Deployment is ready!"
