@@ -85,7 +85,8 @@
       "bio": "自己紹介",
       "bioPlaceholder": "音楽経歴を少し教えてください...",
       "yearsPlaying": "演奏歴（年）",
-      "profilePhoto": "プロフィール写真"
+      "profilePhoto": "プロフィール写真",
+      "optional": "任意"
     },
     "edit": "プロフィールを編集",
     "myProfile": "マイプロフィール",
@@ -137,12 +138,19 @@
       "15": "15km以内",
       "30": "30km以内",
       "999": "制限なし"
-    }
+    },
+    "wishlist": "ウィッシュリスト",
+    "viewAllSongs": "ウィッシュリストを管理",
+    "snsLinks": "SNS / リンク",
+    "levelPrefLabel": "レベルの好み",
+    "feedbackPrefLabel": "フィードバックの好み",
+    "sessionStyleLabel": "セッションスタイル"
   },
   "venue": {
     "title": "セッション会場",
     "titleSingular": "会場",
     "add": "会場を追加",
+    "searchPlaceholder": "会場名・駅名・エリアで検索...",
     "name": "会場名",
     "namePlaceholder": "例：バー○○",
     "address": "住所",

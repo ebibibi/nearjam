@@ -36,6 +36,11 @@ export default async function ProfilePage({
           orderBy: [{ isHome: 'desc' }, { createdAt: 'asc' }],
           select: { id: true, areaLabel: true, isHome: true, isSyncroom: true, syncroomNotes: true },
         },
+        wishlist: {
+          include: { song: { select: { id: true, title: true, artist: true } } },
+          orderBy: { addedAt: 'desc' },
+          take: 10,
+        },
       },
     }),
   ]);
@@ -82,9 +87,21 @@ export default async function ProfilePage({
         <div>
           <p className="font-medium text-gray-900 mb-1">{t('travelRange')}</p>
           <span className="text-gray-600">
-            {t(`travelRanges.${Math.min(999, Math.max(5, profile.travelRadiusKm)).toString()}`)}
+            {profile.travelRadiusKm >= 100
+              ? t('travelRanges.999')
+              : profile.travelRadiusKm >= 25
+              ? t('travelRanges.30')
+              : profile.travelRadiusKm >= 10
+              ? t('travelRanges.15')
+              : t('travelRanges.5')}
           </span>
         </div>
+        {profile.yearsPlaying != null && (
+          <div>
+            <p className="font-medium text-gray-900 mb-1">{t('setup.yearsPlaying')}</p>
+            <span className="text-gray-600">{profile.yearsPlaying} {profile.yearsPlaying === 1 ? 'year' : 'years'}</span>
+          </div>
+        )}
       </div>
 
       {profile.instruments.length > 0 && (
@@ -123,6 +140,49 @@ export default async function ProfilePage({
                 {area.syncroomNotes && <span className="text-xs text-gray-400">{area.syncroomNotes}</span>}
               </div>
             ))}
+          </div>
+        </div>
+      )}
+
+      {/* Wishlist preview */}
+      {profile.wishlist.length > 0 && (
+        <div>
+          <div className="flex items-center justify-between mb-2">
+            <p className="font-medium text-gray-900">{t('wishlist')}</p>
+            <Link href={`/${locale}/songs`} className="text-xs text-violet-600 hover:underline">
+              {t('viewAllSongs')}
+            </Link>
+          </div>
+          <div className="space-y-1">
+            {profile.wishlist.map((wish) => (
+              <div key={wish.id} className="flex items-center gap-2 text-sm text-gray-700">
+                <span>🎵</span>
+                <span className="font-medium">{wish.song.title}</span>
+                {wish.song.artist && <span className="text-gray-400">— {wish.song.artist}</span>}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* SNS links */}
+      {profile.snsLinks && Object.keys(profile.snsLinks as Record<string, string>).some((k) => (profile.snsLinks as Record<string, string>)[k]) && (
+        <div>
+          <p className="font-medium text-gray-900 mb-2">{t('snsLinks')}</p>
+          <div className="flex flex-wrap gap-3">
+            {Object.entries(profile.snsLinks as Record<string, string>).map(([platform, url]) =>
+              url ? (
+                <a
+                  key={platform}
+                  href={url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm text-violet-600 hover:underline capitalize"
+                >
+                  {platform === 'youtube' ? '▶️' : platform === 'instagram' ? '📸' : platform === 'x' ? '🐦' : platform === 'soundcloud' ? '☁️' : platform === 'tiktok' ? '🎵' : '🔗'} {platform}
+                </a>
+              ) : null
+            )}
           </div>
         </div>
       )}

@@ -24,6 +24,10 @@ interface FormData {
   levelPref: string;
   feedbackPref: string;
   sessionStyle: string;
+  snsYoutube: string;
+  snsInstagram: string;
+  snsX: string;
+  snsSoundcloud: string;
 }
 
 interface ProfileSetupWizardProps {
@@ -53,6 +57,10 @@ export function ProfileSetupWizard({ locale, initialNickname }: ProfileSetupWiza
     levelPref: 'EITHER',
     feedbackPref: 'LIGHT',
     sessionStyle: 'EITHER',
+    snsYoutube: '',
+    snsInstagram: '',
+    snsX: '',
+    snsSoundcloud: '',
   });
 
   const update = (patch: Partial<FormData>) => setData((prev) => ({ ...prev, ...patch }));
@@ -62,6 +70,12 @@ export function ProfileSetupWizard({ locale, initialNickname }: ProfileSetupWiza
   async function handleComplete() {
     setIsLoading(true);
     setError(null);
+
+    const snsLinks: Record<string, string> = {};
+    if (data.snsYoutube) snsLinks.youtube = data.snsYoutube;
+    if (data.snsInstagram) snsLinks.instagram = data.snsInstagram;
+    if (data.snsX) snsLinks.x = data.snsX;
+    if (data.snsSoundcloud) snsLinks.soundcloud = data.snsSoundcloud;
 
     const body: Record<string, unknown> = {
       nickname: data.nickname || undefined,
@@ -76,6 +90,7 @@ export function ProfileSetupWizard({ locale, initialNickname }: ProfileSetupWiza
       levelPref: data.levelPref || undefined,
       feedbackPref: data.feedbackPref || undefined,
       sessionStyle: data.sessionStyle || undefined,
+      snsLinks: Object.keys(snsLinks).length > 0 ? snsLinks : undefined,
     };
 
     const res = await fetch('/api/v1/musicians/me', {

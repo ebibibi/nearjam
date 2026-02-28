@@ -85,7 +85,8 @@
       "bio": "Bio",
       "bioPlaceholder": "A few words about your musical background...",
       "yearsPlaying": "Years playing",
-      "profilePhoto": "Profile photo"
+      "profilePhoto": "Profile photo",
+      "optional": "optional"
     },
     "edit": "Edit profile",
     "myProfile": "My Profile",
@@ -137,12 +138,19 @@
       "15": "Within 15 km",
       "30": "Within 30 km",
       "999": "No limit"
-    }
+    },
+    "wishlist": "My Wishlist",
+    "viewAllSongs": "Manage wishlist",
+    "snsLinks": "SNS / Links",
+    "levelPrefLabel": "Level preference",
+    "feedbackPrefLabel": "Feedback preference",
+    "sessionStyleLabel": "Session style"
   },
   "venue": {
     "title": "Venues",
     "titleSingular": "Venue",
     "add": "Add venue",
+    "searchPlaceholder": "Search by name, station, or area...",
     "name": "Venue name",
     "namePlaceholder": "e.g. Bar Example",
     "address": "Address",

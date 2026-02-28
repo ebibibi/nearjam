@@ -3,6 +3,7 @@ import { z } from 'zod';
 export const UpdateProfileSchema = z.object({
   nickname: z.string().min(1).max(50).optional(),
   bio: z.string().max(500).optional(),
+  yearsPlaying: z.number().int().min(0).max(80).optional(),
   areaLabel: z.string().max(100).optional(),
   travelRadiusKm: z.number().int().min(1).max(999).optional(),
   skillLevel: z.enum(['BEGINNER', 'INTERMEDIATE', 'ADVANCED', 'ANY']).optional(),
@@ -10,6 +11,7 @@ export const UpdateProfileSchema = z.object({
   sessionGoal: z.enum(['FUN', 'IMPROVE', 'BOTH']).optional(),
   feedbackPref: z.enum(['WELCOME', 'LIGHT', 'NONE']).optional(),
   sessionStyle: z.enum(['DEEP', 'VARIETY', 'EITHER']).optional(),
+  snsLinks: z.record(z.string(), z.string().max(500)).optional(),
   instruments: z
     .array(
       z.object({

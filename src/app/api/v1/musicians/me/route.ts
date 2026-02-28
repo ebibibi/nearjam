@@ -43,13 +43,14 @@ export async function PUT(req: NextRequest) {
     return err(parsed.error.issues.map((e) => e.message).join(', '), 400);
   }
 
-  const { nickname, instruments, genres, ...profileData } = parsed.data;
+  const { nickname, instruments, genres, snsLinks, ...profileData } = parsed.data;
+  const snsLinksJson = snsLinks !== undefined ? (snsLinks as import('@prisma/client').Prisma.JsonObject) : undefined;
 
   // Upsert profile
   const profile = await prisma.musicianProfile.upsert({
     where: { userId },
-    create: { userId, ...profileData },
-    update: profileData,
+    create: { userId, ...profileData, ...(snsLinksJson !== undefined ? { snsLinks: snsLinksJson } : {}) },
+    update: { ...profileData, ...(snsLinksJson !== undefined ? { snsLinks: snsLinksJson } : {}) },
   });
 
   // Update nickname on User
