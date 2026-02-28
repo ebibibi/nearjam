@@ -60,7 +60,8 @@ enum UserRole {
 
 model User {
   id            String    @id @default(cuid())
-  nickname      String?
+  name          String?   // NextAuth PrismaAdapter が要求する標準フィールド（OAuth プロファイルの表示名）
+  nickname      String?   // ユーザーが自分で設定するアプリ内ニックネーム
   email         String?   @unique
   emailVerified DateTime?
   image         String?
