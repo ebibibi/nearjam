@@ -53,12 +53,12 @@ export default async function HomePage({
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2">
             <Link href={`/${locale}/sessions`}>
-              <Button size="lg" className="bg-white text-violet-700 hover:bg-violet-50 w-full sm:w-auto">
+              <Button size="lg" variant="secondary" className="w-full sm:w-auto">
                 {t('home.hero.ctaSessions')}
               </Button>
             </Link>
             <Link href={`/${locale}/venues`}>
-              <Button size="lg" variant="secondary" className="border-white/40 text-white hover:bg-white/10 bg-transparent w-full sm:w-auto">
+              <Button size="lg" variant="ghost-inverse" className="w-full sm:w-auto">
                 {t('home.hero.ctaVenues')}
               </Button>
             </Link>
