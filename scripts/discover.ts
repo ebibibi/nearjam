@@ -8,6 +8,7 @@
  *   npx ts-node --compiler-options '{"module":"CommonJS"}' scripts/discover.ts
  *   npx ts-node --compiler-options '{"module":"CommonJS"}' scripts/discover.ts --dry-run
  *   npx ts-node --compiler-options '{"module":"CommonJS"}' scripts/discover.ts --no-crawl
+ *   npx ts-node --compiler-options '{"module":"CommonJS"}' scripts/discover.ts --extra-queries-file /path/to/queries.json
  */
 
 import * as dotenv from 'dotenv';
@@ -15,7 +16,7 @@ dotenv.config({ path: '.env.local' });
 dotenv.config({ path: '.env' });
 
 import { spawnSync } from 'child_process';
-import { writeFileSync, unlinkSync } from 'fs';
+import { writeFileSync, readFileSync, unlinkSync } from 'fs';
 import { tmpdir } from 'os';
 import { join } from 'path';
 import { z } from 'zod';
@@ -28,6 +29,10 @@ import { saveExtractionResult } from '../src/crawler/saver';
 const args = process.argv.slice(2);
 const DRY_RUN = args.includes('--dry-run');
 const NO_CRAWL = args.includes('--no-crawl');
+
+// --extra-queries-file <path>: JSON配列ファイルから追加クエリを読み込む
+const extraQueriesFileIdx = args.indexOf('--extra-queries-file');
+const EXTRA_QUERIES_FILE = extraQueriesFileIdx !== -1 ? args[extraQueriesFileIdx + 1] : null;
 
 // ── 検索クエリ一覧（全国47都道府県をカバー）────────────────────────
 const SEARCH_QUERIES = [
@@ -203,9 +208,28 @@ async function main(): Promise<void> {
   if (DRY_RUN) console.log('  [DRY RUN: DBへの書き込みなし]');
   if (NO_CRAWL) console.log('  [--no-crawl: URL登録のみ]');
 
+  // 追加クエリをファイルから読み込む
+  const extraQueries: string[] = [];
+  if (EXTRA_QUERIES_FILE) {
+    try {
+      const raw = readFileSync(EXTRA_QUERIES_FILE, 'utf8');
+      const parsed: unknown = JSON.parse(raw);
+      if (Array.isArray(parsed)) {
+        for (const q of parsed) {
+          if (typeof q === 'string' && q.trim()) extraQueries.push(q.trim());
+        }
+      }
+      console.log(`  📎 追加クエリ: ${extraQueries.length}件 (${EXTRA_QUERIES_FILE})`);
+    } catch (err) {
+      console.warn(`  ⚠️  追加クエリファイル読み込み失敗: ${err}`);
+    }
+  }
+
+  const allQueries = [...SEARCH_QUERIES, ...extraQueries];
+
   // Phase 1: Gemini で会場URLを検索
   const allVenues: VenueItem[] = [];
-  for (const query of SEARCH_QUERIES) {
+  for (const query of allQueries) {
     console.log(`\n🔍 検索: "${query.slice(0, 40)}..."`);
     const found = searchVenuesWithGemini(query);
     console.log(`  ${found.length} 件取得`);
