@@ -76,9 +76,8 @@ jobs:
 
       - name: Deploy to Container App
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        env:
-          IMAGE_TAG: sha-${{ github.sha }}
         run: |
+          IMAGE_TAG="sha-$(echo '${{ github.sha }}' | cut -c1-7)"
           az containerapp update \
             --name ca-nearjam \
             --resource-group rg-nearjam \
