@@ -10,8 +10,8 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
-  # 本番 URL（プロモート後にユーザーが使うURL）
-  APP_URL: https://ca-nearjam.redflower-e9742c17.eastasia.azurecontainerapps.io
+  # 本番 URL（カスタムドメイン）
+  APP_URL: https://nearjam.ebisuda.net
   # リビジョン URL のベース（{revision-name}.{env-domain}）
   # 新リビジョンの URL = https://ca-nearjam--{suffix}.redflower-e9742c17.eastasia.azurecontainerapps.io
   REVISION_BASE_URL: redflower-e9742c17.eastasia.azurecontainerapps.io
@@ -101,6 +101,18 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
+      - name: Sync Google OAuth secrets to Container App
+        # GitHub Secrets (AUTH_GOOGLE_ID / AUTH_GOOGLE_SECRET) を Container App のシークレットに反映する。
+        # 未設定の場合は空文字がセットされ Google ログインは無効になるが、アプリ起動は継続する。
+        # Google Cloud Console でクライアントIDを作成後に GitHub Secrets を設定すること。
+        run: |
+          az containerapp secret set \
+            --name ca-nearjam \
+            --resource-group rg-nearjam \
+            --secrets \
+              "auth-google-id=${{ secrets.AUTH_GOOGLE_ID }}" \
+              "auth-google-secret=${{ secrets.AUTH_GOOGLE_SECRET }}"
+
       - name: Deploy new revision (0% traffic)
         id: deploy
         run: |
@@ -114,7 +126,10 @@ jobs:
             --name ca-nearjam \
             --resource-group rg-nearjam \
             --image "$IMAGE" \
-            --revision-suffix "$REVISION_SUFFIX"
+            --revision-suffix "$REVISION_SUFFIX" \
+            --set-env-vars \
+              "AUTH_GOOGLE_ID=secretref:auth-google-id" \
+              "AUTH_GOOGLE_SECRET=secretref:auth-google-secret"
 
           echo "revision-name=${REVISION_NAME}" >> $GITHUB_OUTPUT
           echo "staging-url=${STAGING_URL}" >> $GITHUB_OUTPUT

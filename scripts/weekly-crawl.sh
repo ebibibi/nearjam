@@ -34,6 +34,30 @@ log_section() { log ""; log "━━━━━━━━━━━━━━━━━
 log_section "🎷 NearJam 週次クロール開始: $(date '+%Y-%m-%d %H:%M:%S')"
 
 # ──────────────────────────────────────────────────────────────
+# Phase 0: 本番 DATABASE_URL を Azure Container App シークレットから取得
+#
+# dotenv はデフォルトで既存の環境変数を上書きしない。
+# ここで export しておけば、各 ts-node 内の dotenv.config('.env.local') が
+# 実行されても localhost URL に戻ることはない。
+# ──────────────────────────────────────────────────────────────
+log_section "🔑 Phase 0: 本番 DATABASE_URL を取得中..."
+
+export DATABASE_URL
+DATABASE_URL=$(AZURE_CONFIG_DIR=~/.azure-mvp az containerapp secret show \
+  --name ca-nearjam \
+  --resource-group rg-nearjam \
+  --secret-name database-url \
+  --query "value" -o tsv 2>/dev/null || echo "")
+
+if [ -z "$DATABASE_URL" ]; then
+  log "❌ ERROR: 本番 DATABASE_URL の取得に失敗しました"
+  log "  確認事項: ~/.azure-mvp で az login 済みか / ca-nearjam が存在するか"
+  exit 1
+fi
+
+log "✅ DATABASE_URL 取得完了（接続先: psql-nearjam.postgres.database.azure.com）"
+
+# ──────────────────────────────────────────────────────────────
 # Phase 1: DB統計を収集
 # ──────────────────────────────────────────────────────────────
 log_section "📊 Phase 1: DB統計を収集中..."
