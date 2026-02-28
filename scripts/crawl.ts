@@ -2,32 +2,31 @@
  * NearJam Web クローラー CLI
  *
  * 使い方:
- *   # 単一URLをクロール（テスト用）
- *   npx ts-node --compiler-options '{"module":"CommonJS"}' scripts/crawl.ts https://example-bar.jp/session
+ *   # 単一URLをクロール（サブページも自動追試）
+ *   npx ts-node --compiler-options '{"module":"CommonJS"}' scripts/crawl.ts https://example-bar.jp/
  *
  *   # AutoCollectionJob テーブルの未処理ジョブを一括処理
  *   npx ts-node --compiler-options '{"module":"CommonJS"}' scripts/crawl.ts
  *
- *   # 信頼度スコアのしきい値を指定（デフォルト: 0.4）
- *   npx ts-node --compiler-options '{"module":"CommonJS"}' scripts/crawl.ts --min-confidence 0.6 https://...
+ *   # low_confidence を含めて再処理
+ *   npx ts-node --compiler-options '{"module":"CommonJS"}' scripts/crawl.ts --retry-low
  */
 
-// .env.local を読み込む（Next.js 規約に合わせて .env.local を優先）
 import * as dotenv from 'dotenv';
 dotenv.config({ path: '.env.local' });
 dotenv.config({ path: '.env' });
 
 import { prisma } from '../src/lib/prisma';
-import { fetchPageAsMarkdown } from '../src/crawler/fetcher';
+import { fetchPageWithSessionLinks, fetchMultiplePages } from '../src/crawler/fetcher';
 import { extractFromMarkdown } from '../src/crawler/extractor';
 import { saveExtractionResult } from '../src/crawler/saver';
 
-// ── CLI 引数パース ────────────────────────────────────────────────
+// ── CLI 引数 ────────────────────────────────────────────────────
 
 const args = process.argv.slice(2);
-
 let targetUrl: string | null = null;
 let minConfidence = 0.4;
+let retryLow = args.includes('--retry-low');
 
 for (let i = 0; i < args.length; i++) {
   if (args[i] === '--min-confidence' && args[i + 1]) {
@@ -38,27 +37,55 @@ for (let i = 0; i < args.length; i++) {
   }
 }
 
-// ── メイン処理 ───────────────────────────────────────────────────
+// ── コア: 1会場をフルクロール ─────────────────────────────────────
 
-async function crawlUrl(url: string, jobId?: string): Promise<void> {
-  console.log(`\n🌐 クロール開始: ${url}`);
+/**
+ * 1つの会場URLをクロールする。
+ * 1. メインページを取得してGeminiで抽出
+ * 2. 信頼度が低い場合はセッション系サブページも追試
+ * 3. 最も信頼度の高い結果をDBに保存
+ */
+async function crawlVenue(url: string, jobId?: string): Promise<void> {
+  console.log(`\n🌐 ${url}`);
   const startedAt = Date.now();
 
   try {
-    // 1. ページ取得
-    console.log('  📄 ページ取得中...');
-    const { markdown, title, url: finalUrl } = await fetchPageAsMarkdown(url);
-    console.log(`  タイトル: "${title}" (${markdown.length} 文字)`);
+    // --- Step 1: メインページ取得（セッション系リンクも同時取得）---
+    process.stdout.write('  📄 メインページ取得中... ');
+    const main = await fetchPageWithSessionLinks(url);
+    console.log(`"${main.title}" (${main.markdown.length}文字)`);
 
-    // 2. Gemini で抽出
-    console.log('  🤖 Gemini で情報抽出中...');
-    const result = await extractFromMarkdown(markdown, finalUrl, title);
-    console.log(`  信頼度: ${result.confidence.toFixed(2)}${result.notes ? ` / 備考: ${result.notes}` : ''}`);
+    // --- Step 2: Gemini で抽出 ---
+    process.stdout.write('  🤖 抽出中... ');
+    let best = await extractFromMarkdown(main.markdown, main.url, main.title);
+    let bestSource = main.url;
+    console.log(`信頼度: ${best.confidence.toFixed(2)}`);
 
-    if (result.confidence < minConfidence) {
-      const msg = `信頼度が低すぎるためスキップ (${result.confidence.toFixed(2)} < ${minConfidence})`;
-      console.warn(`  ⚠️  ${msg}`);
+    // --- Step 3: 信頼度不足の場合サブページを試す ---
+    if (best.confidence < minConfidence && main.sessionPageLinks.length > 0) {
+      console.log(`  🔗 サブページ ${main.sessionPageLinks.length} 件を追試:`);
+      main.sessionPageLinks.forEach(l => console.log(`     ${l}`));
 
+      const subResults = await fetchMultiplePages(main.sessionPageLinks);
+
+      for (const sub of subResults) {
+        if (sub.markdown.length < 50) continue;
+        process.stdout.write(`  🤖 ${sub.url.split('/').slice(-2).join('/')} 抽出中... `);
+        const subResult = await extractFromMarkdown(sub.markdown, sub.url, sub.title);
+        console.log(`信頼度: ${subResult.confidence.toFixed(2)}`);
+
+        if (subResult.confidence > best.confidence) {
+          best = subResult;
+          bestSource = sub.url;
+        }
+        if (best.confidence >= minConfidence) break;
+      }
+    }
+
+    // --- Step 4: 最終判定 ---
+    if (best.confidence < minConfidence) {
+      const msg = `信頼度不足 (${best.confidence.toFixed(2)} < ${minConfidence})`;
+      console.log(`  ⚠️  ${msg}`);
       if (jobId) {
         await prisma.autoCollectionJob.update({
           where: { id: jobId },
@@ -68,50 +95,54 @@ async function crawlUrl(url: string, jobId?: string): Promise<void> {
       return;
     }
 
-    // 3. DB 保存
-    console.log('  💾 DB に保存中...');
-    const { venueId, tendencyIds } = await saveExtractionResult(result, finalUrl, jobId);
+    if (bestSource !== main.url) {
+      console.log(`  ✨ サブページで信頼度向上: ${bestSource}`);
+    }
 
+    // --- Step 5: DB保存 ---
+    const { venueId, tendencyIds } = await saveExtractionResult(best, bestSource, jobId);
     const elapsed = ((Date.now() - startedAt) / 1000).toFixed(1);
-    console.log(`  ✅ 完了 (${elapsed}s): 会場=${venueId ?? 'なし'}, セッション=${tendencyIds.length}件`);
+    console.log(`  ✅ ${elapsed}s — 会場=${venueId ? '保存' : 'なし'}, セッション=${tendencyIds.length}件`);
 
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
-    console.error(`  ❌ エラー: ${message}`);
-
+    const brief = message.split('\n')[0].slice(0, 120);
+    console.log(`  ❌ ${brief}`);
     if (jobId) {
       await prisma.autoCollectionJob.update({
         where: { id: jobId },
-        data: {
-          lastStatus: 'error',
-          errorMessage: message.slice(0, 1000),
-          lastFetchedAt: new Date(),
-        },
+        data: { lastStatus: 'error', errorMessage: message.slice(0, 1000), lastFetchedAt: new Date() },
       });
     }
   }
 }
 
-async function runSingleUrl(url: string): Promise<void> {
-  console.log('🔍 単一URLモード（DBへの保存あり）');
-  await crawlUrl(url);
-}
+// ── ジョブキュー処理 ─────────────────────────────────────────────
 
 async function runJobQueue(): Promise<void> {
-  console.log('📋 ジョブキューモード: AutoCollectionJob を処理します');
-
-  // nextFetchAt が過去か null のジョブを取得（pendingまたは未設定）
   const now = new Date();
+
+  const whereClause = retryLow
+    ? {
+        OR: [
+          { nextFetchAt: null },
+          { nextFetchAt: { lte: now } },
+          { lastStatus: 'low_confidence' },
+        ],
+        NOT: { lastStatus: 'error' },
+      }
+    : {
+        OR: [
+          { nextFetchAt: null },
+          { nextFetchAt: { lte: now } },
+        ],
+        NOT: { lastStatus: 'error' },
+      };
+
   const jobs = await prisma.autoCollectionJob.findMany({
-    where: {
-      OR: [
-        { nextFetchAt: null },
-        { nextFetchAt: { lte: now } },
-      ],
-      NOT: { lastStatus: 'error' }, // エラーのものは手動対応
-    },
+    where: whereClause,
     orderBy: { nextFetchAt: 'asc' },
-    take: 20, // 1回の実行で最大20件
+    take: 50,
   });
 
   if (jobs.length === 0) {
@@ -119,22 +150,19 @@ async function runJobQueue(): Promise<void> {
     return;
   }
 
-  console.log(`${jobs.length} 件のジョブを処理します\n`);
+  console.log(`${jobs.length} 件のジョブを処理します`);
+  let succeeded = 0, failed = 0;
 
-  let succeeded = 0;
-  let failed = 0;
+  for (let i = 0; i < jobs.length; i++) {
+    const job = jobs[i];
+    process.stdout.write(`[${i + 1}/${jobs.length}] `);
+    await crawlVenue(job.sourceUrl, job.id);
 
-  for (const job of jobs) {
-    await crawlUrl(job.sourceUrl, job.id);
-
-    // 次回フェッチを24時間後に設定
     const nextFetch = new Date(Date.now() + 24 * 60 * 60 * 1000);
-    try {
-      await prisma.autoCollectionJob.update({
-        where: { id: job.id },
-        data: { nextFetchAt: nextFetch },
-      });
-    } catch { /* ignore */ }
+    await prisma.autoCollectionJob.update({
+      where: { id: job.id },
+      data: { nextFetchAt: nextFetch },
+    }).catch(() => {});
 
     const status = await prisma.autoCollectionJob.findUnique({
       where: { id: job.id },
@@ -143,11 +171,16 @@ async function runJobQueue(): Promise<void> {
     if (status?.lastStatus === 'success') succeeded++;
     else failed++;
 
-    // 連続アクセスによるレート制限を避けるため少し待つ
-    await sleep(2000);
+    await sleep(2500);
   }
 
-  console.log(`\n📊 処理結果: 成功=${succeeded}, 失敗=${failed} / 合計=${jobs.length}`);
+  const [venueCount, sessionCount] = await Promise.all([
+    prisma.venue.count(),
+    prisma.sessionTendency.count({ where: { sourceType: 'AUTO_COLLECTED' } }),
+  ]);
+
+  console.log(`\n📊 完了: 成功=${succeeded}, 失敗=${failed} / 合計=${jobs.length}`);
+  console.log(`   DB合計: 会場=${venueCount}件, セッション=${sessionCount}件`);
 }
 
 function sleep(ms: number): Promise<void> {
@@ -158,11 +191,11 @@ function sleep(ms: number): Promise<void> {
 
 async function main(): Promise<void> {
   console.log('🎷 NearJam クローラー');
-  console.log(`   信頼度しきい値: ${minConfidence}`);
+  console.log(`   信頼度しきい値: ${minConfidence}${retryLow ? '  [low_confidence再試行あり]' : ''}`);
 
   try {
     if (targetUrl) {
-      await runSingleUrl(targetUrl);
+      await crawlVenue(targetUrl);
     } else {
       await runJobQueue();
     }
