@@ -11,7 +11,9 @@
     "db:migrate": "prisma migrate dev",
     "db:seed": "prisma db seed",
     "db:reset": "prisma migrate reset --force && prisma db seed",
-    "db:studio": "prisma studio"
+    "db:studio": "prisma studio",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui"
   },
   "prisma": {
     "seed": "ts-node --compiler-options '{\"module\":\"CommonJS\"}' prisma/seed.ts"
@@ -27,6 +29,7 @@
   "devDependencies": {
     "@auth/prisma-adapter": "^2.11.1",
     "@hello-pangea/dnd": "^18.0.1",
+    "@playwright/test": "^1.58.2",
     "@react-google-maps/api": "^2.20.8",
     "@tailwindcss/postcss": "^4",
     "@types/dompurify": "^3.0.5",
