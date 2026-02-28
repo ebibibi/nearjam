@@ -48,7 +48,14 @@
       "OAuthAccountNotLinked": "This email is already linked to another sign-in method. Please use your original sign-in method.",
       "EmailSignin": "Failed to send sign-in email. Please check your address and try again.",
       "AccessDenied": "Access was denied. Please contact support if this is unexpected.",
-      "Verification": "The sign-in link has expired. Please request a new one."
+      "Verification": "The sign-in link has expired. Please request a new one.",
+      "Configuration": "There was a problem with the sign-in configuration. Please contact support.",
+      "OAuthSignin": "Could not start the sign-in process. Please try again.",
+      "OAuthCallback": "There was a problem during sign-in. Please try again.",
+      "OAuthCreateAccount": "Could not create your account. Please try again.",
+      "Callback": "There was a problem during sign-in. Please try again.",
+      "OAuthCallbackError": "Sign-in was cancelled or an error occurred. Please try again.",
+      "SessionRequired": "Please sign in to access this page."
     }
   },
   "home": {
