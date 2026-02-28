@@ -10,15 +10,22 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
+  # 本番 URL（プロモート後にユーザーが使うURL）
   APP_URL: https://ca-nearjam.redflower-e9742c17.eastasia.azurecontainerapps.io
+  # ステージング URL（ラベル "staging" が付いたリビジョンの専用URL）
+  STAGING_URL: https://staging---ca-nearjam.redflower-e9742c17.eastasia.azurecontainerapps.io
 
 jobs:
-  build-and-deploy:
-    if: github.event_name == 'push' || github.event_name == 'pull_request'
+  # ──────────────────────────────────────────────
+  # 1. ビルド — Docker イメージをビルドして GHCR に push
+  # ──────────────────────────────────────────────
+  build:
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
+    outputs:
+      image-tag: ${{ steps.image-tag.outputs.tag }}
 
     steps:
       - uses: actions/checkout@v4
@@ -36,6 +43,7 @@ jobs:
         run: npx prisma generate
 
       - name: Run database migrations
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: npx prisma migrate deploy
@@ -49,6 +57,10 @@ jobs:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Compute image tag
+        id: image-tag
+        run: echo "tag=sha-$(echo '${{ github.sha }}' | cut -c1-7)" >> $GITHUB_OUTPUT
 
       - name: Extract metadata for Docker
         id: meta
@@ -69,29 +81,87 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+  # ──────────────────────────────────────────────
+  # 2. ステージングデプロイ — トラフィック 0% の新リビジョンを起動し
+  #    "staging" ラベルを付けて専用 URL を有効化する
+  # ──────────────────────────────────────────────
+  deploy-staging:
+    name: Deploy to Staging
+    needs: [build]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    outputs:
+      revision-name: ${{ steps.deploy.outputs.revision-name }}
+
+    steps:
       - name: Azure login
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: azure/login@v2
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Deploy to Container App
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      - name: Deploy new revision (0% traffic)
+        id: deploy
         run: |
-          IMAGE_TAG="sha-$(echo '${{ github.sha }}' | cut -c1-7)"
+          REVISION_SUFFIX="${{ needs.build.outputs.image-tag }}"
+          IMAGE="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${REVISION_SUFFIX}"
+          REVISION_NAME="ca-nearjam--${REVISION_SUFFIX}"
+
           az containerapp update \
             --name ca-nearjam \
             --resource-group rg-nearjam \
-            --image "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${IMAGE_TAG}"
+            --image "$IMAGE" \
+            --revision-suffix "$REVISION_SUFFIX"
 
+          echo "revision-name=${REVISION_NAME}" >> $GITHUB_OUTPUT
+
+      - name: Wait for revision to be running
+        run: |
+          REVISION_NAME="${{ steps.deploy.outputs.revision-name }}"
+          echo "Waiting for revision ${REVISION_NAME} to be Running..."
+          for i in $(seq 1 24); do
+            STATE=$(az containerapp revision show \
+              --name ca-nearjam \
+              --resource-group rg-nearjam \
+              --revision "$REVISION_NAME" \
+              --query "properties.runningState" -o tsv 2>/dev/null || echo "Unknown")
+            echo "  attempt $i: state = $STATE"
+            if [ "$STATE" = "Running" ]; then
+              echo "Revision is running!"
+              exit 0
+            fi
+            if [ "$STATE" = "Failed" ]; then
+              echo "Revision failed to start!"
+              exit 1
+            fi
+            sleep 5
+          done
+          echo "Revision did not start in time"
+          exit 1
+
+      - name: Assign staging label to new revision
+        run: |
+          # 既存の staging ラベルを削除してから付け替える
+          az containerapp revision label remove \
+            --name ca-nearjam \
+            --resource-group rg-nearjam \
+            --label staging 2>/dev/null || true
+
+          az containerapp revision label add \
+            --name ca-nearjam \
+            --resource-group rg-nearjam \
+            --revision "${{ steps.deploy.outputs.revision-name }}" \
+            --label staging
+
+          echo "Staging URL: ${{ env.STAGING_URL }}"
+
+  # ──────────────────────────────────────────────
+  # 3. E2E テスト — ステージング URL に向けてスモークテストを実行
+  #    失敗した場合 promote は実行されず本番は影響を受けない
+  # ──────────────────────────────────────────────
   e2e:
-    name: E2E Tests
-    # main への push 時はデプロイ完了後に本番URLへ向けてテスト
-    # PR 時はデプロイなし（本番URLをそのまま使う）
-    needs: [build-and-deploy]
+    name: E2E Tests (Staging)
+    needs: [deploy-staging]
     runs-on: ubuntu-latest
-    # デプロイが発生するのは main push のみ。PR はデプロイしないのでスキップ
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
     steps:
       - uses: actions/checkout@v4
@@ -108,28 +178,27 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install chromium --with-deps
 
-      - name: Wait for deployment to be ready
-        # Container App の新リビジョンが起動完了するまで最大60秒ポーリング
+      - name: Wait for staging to respond
         run: |
-          echo "Waiting for deployment at $APP_URL ..."
+          echo "Waiting for staging at $STAGING_URL ..."
           for i in $(seq 1 12); do
-            STATUS=$(curl -s -o /dev/null -w "%{http_code}" -L "$APP_URL" --max-time 15 || true)
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" -L "$STAGING_URL" --max-time 15 || true)
             echo "  attempt $i: HTTP $STATUS"
             if [ "$STATUS" = "200" ]; then
-              echo "Deployment is ready!"
+              echo "Staging is ready!"
               exit 0
             fi
             sleep 5
           done
-          echo "Deployment did not become ready in time"
+          echo "Staging did not become ready in time"
           exit 1
 
-      - name: Run E2E smoke tests
+      - name: Run E2E smoke tests against staging
         env:
-          BASE_URL: ${{ env.APP_URL }}
+          BASE_URL: ${{ env.STAGING_URL }}
         run: npx playwright test --reporter=github
 
-      - name: Upload Playwright report
+      - name: Upload Playwright report on failure
         if: failure()
         uses: actions/upload-artifact@v4
         with:
@@ -138,3 +207,52 @@ jobs:
             playwright-report/
             test-results/
           retention-days: 7
+
+  # ──────────────────────────────────────────────
+  # 4. 本番プロモート — E2E が通った場合のみ実行
+  #    新リビジョンへ 100% トラフィックを切り替え、古いリビジョンを非アクティブ化
+  # ──────────────────────────────────────────────
+  promote:
+    name: Promote to Production
+    needs: [e2e, deploy-staging]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Azure login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Switch 100% traffic to new revision
+        run: |
+          REVISION_NAME="${{ needs.deploy-staging.outputs.revision-name }}"
+          az containerapp ingress traffic set \
+            --name ca-nearjam \
+            --resource-group rg-nearjam \
+            --revision-weight "${REVISION_NAME}=100"
+          echo "Production traffic switched to ${REVISION_NAME}"
+
+      - name: Deactivate old revisions
+        run: |
+          REVISION_NAME="${{ needs.deploy-staging.outputs.revision-name }}"
+          # 新リビジョン以外をすべて非アクティブ化（コスト削減・minReplicas 対策）
+          az containerapp revision list \
+            --name ca-nearjam \
+            --resource-group rg-nearjam \
+            --query "[?name!='${REVISION_NAME}' && properties.active==true].name" \
+            -o tsv | while IFS= read -r old; do
+              [ -n "$old" ] || continue
+              echo "Deactivating ${old}"
+              az containerapp revision deactivate \
+                --name ca-nearjam \
+                --resource-group rg-nearjam \
+                --revision "$old" 2>/dev/null || true
+          done
+
+      - name: Remove staging label
+        run: |
+          az containerapp revision label remove \
+            --name ca-nearjam \
+            --resource-group rg-nearjam \
+            --label staging 2>/dev/null || true
+          echo "Deployment complete: ${{ env.APP_URL }}"
