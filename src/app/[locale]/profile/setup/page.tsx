@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 import { setRequestLocale } from 'next-intl/server';
 import { getTranslations } from 'next-intl/server';
 import { redirect } from 'next/navigation';
