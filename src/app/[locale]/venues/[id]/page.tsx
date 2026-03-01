@@ -112,6 +112,29 @@ export default async function VenueDetailPage({
 
   const isOwner = !!currentUserId && venue?.ownerId === currentUserId;
 
+  // 同ジャンルの関連会場（このvenue の genres から）
+  const venueGenres = [...new Set(venue.tendencies.flatMap((t) => t.genres))];
+  const relatedVenues = venueGenres.length > 0
+    ? await prisma.venue.findMany({
+        where: {
+          id: { not: id },
+          tendencies: { some: { isActive: true, genres: { hasSome: venueGenres } } },
+        },
+        take: 4,
+        orderBy: [{ verifiedAt: 'desc' }, { name: 'asc' }],
+        select: {
+          id: true,
+          name: true,
+          nearestStation: true,
+          tendencies: {
+            where: { isActive: true },
+            select: { genres: true },
+            take: 1,
+          },
+        },
+      })
+    : [];
+
   // 座標があれば精度の高いルート案内、なければ住所検索
   const mapsDestination =
     venue.lat != null && venue.lng != null
@@ -343,6 +366,39 @@ export default async function VenueDetailPage({
           </div>
         )}
       </section>
+
+      {/* 関連会場 */}
+      {relatedVenues.length > 0 && (
+        <section>
+          <h2 className="text-lg font-bold text-gray-900 mb-3">
+            🎵 {locale === 'ja' ? '同ジャンルの他の会場' : 'Similar Venues'}
+          </h2>
+          <div className="grid gap-3 sm:grid-cols-2">
+            {relatedVenues.map((rv) => {
+              const genres = [...new Set(rv.tendencies.flatMap((t) => t.genres))].slice(0, 3);
+              return (
+                <Link
+                  key={rv.id}
+                  href={`/${locale}/venues/${rv.id}`}
+                  className="rounded-lg border border-gray-200 bg-white px-4 py-3 hover:border-violet-300 hover:bg-violet-50 transition-colors"
+                >
+                  <p className="text-sm font-medium text-gray-900">{rv.name}</p>
+                  {rv.nearestStation && (
+                    <p className="text-xs text-gray-500 mt-0.5">📍 {rv.nearestStation}</p>
+                  )}
+                  {genres.length > 0 && (
+                    <div className="flex flex-wrap gap-1 mt-1.5">
+                      {genres.map((g) => (
+                        <span key={g} className="text-xs rounded bg-violet-100 text-violet-700 px-1.5 py-0.5">{g}</span>
+                      ))}
+                    </div>
+                  )}
+                </Link>
+              );
+            })}
+          </div>
+        </section>
+      )}
     </div>
   );
 }
