@@ -29,14 +29,23 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
+  const isJa = locale === 'ja';
+  const defaultTitle = isJa
+    ? 'NearJam — ジャムセッション会場・スケジュール検索'
+    : 'NearJam — Find Jam Session Venues & Schedules';
+  const description = isJa
+    ? '全国のジャズ・ブルース・ロックのジャムセッション会場を検索。定期開催セッションのスケジュール確認、参加申込み、ミュージシャンとのマッチングができます。'
+    : 'Find jazz, blues, and rock jam session venues across Japan. Check schedules, register for sessions, and connect with musicians.';
+
   return {
     title: {
-      default: 'NearJam — ジャムセッション会場・スケジュール検索',
+      default: defaultTitle,
       template: '%s | NearJam',
     },
-    description:
-      '全国のジャズ・ブルース・ロックのジャムセッション会場を検索。定期開催セッションのスケジュール確認、参加申込み、ミュージシャンとのマッチングができます。',
-    keywords: ['ジャムセッション', 'ジャズ', 'ブルース', 'セッション', '演奏', 'ライブハウス', 'ジャズバー'],
+    description,
+    keywords: isJa
+      ? ['ジャムセッション', 'ジャズ', 'ブルース', 'セッション', '演奏', 'ライブハウス', 'ジャズバー']
+      : ['jam session', 'jazz', 'blues', 'live music', 'musicians', 'session bar', 'Japan'],
     manifest: '/manifest.json',
     alternates: {
       canonical: `${BASE_URL}/${locale}`,
@@ -53,13 +62,13 @@ export async function generateMetadata({
     openGraph: {
       type: 'website',
       siteName: 'NearJam',
-      title: 'NearJam — ジャムセッション会場・スケジュール検索',
-      description: '全国のジャズ・ブルース・ロックのジャムセッション会場を検索。定期開催セッションのスケジュール確認、参加申込みができます。',
-      locale: locale === 'ja' ? 'ja_JP' : 'en_US',
+      title: defaultTitle,
+      description,
+      locale: isJa ? 'ja_JP' : 'en_US',
     },
     twitter: {
       card: 'summary',
-      title: 'NearJam — ジャムセッション会場・スケジュール検索',
+      title: defaultTitle,
     },
     formatDetection: { telephone: false },
   };
