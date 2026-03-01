@@ -1,8 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { useTranslations } from 'next-intl'
 import { useRouter } from 'next/navigation'
+import useSWR from 'swr'
 
 interface Venue {
   id: string
@@ -12,6 +13,16 @@ interface Venue {
 interface Props {
   locale: string
   venues: Venue[]
+}
+
+interface SongResult {
+  id: string
+  title: string
+  artist: string | null
+}
+
+function fetcher(url: string) {
+  return fetch(url).then((r) => r.json())
 }
 
 export function HostAvailabilityForm({ venues }: Props) {
@@ -29,9 +40,38 @@ export function HostAvailabilityForm({ venues }: Props) {
   const [notes, setNotes] = useState('')
   const [venueId, setVenueId] = useState('')
 
+  // Song selection
+  const [songQuery, setSongQuery] = useState('')
+  const [debouncedQuery, setDebouncedQuery] = useState('')
+  const [selectedSongs, setSelectedSongs] = useState<SongResult[]>([])
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  function handleSongQueryChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const value = e.target.value
+    setSongQuery(value)
+    if (timerRef.current) clearTimeout(timerRef.current)
+    timerRef.current = setTimeout(() => setDebouncedQuery(value), 400)
+  }
+
+  const songUrl = debouncedQuery
+    ? `/api/v1/songs?limit=10&q=${encodeURIComponent(debouncedQuery)}`
+    : null
+  const { data: songResults } = useSWR<SongResult[]>(songUrl, fetcher)
+
+  function addSong(song: SongResult) {
+    if (!selectedSongs.find((s) => s.id === song.id)) {
+      setSelectedSongs((prev) => [...prev, song])
+    }
+    setSongQuery('')
+    setDebouncedQuery('')
+  }
+
+  function removeSong(id: string) {
+    setSelectedSongs((prev) => prev.filter((s) => s.id !== id))
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    setSaving(true)
     setError(null)
 
     const instrumentList = instruments
@@ -40,10 +80,16 @@ export function HostAvailabilityForm({ venues }: Props) {
       .filter(Boolean)
 
     if (instrumentList.length === 0) {
-      setError('Please enter at least one instrument')
-      setSaving(false)
+      setError(t('instruments') + ' is required')
       return
     }
+
+    if (selectedSongs.length === 0) {
+      setError(t('songs') + ' is required')
+      return
+    }
+
+    setSaving(true)
 
     const res = await fetch('/api/v1/host-availability', {
       method: 'POST',
@@ -53,7 +99,7 @@ export function HostAvailabilityForm({ venues }: Props) {
         availableDate: date,
         startTime,
         durationMinutes: duration,
-        songIds: ['placeholder'], // Temporary: song selection UI not yet implemented
+        songIds: selectedSongs.map((s) => s.id),
         instruments: instrumentList,
         notes: notes || undefined,
       }),
@@ -75,6 +121,7 @@ export function HostAvailabilityForm({ venues }: Props) {
     setInstruments('')
     setNotes('')
     setVenueId('')
+    setSelectedSongs([])
     router.refresh()
   }
 
@@ -155,12 +202,60 @@ export function HostAvailabilityForm({ venues }: Props) {
             </label>
             <input
               type="text"
-              required
               value={instruments}
               onChange={(e) => setInstruments(e.target.value)}
               placeholder={t('instrumentsHint')}
               className="w-full rounded border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
             />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              {t('songs')} <span className="text-red-500">*</span>
+            </label>
+            {selectedSongs.length > 0 && (
+              <div className="mb-2 flex flex-wrap gap-1">
+                {selectedSongs.map((s) => (
+                  <span
+                    key={s.id}
+                    className="inline-flex items-center gap-1 rounded-full bg-violet-100 px-2 py-0.5 text-xs text-violet-700"
+                  >
+                    {s.title}
+                    <button
+                      type="button"
+                      onClick={() => removeSong(s.id)}
+                      className="hover:text-red-500"
+                    >
+                      ×
+                    </button>
+                  </span>
+                ))}
+              </div>
+            )}
+            <div className="relative">
+              <input
+                type="text"
+                value={songQuery}
+                onChange={handleSongQueryChange}
+                placeholder="曲名で検索..."
+                className="w-full rounded border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
+              />
+              {songResults && songResults.length > 0 && songQuery && (
+                <div className="absolute z-10 mt-1 w-full rounded-lg border bg-white shadow-lg">
+                  {songResults.map((song) => (
+                    <button
+                      key={song.id}
+                      type="button"
+                      onClick={() => addSong(song)}
+                      className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-gray-50"
+                    >
+                      <span className="font-medium">{song.title}</span>
+                      {song.artist && <span className="text-gray-400">— {song.artist}</span>}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
 
           <div>
