@@ -197,6 +197,19 @@ export default async function SessionDetailPage({
         </div>
       )}
 
+      {/* 定期セッション情報から自動生成されたセッションの案内 */}
+      {session.description?.startsWith('[tendency:') && session.venue && (
+        <div className="rounded-lg border border-violet-100 bg-violet-50 px-4 py-3 text-sm">
+          <p className="text-violet-700 font-medium mb-1">🔄 定期セッション</p>
+          <p className="text-violet-600">
+            このセッションは定期情報から自動生成されています。
+            <Link href={`/${locale}/venues/${session.venue.id}`} className="underline ml-1">
+              会場ページで詳細・他の開催日を確認 →
+            </Link>
+          </p>
+        </div>
+      )}
+
       {/* Registration */}
       {session.registrationRequired && (
         <div className="flex items-center gap-4">
