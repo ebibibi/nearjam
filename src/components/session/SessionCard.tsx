@@ -13,6 +13,7 @@ interface SessionCardProps {
     isSyncroom: boolean;
     moodFlags: string[];
     maxParticipants: number | null;
+    ticketPriceYen: number | null;
     _count?: { registrations: number };
     venue?: { id: string; name: string; nearestStation: string | null } | null;
     studio?: { id: string; name: string } | null;
@@ -60,11 +61,20 @@ export function SessionCard({ session, locale }: SessionCardProps) {
             <p className="text-sm text-gray-400">{t('session.noVenue')}</p>
           )}
 
-          <div className="flex items-center gap-2 flex-wrap">
+          <div className="flex items-center gap-2 flex-wrap mt-1">
+            {session.ticketPriceYen != null && session.ticketPriceYen > 0 ? (
+              <span className="text-xs rounded-full bg-blue-100 text-blue-700 px-2 py-0.5">
+                ¥{session.ticketPriceYen.toLocaleString()}
+              </span>
+            ) : (
+              <span className="text-xs rounded-full bg-green-100 text-green-700 px-2 py-0.5">
+                {locale === 'ja' ? '無料/現地集金' : 'Free/Pay at door'}
+              </span>
+            )}
             <span className="text-xs text-gray-500">{t(`session.formats.${session.format}`)}</span>
             {session._count && session.maxParticipants && (
               <span className="text-xs text-gray-500">
-                {t('session.participants', { n: session._count.registrations })}/{session.maxParticipants}
+                👥 {session._count.registrations}/{session.maxParticipants}
               </span>
             )}
           </div>

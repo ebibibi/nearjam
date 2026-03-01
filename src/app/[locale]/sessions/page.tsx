@@ -87,7 +87,16 @@ export default async function SessionsPage({
     },
     orderBy: { startsAt: 'asc' },
     take: 200,
-    include: {
+    select: {
+      id: true,
+      title: true,
+      startsAt: true,
+      durationMinutes: true,
+      format: true,
+      isSyncroom: true,
+      moodFlags: true,
+      maxParticipants: true,
+      ticketPriceYen: true,
       venue: { select: { id: true, name: true, nearestStation: true } },
       studio: { select: { id: true, name: true } },
       _count: { select: { registrations: true } },
