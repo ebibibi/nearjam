@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
 
 // ────────────────────────────────────────────────
 // スモークテスト — 認証不要なページが正しく表示されるかを確認する
@@ -8,7 +8,7 @@ import { test, expect } from '@playwright/test';
 // ヘッダーロゴを一意に特定するヘルパー
 // フッターに「© NearJam」が追加されたため getByText('NearJam') は複数マッチする。
 // ロール + 名前で header のロゴリンクだけを特定する。
-const headerLogo = (page: Parameters<Parameters<typeof test>[1]>[0]) =>
+const headerLogo = (page: Page) =>
   page.getByRole('link', { name: /🎸 NearJam/i });
 
 test.describe('トップページ', () => {
