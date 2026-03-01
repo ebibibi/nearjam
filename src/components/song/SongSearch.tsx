@@ -35,7 +35,7 @@ export function SongSearch({
     timerRef.current = setTimeout(() => setDebouncedQuery(value), 400);
   }
 
-  const url = `/api/v1/songs?limit=20${debouncedQuery ? `&q=${encodeURIComponent(debouncedQuery)}` : ''}`;
+  const url = `/api/v1/songs?limit=50${debouncedQuery ? `&q=${encodeURIComponent(debouncedQuery)}` : ''}`;
   const { data, isLoading } = useSWR<{ id: string; title: string; artist: string | null; genre: string | null; typicalKey: string | null; typicalBpmMin: number | null; typicalBpmMax: number | null; difficulty: string; wishlistCount: number }[]>(
     isSignedIn ? url : null,
     fetcher
