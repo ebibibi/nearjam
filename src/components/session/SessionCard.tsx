@@ -54,7 +54,7 @@ export function SessionCard({ session, locale }: SessionCardProps) {
               hour: '2-digit',
               minute: '2-digit',
             })}
-            {session.durationMinutes && ` (${session.durationMinutes}${t('common.minutes')})`}
+            {session.durationMinutes && ` (${t('session.durationMinutes', { n: session.durationMinutes })})`}
           </p>
 
           {session.venue && (
