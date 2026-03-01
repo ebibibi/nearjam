@@ -13,10 +13,10 @@ export default async function VenuesPage({
   searchParams,
 }: {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ q?: string; all?: string }>;
+  searchParams: Promise<{ q?: string; all?: string; genre?: string }>;
 }) {
   const { locale } = await params;
-  const { q, all } = await searchParams;
+  const { q, all, genre: genreFilter } = await searchParams;
   const showAll = all === '1';
   setRequestLocale(locale);
   const t = await getTranslations();
@@ -36,8 +36,24 @@ export default async function VenuesPage({
     .slice(0, 8)
     .map(([station, count]) => ({ station, count }));
 
+  // ジャンル集計（アクティブなtendencyから）
+  const allTendencyGenres = await prisma.sessionTendency.findMany({
+    where: { isActive: true },
+    select: { genres: true },
+  });
+  const genreCounts: Record<string, number> = {};
+  for (const t of allTendencyGenres) {
+    for (const g of t.genres) {
+      genreCounts[g] = (genreCounts[g] ?? 0) + 1;
+    }
+  }
+  const topGenres = Object.entries(genreCounts)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 10)
+    .map(([genre, count]) => ({ genre, count }));
+
   // デフォルトはセッション情報あり会場のみ表示（?all=1 で全会場表示）
-  const baseWhere = showAll || q ? undefined : { tendencies: { some: { isActive: true } } };
+  const baseWhere = showAll || q || genreFilter ? undefined : { tendencies: { some: { isActive: true } } };
   const venues = await prisma.venue.findMany({
     where: q
       ? {
@@ -47,6 +63,8 @@ export default async function VenuesPage({
             { address: { contains: q, mode: 'insensitive' } },
           ],
         }
+      : genreFilter
+      ? { tendencies: { some: { isActive: true, genres: { has: genreFilter } } } }
       : baseWhere,
     orderBy: [{ verifiedAt: 'desc' }, { name: 'asc' }],
     include: {
@@ -77,6 +95,37 @@ export default async function VenuesPage({
       <Suspense fallback={null}>
         <VenueSearch defaultValue={q} />
       </Suspense>
+
+      {/* ジャンルフィルタチップ */}
+      {topGenres.length > 0 && !q && (
+        <div className="flex flex-wrap gap-2">
+          {genreFilter && (
+            <Link
+              href={`/${locale}/venues`}
+              className="rounded-full border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 px-3 py-1 text-xs"
+            >
+              ✕ クリア
+            </Link>
+          )}
+          {topGenres.map(({ genre, count }) => {
+            const isActive = genreFilter === genre;
+            return (
+              <Link
+                key={genre}
+                href={isActive ? `/${locale}/venues` : `/${locale}/venues?genre=${encodeURIComponent(genre)}`}
+                className={`rounded-full px-3 py-1 text-xs transition-colors ${
+                  isActive
+                    ? 'bg-emerald-600 text-white'
+                    : 'border border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
+                }`}
+              >
+                🎵 {genre}
+                <span className="ml-1 opacity-60">({count})</span>
+              </Link>
+            );
+          })}
+        </div>
+      )}
 
       {/* エリアフィルタチップ */}
       {topStations.length > 0 && (
@@ -114,6 +163,8 @@ export default async function VenuesPage({
         <p className="text-sm text-gray-500">
           {q
             ? (locale === 'ja' ? `「${q}」の検索結果: ${venues.length} 件` : `${venues.length} results for "${q}"`)
+            : genreFilter
+            ? (locale === 'ja' ? `「${genreFilter}」の会場: ${venues.length} 件` : `${venues.length} venues for "${genreFilter}"`)
             : showAll
             ? (locale === 'ja' ? `全 ${venues.length} 件の会場` : `All ${venues.length} venues`)
             : (locale === 'ja' ? `セッション情報あり: ${venues.length} 件` : `${venues.length} venues with sessions`)
