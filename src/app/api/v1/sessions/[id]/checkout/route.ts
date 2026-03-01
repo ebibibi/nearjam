@@ -82,10 +82,21 @@ export async function POST(
     },
   })
 
+  const reqBody = await req.json().catch(() => ({}))
+  const locale: string = reqBody.locale === 'en' ? 'en' : 'ja'
+
   const baseUrl = process.env.NEXTAUTH_URL ?? 'https://nearjam.ebisuda.net'
   const policyText = describeCancellationPolicy(
     jamSession.cancellationPolicy as Parameters<typeof describeCancellationPolicy>[0]
   )
+
+  const dateStr = new Date(jamSession.startsAt).toLocaleDateString(locale === 'en' ? 'en-US' : 'ja-JP')
+  const productName = locale === 'en'
+    ? `${jamSession.title} — Ticket`
+    : `${jamSession.title} 参加費`
+  const productDesc = locale === 'en'
+    ? `Event on ${dateStr} | Cancellation policy: ${policyText}`
+    : `${dateStr} 開催 | キャンセルポリシー: ${policyText}`
 
   const checkoutSession = await stripe.checkout.sessions.create(
     {
@@ -96,8 +107,8 @@ export async function POST(
           price_data: {
             currency: 'jpy',
             product_data: {
-              name: `${jamSession.title} 参加費`,
-              description: `${new Date(jamSession.startsAt).toLocaleDateString('ja-JP')} 開催 | キャンセルポリシー: ${policyText}`,
+              name: productName,
+              description: productDesc,
             },
             unit_amount: jamSession.ticketPriceYen,
           },

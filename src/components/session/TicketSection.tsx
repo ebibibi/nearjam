@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import { describeCancellationPolicy, CancellationPolicy } from '@/lib/stripe'
 
 interface Props {
@@ -22,6 +22,7 @@ export function TicketSection({
   hostHasStripe,
 }: Props) {
   const t = useTranslations('session.ticket')
+  const locale = useLocale()
   const [loading, setLoading] = useState(false)
   const [cancelLoading, setCancelLoading] = useState(false)
   const [cancelResult, setCancelResult] = useState<{
@@ -39,6 +40,8 @@ export function TicketSection({
 
     const res = await fetch(`/api/v1/sessions/${sessionId}/checkout`, {
       method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ locale }),
     })
 
     if (res.ok) {
