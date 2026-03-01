@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 
 interface Props {
   seriesId: string
@@ -9,6 +10,7 @@ interface Props {
 
 export function SeriesGenerateButton({ seriesId }: Props) {
   const router = useRouter()
+  const t = useTranslations('session.series')
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState<{ created: number } | null>(null)
 
@@ -42,13 +44,11 @@ export function SeriesGenerateButton({ seriesId }: Props) {
         disabled={loading}
         className="rounded-lg border border-blue-600 px-3 py-1.5 text-sm text-blue-600 hover:bg-blue-50 disabled:opacity-50"
       >
-        {loading ? '生成中...' : '今後3ヶ月分を生成'}
+        {loading ? t('generating') : t('generate')}
       </button>
       {result && (
         <span className="text-xs text-gray-500">
-          {result.created > 0
-            ? `${result.created}件のセッションを生成しました`
-            : '新しいセッションはありません'}
+          {result.created > 0 ? t('generated', { n: result.created }) : t('noNew')}
         </span>
       )}
     </div>

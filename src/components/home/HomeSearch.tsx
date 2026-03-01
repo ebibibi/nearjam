@@ -2,11 +2,13 @@
 
 import { useRouter } from 'next/navigation';
 import { useRef } from 'react';
-import { useLocale } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 
 export function HomeSearch() {
   const router = useRouter();
   const locale = useLocale();
+  const t = useTranslations('home');
+  const tCommon = useTranslations('common');
   const inputRef = useRef<HTMLInputElement>(null);
 
   function handleSubmit(e: React.FormEvent) {
@@ -24,14 +26,14 @@ export function HomeSearch() {
       <input
         ref={inputRef}
         type="search"
-        placeholder="駅名・会場名・エリアで検索…"
+        placeholder={t('searchPlaceholder')}
         className="flex-1 rounded-full px-4 py-2.5 text-sm text-gray-900 bg-white/95 border-0 focus:outline-none focus:ring-2 focus:ring-white shadow-sm"
       />
       <button
         type="submit"
         className="rounded-full bg-white text-violet-700 font-medium px-5 py-2.5 text-sm hover:bg-violet-50 transition-colors shadow-sm"
       >
-        検索
+        {tCommon('search')}
       </button>
     </form>
   );

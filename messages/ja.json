@@ -97,7 +97,8 @@
     "addVenueDesc": "ジャムセッションが開催されている会場をご存知ですか？NearJamに追加して、みんなが見つけられるようにしましょう。",
     "addVenue": "会場を登録する",
     "browseVenues": "会場一覧を見る",
-    "noSessionInfo": "セッション情報なし"
+    "noSessionInfo": "セッション情報なし",
+    "searchPlaceholder": "駅名・会場名・エリアで検索…"
   },
   "profile": {
     "setup": {
@@ -288,6 +289,16 @@
       "ownerOnly": "この会場のオーナーのみ編集できます",
       "verifiedOnly": "マナーページの編集は会場認証後に利用できます",
       "subtitle": "マナーページ・セッションルール編集"
+    },
+    "editor": {
+      "edit": "編集",
+      "preview": "プレビュー",
+      "markdownFormat": "Markdown 形式",
+      "placeholder": "# セッションルール\n\n## 参加について\n- どなたでも参加できます\n\n## マナー\n- ...",
+      "saved": "保存しました",
+      "saveFailed": "保存に失敗しました",
+      "saving": "保存中...",
+      "save": "保存する"
     }
   },
   "studio": {
@@ -420,7 +431,11 @@
       "createCta": "シリーズを作成する",
       "generatedCount": "生成済みセッション: {n}件",
       "startTime": "開始 {time}",
-      "duration": "{n}分"
+      "duration": "{n}分",
+      "generate": "今後3ヶ月分を生成",
+      "generating": "生成中...",
+      "generated": "{n}件のセッションを生成しました",
+      "noNew": "新しいセッションはありません"
     },
     "qr": {
       "title": "チェックイン QR",
@@ -498,7 +513,8 @@
       "4": "木",
       "5": "金",
       "6": "土"
-    }
+    },
+    "sourcePage": "元ページ →"
   },
   "live": {
     "title": "ライブセッション",

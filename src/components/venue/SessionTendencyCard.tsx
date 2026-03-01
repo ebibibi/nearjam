@@ -52,7 +52,7 @@ export function SessionTendencyCard({ tendency }: TendencyCardProps) {
         {dayName ? (
           <span>📅 {dayName}{timeRange && ` ${timeRange}`}</span>
         ) : (
-          <span className="text-gray-400">📅 不定期開催</span>
+          <span className="text-gray-400">📅 {t('venue.irregular')}</span>
         )}
         {tendency.levelRange && <span>🎵 {tendency.levelRange}</span>}
         {tendency.entrySystem && <span>🎫 {tendency.entrySystem}</span>}
@@ -94,7 +94,7 @@ export function SessionTendencyCard({ tendency }: TendencyCardProps) {
             rel="noopener noreferrer"
             className="text-xs text-violet-500 hover:underline shrink-0"
           >
-            元ページ →
+            {t('tendency.sourcePage')}
           </a>
         )}
       </div>

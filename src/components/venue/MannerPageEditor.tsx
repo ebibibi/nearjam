@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import ReactMarkdown from 'react-markdown'
 
 interface Props {
@@ -11,6 +12,7 @@ interface Props {
 
 export function MannerPageEditor({ venueId, initialContent }: Props) {
   const router = useRouter()
+  const t = useTranslations('venue.editor')
   const [content, setContent] = useState(initialContent)
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
@@ -33,7 +35,7 @@ export function MannerPageEditor({ venueId, initialContent }: Props) {
       router.refresh()
     } else {
       const data = await res.json()
-      setError(data.error ?? '保存に失敗しました')
+      setError(data.error ?? t('saveFailed'))
     }
     setSaving(false)
   }
@@ -45,15 +47,15 @@ export function MannerPageEditor({ venueId, initialContent }: Props) {
           onClick={() => setPreview(false)}
           className={`rounded px-3 py-1.5 text-sm ${!preview ? 'bg-blue-600 text-white' : 'border text-gray-600 hover:bg-gray-50'}`}
         >
-          編集
+          {t('edit')}
         </button>
         <button
           onClick={() => setPreview(true)}
           className={`rounded px-3 py-1.5 text-sm ${preview ? 'bg-blue-600 text-white' : 'border text-gray-600 hover:bg-gray-50'}`}
         >
-          プレビュー
+          {t('preview')}
         </button>
-        <span className="ml-auto text-xs text-gray-400">Markdown 形式</span>
+        <span className="ml-auto text-xs text-gray-400">{t('markdownFormat')}</span>
       </div>
 
       {preview ? (
@@ -66,7 +68,7 @@ export function MannerPageEditor({ venueId, initialContent }: Props) {
           onChange={(e) => setContent(e.target.value)}
           rows={20}
           className="w-full rounded-lg border px-3 py-2 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder={`# セッションルール\n\n## 参加について\n- どなたでも参加できます\n\n## マナー\n- ...`}
+          placeholder={t('placeholder')}
         />
       )}
 
@@ -74,7 +76,7 @@ export function MannerPageEditor({ venueId, initialContent }: Props) {
         <div className="rounded-lg bg-red-50 p-3 text-sm text-red-700">{error}</div>
       )}
       {saved && (
-        <div className="rounded-lg bg-green-50 p-3 text-sm text-green-700">保存しました</div>
+        <div className="rounded-lg bg-green-50 p-3 text-sm text-green-700">{t('saved')}</div>
       )}
 
       <div className="flex justify-end">
@@ -83,7 +85,7 @@ export function MannerPageEditor({ venueId, initialContent }: Props) {
           disabled={saving}
           className="rounded-lg bg-blue-600 px-6 py-2 text-white hover:bg-blue-700 disabled:opacity-50"
         >
-          {saving ? '保存中...' : '保存する'}
+          {saving ? t('saving') : t('save')}
         </button>
       </div>
     </div>

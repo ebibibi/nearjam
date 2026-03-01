@@ -97,7 +97,8 @@
     "addVenueDesc": "Know a venue that hosts jam sessions? Add it to NearJam and help musicians find it.",
     "addVenue": "Add a Venue",
     "browseVenues": "Browse Venues",
-    "noSessionInfo": "No session info"
+    "noSessionInfo": "No session info",
+    "searchPlaceholder": "Search by station, venue, or area…"
   },
   "profile": {
     "setup": {
@@ -263,7 +264,7 @@
     "freeEntry": "Free",
     "similarVenues": "Similar Venues",
     "noSessionInfo": "No session info",
-    "irregular": "Irregular",
+    "irregular": "Irregular schedule",
     "everyDay": "Every {day}",
     "moreSessions": "+{n} more sessions",
     "showWithSessions": "Show venues with sessions only",
@@ -288,6 +289,16 @@
       "ownerOnly": "Only the venue owner can edit this.",
       "verifiedOnly": "The rules page is available after venue verification.",
       "subtitle": "Edit manner guidelines and session rules"
+    },
+    "editor": {
+      "edit": "Edit",
+      "preview": "Preview",
+      "markdownFormat": "Markdown format",
+      "placeholder": "# Session Rules\n\n## Participation\n- Anyone can join\n\n## Etiquette\n- ...",
+      "saved": "Saved!",
+      "saveFailed": "Failed to save.",
+      "saving": "Saving...",
+      "save": "Save"
     }
   },
   "studio": {
@@ -420,7 +431,11 @@
       "createCta": "Create a series",
       "generatedCount": "{n} sessions generated",
       "startTime": "starts {time}",
-      "duration": "{n} min"
+      "duration": "{n} min",
+      "generate": "Generate next 3 months",
+      "generating": "Generating...",
+      "generated": "{n} sessions generated",
+      "noNew": "No new sessions"
     },
     "qr": {
       "title": "Check-in QR Code",
@@ -498,7 +513,8 @@
       "4": "Thu",
       "5": "Fri",
       "6": "Sat"
-    }
+    },
+    "sourcePage": "Source →"
   },
   "live": {
     "title": "Live Session",
