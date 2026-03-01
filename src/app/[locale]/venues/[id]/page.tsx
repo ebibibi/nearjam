@@ -1,4 +1,5 @@
 export const dynamic = 'force-dynamic';
+import type { Metadata } from 'next';
 import { setRequestLocale } from 'next-intl/server';
 import { getTranslations } from 'next-intl/server';
 import Link from 'next/link';
@@ -10,6 +11,38 @@ import { SessionTendencyCard } from '@/components/venue/SessionTendencyCard';
 import { TendencyOwnerActions } from '@/components/venue/TendencyOwnerActions';
 import { Button } from '@/components/ui/Button';
 import { VenueClaimButton } from '@/components/venue/VenueClaimButton';
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string; id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+  const venue = await prisma.venue.findUnique({
+    where: { id },
+    select: { name: true, address: true, nearestStation: true, tendencies: { where: { isActive: true }, select: { name: true, genres: true }, take: 3 } },
+  });
+  if (!venue) return {};
+
+  const sessionNames = venue.tendencies.map(t => t.name).join('、');
+  const genres = [...new Set(venue.tendencies.flatMap(t => t.genres))].slice(0, 5).join('・');
+  const desc = [
+    `${venue.name}のジャムセッション情報。`,
+    venue.nearestStation ? `${venue.nearestStation}駅近く。` : '',
+    sessionNames ? `定期セッション: ${sessionNames}。` : '',
+    genres ? `ジャンル: ${genres}。` : '',
+    'NearJam でセッションスケジュールを確認・参加申込できます。',
+  ].join('');
+
+  return {
+    title: `${venue.name} — ジャムセッション`,
+    description: desc.slice(0, 160),
+    openGraph: {
+      title: `${venue.name} のジャムセッション | NearJam`,
+      description: desc.slice(0, 160),
+    },
+  };
+}
 
 export default async function VenueDetailPage({
   params,

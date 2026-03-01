@@ -21,14 +21,28 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'NearJam — Find your next jam session',
+  title: {
+    default: 'NearJam — ジャムセッション会場・スケジュール検索',
+    template: '%s | NearJam',
+  },
   description:
-    'Discover jam session venues, match with musicians, and play the songs you love — near you or online via SYNCROOM.',
+    '全国のジャズ・ブルース・ロックのジャムセッション会場を検索。定期開催セッションのスケジュール確認、参加申込み、ミュージシャンとのマッチングができます。',
+  keywords: ['ジャムセッション', 'ジャズ', 'ブルース', 'セッション', '演奏', 'ライブハウス', 'ジャズバー'],
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
     title: 'NearJam',
+  },
+  openGraph: {
+    type: 'website',
+    siteName: 'NearJam',
+    title: 'NearJam — ジャムセッション会場・スケジュール検索',
+    description: '全国のジャズ・ブルース・ロックのジャムセッション会場を検索。定期開催セッションのスケジュール確認、参加申込みができます。',
+  },
+  twitter: {
+    card: 'summary',
+    title: 'NearJam — ジャムセッション会場・スケジュール検索',
   },
   formatDetection: { telephone: false },
 };
