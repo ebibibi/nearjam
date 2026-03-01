@@ -5,7 +5,9 @@ import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
 import { Button } from '@/components/ui/Button';
 import { Card, CardContent, CardTitle } from '@/components/ui/Card';
+import { Suspense } from 'react';
 import { Badge } from '@/components/ui/Badge';
+import { HomeSearch } from '@/components/home/HomeSearch';
 
 const DAY_NAMES_JA = ['日', '月', '火', '水', '木', '金', '土'] as const;
 const DAY_NAMES_EN = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] as const;
@@ -99,6 +101,9 @@ export default async function HomePage({
           <p className="text-lg text-violet-200 leading-relaxed">
             {t('home.hero.subtitle')}
           </p>
+          <Suspense fallback={null}>
+            <HomeSearch />
+          </Suspense>
           <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2">
             <Link href={`/${locale}/sessions`}>
               <Button size="lg" variant="secondary" className="w-full sm:w-auto">
