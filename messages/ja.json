@@ -475,6 +475,35 @@
     },
     "checkin": {
       "notFound": "セッションが見つかりません"
+    },
+    "ticket": {
+      "price": "参加費",
+      "prepayBenefitTitle": "💳 事前決済のメリット",
+      "prepayBenefit": "現地集金でも参加できますが、事前に Stripe 決済しておくと当日キャンセル時もキャンセル料を確実に回収できます。",
+      "cancelPolicy": "キャンセルポリシー",
+      "colTimeUntil": "セッション開始まで",
+      "colYourRefund": "あなたへの返金",
+      "colYourCharge": "あなたの負担",
+      "row72h": "✅ 72時間以上前",
+      "row24to72h": "⚠️ 24〜72時間前",
+      "row24h": "❌ 24時間未満",
+      "feeOnly": "（手数料のみ）",
+      "fullAmount": "（全額）",
+      "policyNote": "※ タイミングはセッション開始時刻からの絶対時間で判定します（日付の変わり目・タイムゾーン不問）。Stripe 決済手数料（3.6%）+ NearJam 手数料（1%）はキャンセル時も返金されません。",
+      "paid": "✅ 決済済み",
+      "cancelAction": "キャンセルする（ポリシー適用）",
+      "cancelling": "キャンセル中...",
+      "noStripe": "ホストが Stripe 未設定のため事前決済できません",
+      "paying": "決済ページへ移動中...",
+      "payButton": "¥{price} を Stripe で支払う",
+      "walkIn": "現地集金での参加も可能です",
+      "cancelDone": "キャンセル完了",
+      "refundAmount": "返金額: {amount}円",
+      "cancelFee": "（キャンセル料: {amount}円）",
+      "refundNote": "返金は数日以内にカードに反映されます",
+      "checkoutFailed": "決済の開始に失敗しました",
+      "cancelFailed": "キャンセルに失敗しました",
+      "cancelConfirm": "キャンセルします。キャンセルポリシーに基づいて返金されます。よろしいですか？"
     }
   },
   "song": {

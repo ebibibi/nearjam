@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { describeCancellationPolicy, CancellationPolicy } from '@/lib/stripe'
 
 interface Props {
@@ -20,6 +21,7 @@ export function TicketSection({
   paymentStatus,
   hostHasStripe,
 }: Props) {
+  const t = useTranslations('session.ticket')
   const [loading, setLoading] = useState(false)
   const [cancelLoading, setCancelLoading] = useState(false)
   const [cancelResult, setCancelResult] = useState<{
@@ -28,7 +30,8 @@ export function TicketSection({
   } | null>(null)
   const [error, setError] = useState<string | null>(null)
 
-  const policyText = describeCancellationPolicy(cancellationPolicy)
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const _policyText = describeCancellationPolicy(cancellationPolicy)
 
   const handlePurchase = async () => {
     setLoading(true)
@@ -43,14 +46,14 @@ export function TicketSection({
       window.location.href = data.url
     } else {
       const data = await res.json()
-      setError(data.error ?? '決済の開始に失敗しました')
+      setError(data.error ?? t('checkoutFailed'))
       setLoading(false)
     }
   }
 
   const handleCancel = async () => {
     if (!registrationId) return
-    if (!confirm('キャンセルします。キャンセルポリシーに基づいて返金されます。よろしいですか？')) return
+    if (!confirm(t('cancelConfirm'))) return
 
     setCancelLoading(true)
     setError(null)
@@ -67,7 +70,7 @@ export function TicketSection({
         cancelFeeYen: data.cancelFeeYen,
       })
     } else {
-      setError(data.error ?? 'キャンセルに失敗しました')
+      setError(data.error ?? t('cancelFailed'))
     }
     setCancelLoading(false)
   }
@@ -75,25 +78,27 @@ export function TicketSection({
   if (cancelResult) {
     return (
       <div className="rounded-xl border bg-green-50 p-4">
-        <p className="font-semibold text-green-700">キャンセル完了</p>
+        <p className="font-semibold text-green-700">{t('cancelDone')}</p>
         <p className="text-sm text-green-600">
-          返金額: {cancelResult.refundedAmountYen.toLocaleString()}円
+          {t('refundAmount', { amount: cancelResult.refundedAmountYen.toLocaleString() })}
           {cancelResult.cancelFeeYen > 0 && (
             <span className="ml-2 text-orange-600">
-              （キャンセル料: {cancelResult.cancelFeeYen.toLocaleString()}円）
+              {t('cancelFee', { amount: cancelResult.cancelFeeYen.toLocaleString() })}
             </span>
           )}
         </p>
-        <p className="mt-1 text-xs text-gray-500">返金は数日以内にカードに反映されます</p>
+        <p className="mt-1 text-xs text-gray-500">{t('refundNote')}</p>
       </div>
     )
   }
+
+  const hostNet = ticketPriceYen - Math.floor(ticketPriceYen * 0.036) - Math.floor(ticketPriceYen * 0.01)
 
   return (
     <div className="rounded-xl border p-4 space-y-3">
       {/* 参加費 */}
       <div className="flex items-center justify-between">
-        <span className="font-semibold text-gray-700">参加費</span>
+        <span className="font-semibold text-gray-700">{t('price')}</span>
         <span className="text-2xl font-bold text-blue-700">
           ¥{ticketPriceYen.toLocaleString()}
         </span>
@@ -101,57 +106,45 @@ export function TicketSection({
 
       {/* Stripe 決済の価値説明 */}
       <div className="rounded-lg bg-blue-50 p-3 text-sm text-blue-700">
-        <p className="font-medium">💳 事前決済のメリット</p>
-        <p className="mt-1 text-blue-600">
-          現地集金でも参加できますが、事前に Stripe 決済しておくと
-          <strong>当日キャンセル時もキャンセル料を確実に回収</strong>できます。
-        </p>
+        <p className="font-medium">{t('prepayBenefitTitle')}</p>
+        <p className="mt-1 text-blue-600">{t('prepayBenefit')}</p>
       </div>
 
       {/* キャンセルポリシー */}
       <div className="rounded-lg bg-gray-50 border border-gray-100 p-3 space-y-2 text-sm">
-        <p className="font-medium text-gray-700">キャンセルポリシー</p>
+        <p className="font-medium text-gray-700">{t('cancelPolicy')}</p>
 
-        {/* 返金額の内訳（参加費をベースに計算して表示） */}
-        {(() => {
-          const hostNet = ticketPriceYen - Math.floor(ticketPriceYen * 0.036) - Math.floor(ticketPriceYen * 0.01)
-          return (
-            <table className="w-full text-xs">
-              <thead>
-                <tr className="text-gray-400">
-                  <th className="text-left font-normal pb-1">セッション開始まで</th>
-                  <th className="text-right font-normal pb-1">あなたへの返金</th>
-                  <th className="text-right font-normal pb-1">あなたの負担</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                <tr>
-                  <td className="py-1">✅ 72時間以上前</td>
-                  <td className="py-1 text-right text-green-600">¥{hostNet.toLocaleString()}</td>
-                  <td className="py-1 text-right text-orange-500">
-                    ¥{(ticketPriceYen - hostNet).toLocaleString()}
-                    <span className="text-gray-400 ml-1">（手数料のみ）</span>
-                  </td>
-                </tr>
-                <tr>
-                  <td className="py-1">⚠️ 24〜72時間前</td>
-                  <td className="py-1 text-right text-yellow-600">¥{Math.floor(hostNet * 0.7).toLocaleString()}</td>
-                  <td className="py-1 text-right text-orange-500">¥{(ticketPriceYen - Math.floor(hostNet * 0.7)).toLocaleString()}</td>
-                </tr>
-                <tr>
-                  <td className="py-1">❌ 24時間未満</td>
-                  <td className="py-1 text-right text-red-500">¥0</td>
-                  <td className="py-1 text-right text-red-500">¥{ticketPriceYen.toLocaleString()}（全額）</td>
-                </tr>
-              </tbody>
-            </table>
-          )
-        })()}
+        <table className="w-full text-xs">
+          <thead>
+            <tr className="text-gray-400">
+              <th className="text-left font-normal pb-1">{t('colTimeUntil')}</th>
+              <th className="text-right font-normal pb-1">{t('colYourRefund')}</th>
+              <th className="text-right font-normal pb-1">{t('colYourCharge')}</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-100">
+            <tr>
+              <td className="py-1">{t('row72h')}</td>
+              <td className="py-1 text-right text-green-600">¥{hostNet.toLocaleString()}</td>
+              <td className="py-1 text-right text-orange-500">
+                ¥{(ticketPriceYen - hostNet).toLocaleString()}
+                <span className="text-gray-400 ml-1">{t('feeOnly')}</span>
+              </td>
+            </tr>
+            <tr>
+              <td className="py-1">{t('row24to72h')}</td>
+              <td className="py-1 text-right text-yellow-600">¥{Math.floor(hostNet * 0.7).toLocaleString()}</td>
+              <td className="py-1 text-right text-orange-500">¥{(ticketPriceYen - Math.floor(hostNet * 0.7)).toLocaleString()}</td>
+            </tr>
+            <tr>
+              <td className="py-1">{t('row24h')}</td>
+              <td className="py-1 text-right text-red-500">¥0</td>
+              <td className="py-1 text-right text-red-500">¥{ticketPriceYen.toLocaleString()}{t('fullAmount')}</td>
+            </tr>
+          </tbody>
+        </table>
 
-        <p className="text-xs text-gray-400 border-t border-gray-100 pt-2">
-          ※ タイミングはセッション開始時刻からの絶対時間で判定します（日付の変わり目・タイムゾーン不問）。
-          Stripe 決済手数料（3.6%）+ NearJam 手数料（1%）はキャンセル時も返金されません。
-        </p>
+        <p className="text-xs text-gray-400 border-t border-gray-100 pt-2">{t('policyNote')}</p>
       </div>
 
       {error && (
@@ -162,7 +155,7 @@ export function TicketSection({
       {paymentStatus === 'paid' ? (
         <div className="space-y-2">
           <div className="rounded-lg bg-green-50 p-2 text-center text-sm text-green-700">
-            ✅ 決済済み
+            {t('paid')}
           </div>
           {registrationId && (
             <button
@@ -170,27 +163,23 @@ export function TicketSection({
               disabled={cancelLoading}
               className="w-full rounded-lg border border-red-300 py-2 text-sm text-red-600 hover:bg-red-50 disabled:opacity-50"
             >
-              {cancelLoading ? 'キャンセル中...' : 'キャンセルする（ポリシー適用）'}
+              {cancelLoading ? t('cancelling') : t('cancelAction')}
             </button>
           )}
         </div>
       ) : !hostHasStripe ? (
-        <p className="text-center text-sm text-gray-400">
-          ホストが Stripe 未設定のため事前決済できません
-        </p>
+        <p className="text-center text-sm text-gray-400">{t('noStripe')}</p>
       ) : (
         <button
           onClick={handlePurchase}
           disabled={loading}
           className="w-full rounded-xl bg-blue-600 py-3 text-white font-semibold hover:bg-blue-700 disabled:opacity-50"
         >
-          {loading ? '決済ページへ移動中...' : `¥${ticketPriceYen.toLocaleString()} を Stripe で支払う`}
+          {loading ? t('paying') : t('payButton', { price: ticketPriceYen.toLocaleString() })}
         </button>
       )}
 
-      <p className="text-center text-xs text-gray-400">
-        現地集金での参加も可能です
-      </p>
+      <p className="text-center text-xs text-gray-400">{t('walkIn')}</p>
     </div>
   )
 }

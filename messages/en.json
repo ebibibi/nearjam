@@ -475,6 +475,35 @@
     },
     "checkin": {
       "notFound": "Session not found."
+    },
+    "ticket": {
+      "price": "Ticket price",
+      "prepayBenefitTitle": "💳 Benefits of prepayment",
+      "prepayBenefit": "You can also pay at the door, but prepaying with Stripe ensures cancellation fees are collected even for last-minute cancellations.",
+      "cancelPolicy": "Cancellation Policy",
+      "colTimeUntil": "Time until session",
+      "colYourRefund": "Your refund",
+      "colYourCharge": "Your cost",
+      "row72h": "✅ 72+ hours before",
+      "row24to72h": "⚠️ 24–72 hours before",
+      "row24h": "❌ Under 24 hours",
+      "feeOnly": "(fee only)",
+      "fullAmount": "(full amount)",
+      "policyNote": "※ Timing is calculated as absolute hours from session start (timezone-independent). Stripe fee (3.6%) + NearJam fee (1%) are non-refundable.",
+      "paid": "✅ Payment complete",
+      "cancelAction": "Cancel (policy applies)",
+      "cancelling": "Cancelling...",
+      "noStripe": "Host has not set up Stripe for prepayment.",
+      "paying": "Redirecting to payment...",
+      "payButton": "Pay ¥{price} with Stripe",
+      "walkIn": "Walk-in payment also accepted.",
+      "cancelDone": "Cancellation complete",
+      "refundAmount": "Refund: ¥{amount}",
+      "cancelFee": "(Cancellation fee: ¥{amount})",
+      "refundNote": "Refund will appear on your card within a few days.",
+      "checkoutFailed": "Failed to start payment.",
+      "cancelFailed": "Failed to cancel.",
+      "cancelConfirm": "This will cancel your registration. A refund will be issued per the cancellation policy. Proceed?"
     }
   },
   "song": {
