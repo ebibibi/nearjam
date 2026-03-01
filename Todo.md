@@ -66,10 +66,10 @@
 
 | ID  | ステータス | 機能 | 詳細 |
 |-----|-----------|------|------|
-| I1  | [ ] | 定期セッション管理 | `SessionSeries` モデル + rrule-based 繰り返しルール。API `POST/GET /api/v1/session-series` + インスタンス生成エンドポイント + 作成 UI |
-| I2  | [ ] | マナーページ Markdown エディタ | `Venue.rulesMarkdown` は DB 済み。`PUT /api/v1/venues/[id]/rules` + Markdown エディタ UI（verified venue のみ） |
-| I3  | [ ] | 「練習して挑める曲」レコメンデーション | スキルレベル範囲内 + 未演奏 + エリアで人気の曲を提案。`/api/v1/recommendations?type=practice` |
-| I4  | [ ] | 会場なりすまし報告 | `VenueImpersonationReport` モデル + `POST /api/v1/venues/[id]/report` + 報告 UI |
+| I1  | [x] | 定期セッション管理 | `SessionSeries` モデル + rrule-based 繰り返しルール。API `POST/GET /api/v1/session-series` + インスタンス生成エンドポイント + 作成 UI |
+| I2  | [x] | マナーページ Markdown エディタ | `Venue.rulesMarkdown` は DB 済み。`PUT /api/v1/venues/[id]/rules` + Markdown エディタ UI（verified venue のみ） |
+| I3  | [x] | 「練習して挑める曲」レコメンデーション | スキルレベル範囲内 + 未演奏 + エリアで人気の曲を提案。`/api/v1/recommendations?type=practice` |
+| I4  | [x] | 会場なりすまし報告 | `VenueImpersonationReport` モデル + `POST /api/v1/venues/[id]/report` + 報告 UI |
 
 ---
 
@@ -77,9 +77,9 @@
 
 | ID  | ステータス | 機能 | 詳細 |
 |-----|-----------|------|------|
-| J1  | [ ] | ターン/ソロ管理 UI | LiveSession ダッシュボードに「各参加者の演奏回数」可視化。`PerformanceLog.groupBy(musicianProfileId)` |
-| J2  | [ ] | 組み合わせマッチング提案 | 「この 3 人は共通曲 5 曲あるのに一緒にやってない」。SQL combinatorics で LLM なし実装。`GET /api/v1/match-suggestions` |
-| J3  | [ ] | ホスト主導マッチング | ホストが「利用可能日 + 弾ける曲」を登録 → マッチしたミュージシャンに通知。`HostAvailability` モデル + マッチング API |
+| J1  | [x] | ターン/ソロ管理 UI | LiveSession ダッシュボードに「各参加者の演奏回数」可視化。`PerformanceLog.groupBy(musicianProfileId)` |
+| J2  | [x] | 組み合わせマッチング提案 | 「この 3 人は共通曲 5 曲あるのに一緒にやってない」。SQL combinatorics で LLM なし実装。`GET /api/v1/match-suggestions` |
+| J3  | [x] | ホスト主導マッチング | ホストが「利用可能日 + 弾ける曲」を登録 → マッチしたミュージシャンに通知。`HostAvailability` モデル + マッチング API |
 
 ---
 
@@ -87,9 +87,9 @@
 
 | ID  | ステータス | 機能 | 詳細 |
 |-----|-----------|------|------|
-| K1  | [ ] | ミュージシャン演奏履歴ページ（opt-in 公開） | `/musicians/[id]/history` — 過去セッション・曲・共演者を視覚化。`profileVisibility` を尊重 |
-| K2  | [ ] | 会場別セッション履歴・人気曲ページ | `/venues/[id]/analytics` — 開催回数・参加者数推移・人気曲 Top10 |
-| K3  | [ ] | 月次ダイジェスト（recurring sessions） | `SessionSeries` の実績を毎月集計して管理者にメール送信。cron エンドポイント追加 |
+| K1  | [x] | ミュージシャン演奏履歴ページ（opt-in 公開） | `/musicians/[id]/history` — 過去セッション・曲・共演者を視覚化。`profileVisibility` を尊重 |
+| K2  | [x] | 会場別セッション履歴・人気曲ページ | `/venues/[id]/analytics` — 開催回数・参加者数推移・人気曲 Top10 |
+| K3  | [x] | 月次ダイジェスト（recurring sessions） | `SessionSeries` の実績を毎月集計して管理者にメール送信。cron エンドポイント追加 |
 
 ---
 
@@ -97,9 +97,9 @@
 
 | ID  | ステータス | 機能 | 詳細 |
 |-----|-----------|------|------|
-| L1  | [ ] | 自動収集ボット定期再取得スケジューラー | `AutoCollectionJob.nextFetchAt` を参照して週次再取得。cron `POST /api/v1/cron/auto-collect` + scheduler 登録 |
-| L2  | [ ] | Google Maps フィルタ機能 | ジャンル・曜日・SYNCROOM・初心者向けフィルタ。`/map` ページの検索パネルを拡張 |
-| L3  | [ ] | 「今週近くで開催」マップビュー | 今週の JamSession を地図上にピン表示。`/map?week=true` |
+| L1  | [x] | 自動収集ボット定期再取得スケジューラー | `AutoCollectionJob.nextFetchAt` を参照して週次再取得。cron `POST /api/v1/cron/auto-collect` + scheduler 登録 |
+| L2  | [x] | Google Maps フィルタ機能 | ジャンル・曜日・SYNCROOM・初心者向けフィルタ。`/map` ページの検索パネルを拡張 |
+| L3  | [x] | 「今週近くで開催」マップビュー | 今週の JamSession を地図上にピン表示。`/map?week=true` |
 
 ---
 
@@ -107,9 +107,9 @@
 
 | ID  | ステータス | 機能 | 詳細 |
 |-----|-----------|------|------|
-| M1  | [ ] | QR チェックイン | セッション当日に QR コードを表示 → 参加者がスキャンして参加確認。`qrcode` ライブラリ + `GET /api/v1/sessions/[id]/qr` + スキャン確認 API |
-| M2  | [ ] | セッション録音ログ | 演奏後に録音 URL（YouTube / SoundCloud 等）を添付。`PerformanceLog.recordingUrl` フィールド追加 |
-| M3  | [ ] | PWA 対応 | `manifest.json` + Service Worker + オフラインフォールバックページ。モバイルで「ホーム画面に追加」対応 |
+| M1  | [x] | QR チェックイン | セッション当日に QR コードを表示 → 参加者がスキャンして参加確認。`qrcode` ライブラリ + `GET /api/v1/sessions/[id]/qr` + スキャン確認 API |
+| M2  | [x] | セッション録音ログ | 演奏後に録音 URL（YouTube / SoundCloud 等）を添付。`PerformanceLog.recordingUrl` フィールド追加 |
+| M3  | [x] | PWA 対応 | `manifest.json` + Service Worker + オフラインフォールバックページ。モバイルで「ホーム画面に追加」対応 |
 
 ---
 
