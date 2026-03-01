@@ -55,11 +55,12 @@ export default async function SessionsPage({
   searchParams,
 }: {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ venue?: string; station?: string; dow?: string; q?: string }>;
+  searchParams: Promise<{ venue?: string; station?: string; dow?: string; q?: string; free?: string }>;
 }) {
   const { locale } = await params;
-  const { venue: venueFilter, station: stationFilter, dow: dowParam, q: keywordFilter } = await searchParams;
+  const { venue: venueFilter, station: stationFilter, dow: dowParam, q: keywordFilter, free: freeParam } = await searchParams;
   const dowFilter = dowParam != null ? parseInt(dowParam, 10) : null;
+  const freeOnly = freeParam === '1';
   setRequestLocale(locale);
   const t = await getTranslations();
 
@@ -95,6 +96,7 @@ export default async function SessionsPage({
       } : {}),
       ...(venueFilter && !keywordFilter ? { venue: { name: { contains: venueFilter, mode: 'insensitive' } } } : {}),
       ...(stationFilter ? { venue: { nearestStation: { contains: stationFilter, mode: 'insensitive' } } } : {}),
+      ...(freeOnly ? { ticketPriceYen: { lte: 0 } } : {}),
     },
     orderBy: { startsAt: 'asc' },
     take: 200,
@@ -128,7 +130,7 @@ export default async function SessionsPage({
   }
   const weekGroups = [...weekMap.entries()].map(([label, wSessions]) => ({ label, sessions: wSessions }));
 
-  const hasFilter = !!venueFilter || !!stationFilter || dowFilter != null || !!keywordFilter;
+  const hasFilter = !!venueFilter || !!stationFilter || dowFilter != null || !!keywordFilter || freeOnly;
 
   // 今日のセッション（フィルタなし時のみ）
   const todaySessions = !hasFilter
@@ -236,6 +238,22 @@ export default async function SessionsPage({
           })}
         </div>
       )}
+
+      {/* 無料フィルタ */}
+      <div className="flex items-center gap-2">
+        <Link
+          href={freeOnly
+            ? `/${locale}/sessions${stationFilter ? `?station=${encodeURIComponent(stationFilter)}` : ''}`
+            : `/${locale}/sessions?free=1${stationFilter ? `&station=${encodeURIComponent(stationFilter)}` : ''}`}
+          className={`rounded-full px-3 py-1 text-xs transition-colors ${
+            freeOnly
+              ? 'bg-green-600 text-white'
+              : 'border border-green-200 bg-green-50 text-green-700 hover:bg-green-100'
+          }`}
+        >
+          💚 {locale === 'ja' ? '無料・現地集金のみ' : 'Free only'}
+        </Link>
+      </div>
 
       {/* 会場フィルターバッジ */}
       {venueFilter && (
