@@ -301,16 +301,27 @@ export default async function SessionDetailPage({
           registrations.length > 0 ? (
             <div className="flex flex-wrap gap-3">
               {registrations.map((reg) => (
-                <div key={reg.id} className="flex items-center gap-2 rounded-full bg-gray-100 px-3 py-1.5">
-                  {reg.musicianProfile.user.image && (
+                <div key={reg.id} className="flex items-center gap-2 rounded-lg bg-gray-100 px-3 py-2">
+                  {reg.musicianProfile.user.image ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
                       src={reg.musicianProfile.user.image}
                       alt=""
-                      className="h-5 w-5 rounded-full object-cover"
+                      className="h-7 w-7 rounded-full object-cover"
                     />
+                  ) : (
+                    <div className="h-7 w-7 rounded-full bg-violet-200 flex items-center justify-center text-violet-700 text-xs font-bold">
+                      {(reg.musicianProfile.user.nickname ?? 'A')[0]}
+                    </div>
                   )}
-                  <span className="text-sm">{reg.musicianProfile.user.nickname ?? 'Anonymous'}</span>
+                  <div>
+                    <div className="text-sm font-medium">{reg.musicianProfile.user.nickname ?? 'Anonymous'}</div>
+                    {reg.musicianProfile.instruments.length > 0 && (
+                      <div className="text-xs text-gray-500">
+                        {reg.musicianProfile.instruments.slice(0, 2).map(i => i.instrument).join(' / ')}
+                      </div>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>
