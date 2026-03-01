@@ -299,6 +299,18 @@
       "saveFailed": "Failed to save.",
       "saving": "Saving...",
       "save": "Save"
+    },
+    "report": {
+      "button": "Report impersonation",
+      "title": "Report venue impersonation",
+      "reasonLabel": "Reason *",
+      "reasonPlaceholder": "Describe why you believe this is impersonation",
+      "evidenceLabel": "Evidence URL (optional)",
+      "cancel": "Cancel",
+      "submit": "Report",
+      "submitting": "Submitting...",
+      "submitted": "Your report has been received. We will review it.",
+      "submitFailed": "Failed to submit."
     }
   },
   "studio": {
@@ -435,7 +447,26 @@
       "generate": "Generate next 3 months",
       "generating": "Generating...",
       "generated": "{n} sessions generated",
-      "noNew": "No new sessions"
+      "noNew": "No new sessions",
+      "form": {
+        "nameLabel": "Series name *",
+        "namePlaceholder": "Thursday Jazz Session",
+        "venueLabel": "Venue",
+        "venueSelect": "Select venue",
+        "freqLabel": "Repeat",
+        "weekly": "Weekly",
+        "monthly": "Monthly",
+        "weekdayLabel": "Day of week",
+        "startTimeLabel": "Start time",
+        "durationLabel": "Duration (min)",
+        "descLabel": "Description",
+        "descPlaceholder": "Session vibe, level, etc.",
+        "maxLabel": "Max participants",
+        "maxPlaceholder": "Optional",
+        "submit": "Create series",
+        "submitting": "Creating...",
+        "error": "An error occurred"
+      }
     },
     "qr": {
       "title": "Check-in QR Code",
@@ -514,7 +545,16 @@
       "5": "Fri",
       "6": "Sat"
     },
-    "sourcePage": "Source →"
+    "sourcePage": "Source →",
+    "weekdayFull": {
+      "MO": "Monday",
+      "TU": "Tuesday",
+      "WE": "Wednesday",
+      "TH": "Thursday",
+      "FR": "Friday",
+      "SA": "Saturday",
+      "SU": "Sunday"
+    }
   },
   "live": {
     "title": "Live Session",
@@ -624,7 +664,8 @@
       "✨": "Great atmosphere"
     },
     "alreadySent": "Already sent kudos",
-    "sendFailed": "Failed to send kudos"
+    "sendFailed": "Failed to send kudos",
+    "toUser": "Kudos to {name}"
   },
   "feedback": {
     "title": "Anonymous Feedback",

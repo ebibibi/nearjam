@@ -1,12 +1,15 @@
 'use client'
 
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 
 interface Props {
   venueId: string
 }
 
 export function VenueReportButton({ venueId }: Props) {
+  const t = useTranslations('venue.report')
+  const tCommon = useTranslations('common')
   const [open, setOpen] = useState(false)
   const [reason, setReason] = useState('')
   const [evidenceUrl, setEvidenceUrl] = useState('')
@@ -32,7 +35,7 @@ export function VenueReportButton({ venueId }: Props) {
       setSubmitted(true)
     } else {
       const data = await res.json()
-      setError(data.error ?? '送信に失敗しました')
+      setError(data.error ?? t('submitFailed'))
     }
     setLoading(false)
   }
@@ -40,7 +43,7 @@ export function VenueReportButton({ venueId }: Props) {
   if (submitted) {
     return (
       <div className="rounded-lg bg-green-50 p-3 text-sm text-green-700">
-        報告を受け付けました。運営が確認します。
+        {t('submitted')}
       </div>
     )
   }
@@ -51,13 +54,13 @@ export function VenueReportButton({ venueId }: Props) {
         onClick={() => setOpen(true)}
         className="text-sm text-gray-400 hover:text-red-600"
       >
-        不正・なりすましを報告
+        {t('button')}
       </button>
 
       {open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
           <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-xl">
-            <h2 className="mb-4 text-lg font-bold">会場なりすまし報告</h2>
+            <h2 className="mb-4 text-lg font-bold">{t('title')}</h2>
 
             {error && (
               <div className="mb-3 rounded bg-red-50 p-3 text-sm text-red-700">{error}</div>
@@ -65,7 +68,7 @@ export function VenueReportButton({ venueId }: Props) {
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="mb-1 block text-sm font-medium">報告理由 *</label>
+                <label className="mb-1 block text-sm font-medium">{t('reasonLabel')}</label>
                 <textarea
                   required
                   minLength={10}
@@ -73,11 +76,11 @@ export function VenueReportButton({ venueId }: Props) {
                   onChange={(e) => setReason(e.target.value)}
                   rows={4}
                   className="w-full rounded border px-3 py-2 text-sm"
-                  placeholder="なりすましと判断した理由を詳しく記述してください"
+                  placeholder={t('reasonPlaceholder')}
                 />
               </div>
               <div>
-                <label className="mb-1 block text-sm font-medium">証拠 URL（任意）</label>
+                <label className="mb-1 block text-sm font-medium">{t('evidenceLabel')}</label>
                 <input
                   type="url"
                   value={evidenceUrl}
@@ -92,14 +95,14 @@ export function VenueReportButton({ venueId }: Props) {
                   onClick={() => setOpen(false)}
                   className="flex-1 rounded border py-2 text-sm"
                 >
-                  キャンセル
+                  {tCommon('cancel')}
                 </button>
                 <button
                   type="submit"
                   disabled={loading}
                   className="flex-1 rounded bg-red-600 py-2 text-sm text-white hover:bg-red-700 disabled:opacity-50"
                 >
-                  {loading ? '送信中...' : '報告する'}
+                  {loading ? t('submitting') : t('submit')}
                 </button>
               </div>
             </form>

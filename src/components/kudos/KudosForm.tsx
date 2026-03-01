@@ -53,7 +53,7 @@ export function KudosForm({ sessionId, targetUserId, targetName }: KudosFormProp
   return (
     <div className="space-y-4 p-4 rounded-xl border border-gray-200 bg-white">
       <p className="text-sm font-medium text-gray-700">
-        {targetName} への Kudos
+        {t('toUser', { name: targetName })}
       </p>
 
       <div>
