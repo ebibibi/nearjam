@@ -11,6 +11,7 @@ import { SessionTendencyCard } from '@/components/venue/SessionTendencyCard';
 import { TendencyOwnerActions } from '@/components/venue/TendencyOwnerActions';
 import { Button } from '@/components/ui/Button';
 import { VenueClaimButton } from '@/components/venue/VenueClaimButton';
+import { ShareButton } from '@/components/session/ShareButton';
 
 export async function generateMetadata({
   params,
@@ -135,6 +136,12 @@ export default async function VenueDetailPage({
         <div className="flex items-start justify-between gap-4">
           <h1 className="text-3xl font-bold text-gray-900">{venue.name}</h1>
           <VerificationBadge verifiedAt={venue.verifiedAt} disputedAt={venue.disputedAt} />
+        </div>
+        <div className="mt-2">
+          <ShareButton
+            title={`${venue.name} | NearJam`}
+            url={`${process.env.NEXT_PUBLIC_APP_URL ?? 'https://nearjam.app'}/${locale}/venues/${id}`}
+          />
         </div>
 
         {venue.verifiedAt == null && (
