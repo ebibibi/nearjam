@@ -18,28 +18,40 @@ export async function generateMetadata({
 }: {
   params: Promise<{ locale: string; id: string }>;
 }): Promise<Metadata> {
-  const { id } = await params;
+  const { locale, id } = await params;
   const venue = await prisma.venue.findUnique({
     where: { id },
     select: { name: true, address: true, nearestStation: true, tendencies: { where: { isActive: true }, select: { name: true, genres: true }, take: 3 } },
   });
   if (!venue) return {};
 
-  const sessionNames = venue.tendencies.map(t => t.name).join('、');
-  const genres = [...new Set(venue.tendencies.flatMap(t => t.genres))].slice(0, 5).join('・');
-  const desc = [
-    `${venue.name}のジャムセッション情報。`,
-    venue.nearestStation ? `${venue.nearestStation}駅近く。` : '',
-    sessionNames ? `定期セッション: ${sessionNames}。` : '',
-    genres ? `ジャンル: ${genres}。` : '',
-    'NearJam でセッションスケジュールを確認・参加申込できます。',
-  ].join('');
+  const genres = [...new Set(venue.tendencies.flatMap(t => t.genres))].slice(0, 5);
+
+  const desc = locale === 'ja'
+    ? [
+        `${venue.name}のジャムセッション情報。`,
+        venue.nearestStation ? `${venue.nearestStation}駅近く。` : '',
+        venue.tendencies.length > 0 ? `定期セッション: ${venue.tendencies.map(t => t.name).join('、')}。` : '',
+        genres.length > 0 ? `ジャンル: ${genres.join('・')}。` : '',
+        'NearJam でセッションスケジュールを確認・参加申込できます。',
+      ].join('')
+    : [
+        `Jam session info for ${venue.name}.`,
+        venue.nearestStation ? `Near ${venue.nearestStation} station.` : '',
+        venue.tendencies.length > 0 ? `Sessions: ${venue.tendencies.map(t => t.name).join(', ')}.` : '',
+        genres.length > 0 ? `Genres: ${genres.join(', ')}.` : '',
+        'Find schedules and register on NearJam.',
+      ].join(' ');
+
+  const title = locale === 'ja'
+    ? `${venue.name} — ジャムセッション`
+    : `${venue.name} — Jam Sessions`;
 
   return {
-    title: `${venue.name} — ジャムセッション`,
+    title,
     description: desc.slice(0, 160),
     openGraph: {
-      title: `${venue.name} のジャムセッション | NearJam`,
+      title: `${title} | NearJam`,
       description: desc.slice(0, 160),
     },
   };
