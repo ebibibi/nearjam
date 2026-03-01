@@ -65,12 +65,14 @@ export function VenueCard({ venue, locale }: VenueCardProps) {
               <div key={i} className="rounded-lg bg-violet-50 px-3 py-2 text-xs">
                 <div className="font-medium text-violet-800 mb-0.5 line-clamp-1">{tendency.name}</div>
                 <div className="text-violet-600 flex flex-wrap gap-x-2 gap-y-0.5">
-                  {tendency.typicalDayOfWeek != null && (
+                  {tendency.typicalDayOfWeek != null ? (
                     <span>
                       {locale === 'ja'
                         ? `毎週${dayNames[tendency.typicalDayOfWeek]}曜`
                         : `Every ${dayNames[tendency.typicalDayOfWeek]}`}
                     </span>
+                  ) : (
+                    <span className="text-violet-400">{locale === 'ja' ? '不定期開催' : 'Irregular'}</span>
                   )}
                   {tendency.typicalStartTime && <span>{tendency.typicalStartTime}〜</span>}
                   {tendency.entrySystem && <span>{tendency.entrySystem}</span>}
