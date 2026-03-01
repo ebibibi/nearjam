@@ -14,6 +14,7 @@ export async function Header({ locale }: HeaderProps) {
     { href: `/${locale}/venues`, label: t('venues') },
     { href: `/${locale}/sessions`, label: t('sessions') },
     { href: `/${locale}/studios`, label: t('studios') },
+    { href: `/${locale}/songs`, label: t('songs') },
   ];
 
   return (
