@@ -1,4 +1,5 @@
 export const dynamic = 'force-dynamic';
+import type { Metadata } from 'next';
 import { setRequestLocale } from 'next-intl/server';
 import { getTranslations } from 'next-intl/server';
 import Link from 'next/link';
@@ -7,6 +8,24 @@ import { prisma } from '@/lib/prisma';
 import { Button } from '@/components/ui/Button';
 import { VenueCard } from '@/components/venue/VenueCard';
 import { VenueSearch } from '@/components/venue/VenueSearch';
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const count = await prisma.venue.count({ where: { tendencies: { some: { isActive: true } } } });
+  const title = locale === 'ja' ? 'ジャムセッション会場一覧' : 'Jam Session Venues';
+  const desc = locale === 'ja'
+    ? `全国 ${count} 件のジャムセッション開催会場を掲載。ジャズ・ブルース・ファンクなど様々なジャンルのセッションが探せます。エリア・ジャンルで絞り込み可能。`
+    : `Browse ${count} jam session venues. Find jazz, blues, and funk sessions near you. Filter by area and genre.`;
+  return {
+    title,
+    description: desc,
+    openGraph: { title: `${title} | NearJam`, description: desc },
+  };
+}
 
 export default async function VenuesPage({
   params,
