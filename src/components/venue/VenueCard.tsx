@@ -59,10 +59,16 @@ export function VenueCard({ venue, locale, upcomingSessionCount = 0 }: VenueCard
 
         {/* SNS リンク */}
         {(venue.websiteUrl || venue.instagramUrl || venue.xUrl) && (
-          <div className="flex gap-2 mb-3 text-xs text-gray-400">
-            {venue.websiteUrl && <span>🌐 HP</span>}
-            {venue.instagramUrl && <span>📸 IG</span>}
-            {venue.xUrl && <span>🐦 X</span>}
+          <div className="flex gap-2 mb-3 text-xs text-gray-500">
+            {venue.websiteUrl && (
+              <a href={venue.websiteUrl} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="hover:text-violet-600 transition-colors">🌐 HP</a>
+            )}
+            {venue.instagramUrl && (
+              <a href={venue.instagramUrl} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="hover:text-pink-500 transition-colors">📸 IG</a>
+            )}
+            {venue.xUrl && (
+              <a href={venue.xUrl} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="hover:text-blue-400 transition-colors">🐦 X</a>
+            )}
           </div>
         )}
 
