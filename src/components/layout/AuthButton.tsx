@@ -31,7 +31,7 @@ export function AuthButton() {
             </div>
           )}
           <span className="text-sm text-gray-700 hidden sm:block max-w-[80px] truncate">
-            {session.user?.nickname ?? session.user?.name ?? t('profile')}
+            {session.user?.name ?? t('profile')}
           </span>
         </Link>
         <Button

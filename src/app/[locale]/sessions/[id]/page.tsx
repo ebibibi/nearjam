@@ -181,6 +181,16 @@ export default async function SessionDetailPage({
             {session.venue.nearestStation && (
               <p className="text-gray-500 text-xs">{session.venue.nearestStation}</p>
             )}
+            {session.venue.address && (
+              <a
+                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(session.venue.address)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-1 inline-flex items-center gap-1 text-xs text-violet-500 hover:underline"
+              >
+                🗺️ 地図で見る →
+              </a>
+            )}
           </div>
         )}
 
