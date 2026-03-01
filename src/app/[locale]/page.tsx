@@ -217,7 +217,7 @@ export default async function HomePage({
                     </div>
                   ) : (
                     <CardContent className="text-gray-400 text-sm flex-1">
-                      セッション情報なし
+                      {locale === 'ja' ? 'セッション情報なし' : 'No session info'}
                     </CardContent>
                   )}
                 </Card>
@@ -242,7 +242,7 @@ export default async function HomePage({
             <p className="text-lg">🥁</p>
             <p>{t('home.noSessions')}</p>
             <Link href={`/${locale}/sessions/new`} className="mt-2 inline-block text-sm text-violet-600 hover:underline">
-              最初のセッションを作成 →
+              {locale === 'ja' ? '最初のセッションを作成 →' : 'Create the first session →'}
             </Link>
           </div>
         ) : (
@@ -280,7 +280,7 @@ export default async function HomePage({
                           </span>
                         ) : (
                           <span className="text-xs rounded-full bg-green-100 text-green-700 px-2 py-0.5">
-                            無料/現地集金
+                            {locale === 'ja' ? '無料/現地集金' : 'Free/Pay at door'}
                           </span>
                         )}
                         {session.maxParticipants != null && (
