@@ -311,7 +311,9 @@
     "filterByGenre": "ジャンル",
     "filterByDate": "日付",
     "filterSyncroom": "SYNCROOMのみ",
-    "freeOrDoorPrice": "無料/現地集金"
+    "freeOrDoorPrice": "無料/現地集金",
+    "full": "満員",
+    "viewVenuePage": "会場ページを見る →"
   },
   "song": {
     "title": "曲",

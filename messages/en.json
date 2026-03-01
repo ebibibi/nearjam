@@ -311,7 +311,9 @@
     "filterByGenre": "Genre",
     "filterByDate": "Date",
     "filterSyncroom": "SYNCROOM only",
-    "freeOrDoorPrice": "Free/Pay at door"
+    "freeOrDoorPrice": "Free/Pay at door",
+    "full": "Full",
+    "viewVenuePage": "View venue page →"
   },
   "song": {
     "title": "Songs",

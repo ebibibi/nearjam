@@ -281,7 +281,7 @@ export default async function SessionDetailPage({
                   </div>
                   {isFull && (
                     <p className="text-xs text-red-600 font-medium mt-0.5">
-                      {locale === 'ja' ? '満員' : 'Full'}
+                      {t('session.full')}
                     </p>
                   )}
                 </div>
@@ -453,14 +453,14 @@ export default async function SessionDetailPage({
                   </span>
                 ) : (
                   <span className="text-xs rounded-full bg-green-100 text-green-700 px-2 py-0.5 shrink-0">
-                    {locale === 'ja' ? '無料' : 'Free'}
+                    {t('venue.freeEntry')}
                   </span>
                 )}
               </Link>
             ))}
           </div>
           <Link href={`/${locale}/venues/${session.venue.id}`} className="mt-3 inline-block text-sm text-violet-600 hover:underline">
-            {locale === 'ja' ? '会場ページを見る →' : 'View venue page →'}
+            {t('session.viewVenuePage')}
           </Link>
         </section>
       )}
