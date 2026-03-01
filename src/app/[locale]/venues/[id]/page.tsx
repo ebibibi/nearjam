@@ -23,7 +23,7 @@ export default async function VenueDetailPage({
   const authSession = await auth();
   const currentUserId = authSession?.user?.id ?? null;
 
-  const [venue, topSongGroups] = await Promise.all([
+  const [venue, upcomingSessions, topSongGroups] = await Promise.all([
     prisma.venue.findUnique({
       where: { id },
       include: {
@@ -31,6 +31,23 @@ export default async function VenueDetailPage({
           orderBy: [{ sourceType: 'asc' }, { createdAt: 'desc' }],
           include: { sourceUser: { select: { nickname: true } } },
         },
+      },
+    }),
+    prisma.jamSession.findMany({
+      where: {
+        venueId: id,
+        startsAt: { gte: new Date() },
+      },
+      orderBy: { startsAt: 'asc' },
+      take: 8,
+      select: {
+        id: true,
+        title: true,
+        startsAt: true,
+        durationMinutes: true,
+        ticketPriceYen: true,
+        maxParticipants: true,
+        _count: { select: { registrations: true } },
       },
     }),
     prisma.performanceLog.groupBy({
@@ -173,6 +190,57 @@ export default async function VenueDetailPage({
           </a>
         )}
       </div>
+
+      {/* 今後のセッション */}
+      {upcomingSessions.length > 0 && (
+        <section>
+          <h2 className="text-lg font-bold text-gray-900 mb-3">📅 今後のセッション</h2>
+          <div className="space-y-2">
+            {upcomingSessions.map((s) => {
+              const startsAt = new Date(s.startsAt);
+              return (
+                <Link key={s.id} href={`/${locale}/sessions/${s.id}`}>
+                  <div className="flex items-center gap-4 rounded-lg border border-gray-100 bg-gray-50 hover:bg-violet-50 hover:border-violet-200 px-4 py-3 transition-colors">
+                    <div className="text-center min-w-[3rem]">
+                      <div className="text-xs text-gray-400">
+                        {startsAt.toLocaleDateString(locale === 'ja' ? 'ja-JP' : 'en-US', { month: 'short' })}
+                      </div>
+                      <div className="text-xl font-bold text-gray-800">{startsAt.getDate()}</div>
+                      <div className="text-xs text-gray-400">
+                        {startsAt.toLocaleDateString(locale === 'ja' ? 'ja-JP' : 'en-US', { weekday: 'short' })}
+                      </div>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="font-medium text-gray-900 text-sm truncate">{s.title}</div>
+                      <div className="text-xs text-gray-500 mt-0.5">
+                        {startsAt.toLocaleTimeString(locale === 'ja' ? 'ja-JP' : 'en-US', { hour: '2-digit', minute: '2-digit' })}
+                        {s.durationMinutes && ` （${s.durationMinutes}分）`}
+                      </div>
+                    </div>
+                    <div className="text-right shrink-0">
+                      {s.ticketPriceYen != null && s.ticketPriceYen > 0 ? (
+                        <span className="text-xs rounded-full bg-blue-100 text-blue-700 px-2 py-1">¥{s.ticketPriceYen.toLocaleString()}</span>
+                      ) : (
+                        <span className="text-xs rounded-full bg-green-100 text-green-700 px-2 py-1">無料</span>
+                      )}
+                      {s.maxParticipants != null && (
+                        <div className="text-xs text-gray-400 mt-1">
+                          👥 {s._count.registrations}/{s.maxParticipants}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+          <div className="mt-3 text-center">
+            <Link href={`/${locale}/sessions?venue=${encodeURIComponent(venue.name)}`} className="text-sm text-violet-600 hover:underline">
+              この会場の全セッションを見る →
+            </Link>
+          </div>
+        </section>
+      )}
 
       {/* Top songs at this venue */}
       {topSongsOrdered.length > 0 && (
