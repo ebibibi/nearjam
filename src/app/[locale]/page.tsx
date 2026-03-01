@@ -36,7 +36,7 @@ export default async function HomePage({
         where: {
           tendencies: { some: { isActive: true } },
         },
-        orderBy: [{ verifiedAt: 'desc' }, { name: 'asc' }],
+        orderBy: [{ verifiedAt: 'desc' }, { tendencies: { _count: 'desc' } }, { name: 'asc' }],
         include: {
           tendencies: {
             where: { isActive: true },
