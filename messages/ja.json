@@ -35,7 +35,9 @@
     "signIn": "ログイン",
     "signOut": "ログアウト",
     "kudos": "Kudos",
-    "recommendations": "発見"
+    "recommendations": "発見",
+    "matchSuggestions": "マッチング",
+    "sessionSeries": "定期セッション"
   },
   "auth": {
     "signIn": "ログイン",

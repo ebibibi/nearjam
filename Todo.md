@@ -1,7 +1,7 @@
 # NearJam 実装 Todo（PRD v0.4 差分）
 
-> 生成日: 2026-03-01（PRD v0.4 再照合 更新）
-> PRD との差異分析から抽出。Phase 1 MVP の未実装機能を Sprint 単位で管理する。
+> 生成日: 2026-03-01（Sprint 8-12 追加・全残機能完走計画）
+> PRD との差異分析から抽出。Phase 1-3 の全自律実装可能機能を Sprint 単位で管理する。
 
 ---
 
@@ -49,14 +49,74 @@
 
 ---
 
-## 後回し（Phase 1 だが複雑・インフラ必要）
+## Sprint 7 — Phase 2 先行実装（Kudos・フィードバック・プライバシー・レコメンデーション・会場認証）
 
-| 機能 | 理由 |
-|------|------|
-| 会場認証フロー | HP メールスクレイプ + SNS コード確認。外部 I/O が複雑 |
-| 定期セッション管理 | 繰り返し Event パターン（rrule 等） |
-| 楽曲レコメンデーション | 「近くで演奏されたがウィッシュリスト未登録」— スコアリングエンジン必要 |
-| Auto-collection bot UI | オペレーターレビューキュー（クローラ基盤は実装済み） |
-| Kudos システム | PRD では Phase 2 |
-| 匿名フィードバック | PRD では Phase 2 |
-| セッションレベルプライバシー設定 UI | AND-consent の複雑な UI |
+| ID  | ステータス | 機能 | 詳細 |
+|-----|-----------|------|------|
+| H1  | [x] | Kudos API + 受信箱 UI | `POST/GET /api/v1/sessions/[id]/kudos` + `GET /api/v1/kudos` + `/kudos` ページ + `KudosForm.tsx` |
+| H2  | [x] | 匿名フィードバック | `POST /api/v1/sessions/[id]/feedback` + `GET /api/v1/feedback` |
+| H3  | [x] | AND-consent プライバシー設定 UI | `GET/PUT /api/v1/sessions/[id]/privacy` + `PrivacySettingsPanel.tsx` |
+| H4  | [x] | 会場認証（HP メール + MANUAL） | `claim/route.ts` + `verify/route.ts` + `verify/confirm/route.ts` + `VenueClaimButton.tsx` |
+| H5  | [x] | 「近くで演奏されたが未ウィッシュリスト」レコメンデーション | `GET /api/v1/recommendations` + `/recommendations` ページ |
+| H6  | [x] | Admin 収集キューレビュー | `GET/POST /api/v1/admin/collection-queue` + PATCH 承認/却下 + `/admin/collection-queue` ページ |
+
+---
+
+## Sprint 8 — Phase 1 完結（定期セッション・マナーページ・レコメンデーション2種目・なりすまし報告）
+
+| ID  | ステータス | 機能 | 詳細 |
+|-----|-----------|------|------|
+| I1  | [ ] | 定期セッション管理 | `SessionSeries` モデル + rrule-based 繰り返しルール。API `POST/GET /api/v1/session-series` + インスタンス生成エンドポイント + 作成 UI |
+| I2  | [ ] | マナーページ Markdown エディタ | `Venue.rulesMarkdown` は DB 済み。`PUT /api/v1/venues/[id]/rules` + Markdown エディタ UI（verified venue のみ） |
+| I3  | [ ] | 「練習して挑める曲」レコメンデーション | スキルレベル範囲内 + 未演奏 + エリアで人気の曲を提案。`/api/v1/recommendations?type=practice` |
+| I4  | [ ] | 会場なりすまし報告 | `VenueImpersonationReport` モデル + `POST /api/v1/venues/[id]/report` + 報告 UI |
+
+---
+
+## Sprint 9 — Phase 2 ソーシャル・AI マッチング
+
+| ID  | ステータス | 機能 | 詳細 |
+|-----|-----------|------|------|
+| J1  | [ ] | ターン/ソロ管理 UI | LiveSession ダッシュボードに「各参加者の演奏回数」可視化。`PerformanceLog.groupBy(musicianProfileId)` |
+| J2  | [ ] | 組み合わせマッチング提案 | 「この 3 人は共通曲 5 曲あるのに一緒にやってない」。SQL combinatorics で LLM なし実装。`GET /api/v1/match-suggestions` |
+| J3  | [ ] | ホスト主導マッチング | ホストが「利用可能日 + 弾ける曲」を登録 → マッチしたミュージシャンに通知。`HostAvailability` モデル + マッチング API |
+
+---
+
+## Sprint 10 — Phase 2 アナリティクス
+
+| ID  | ステータス | 機能 | 詳細 |
+|-----|-----------|------|------|
+| K1  | [ ] | ミュージシャン演奏履歴ページ（opt-in 公開） | `/musicians/[id]/history` — 過去セッション・曲・共演者を視覚化。`profileVisibility` を尊重 |
+| K2  | [ ] | 会場別セッション履歴・人気曲ページ | `/venues/[id]/analytics` — 開催回数・参加者数推移・人気曲 Top10 |
+| K3  | [ ] | 月次ダイジェスト（recurring sessions） | `SessionSeries` の実績を毎月集計して管理者にメール送信。cron エンドポイント追加 |
+
+---
+
+## Sprint 11 — Phase 2 自動収集 + Google Maps 拡張
+
+| ID  | ステータス | 機能 | 詳細 |
+|-----|-----------|------|------|
+| L1  | [ ] | 自動収集ボット定期再取得スケジューラー | `AutoCollectionJob.nextFetchAt` を参照して週次再取得。cron `POST /api/v1/cron/auto-collect` + scheduler 登録 |
+| L2  | [ ] | Google Maps フィルタ機能 | ジャンル・曜日・SYNCROOM・初心者向けフィルタ。`/map` ページの検索パネルを拡張 |
+| L3  | [ ] | 「今週近くで開催」マップビュー | 今週の JamSession を地図上にピン表示。`/map?week=true` |
+
+---
+
+## Sprint 12 — Phase 3 基盤
+
+| ID  | ステータス | 機能 | 詳細 |
+|-----|-----------|------|------|
+| M1  | [ ] | QR チェックイン | セッション当日に QR コードを表示 → 参加者がスキャンして参加確認。`qrcode` ライブラリ + `GET /api/v1/sessions/[id]/qr` + スキャン確認 API |
+| M2  | [ ] | セッション録音ログ | 演奏後に録音 URL（YouTube / SoundCloud 等）を添付。`PerformanceLog.recordingUrl` フィールド追加 |
+| M3  | [ ] | PWA 対応 | `manifest.json` + Service Worker + オフラインフォールバックページ。モバイルで「ホーム画面に追加」対応 |
+
+---
+
+## ⛔ Claude が自律実装できないもの（要胡田判断）
+
+| 機能 | 必要なアクション |
+|------|----------------|
+| 有料イベント支援 | Stripe アカウント作成 + API キー提供が必要 |
+| SNS コード確認（会場認証） | X API Basic 以上（月 $100）の契約判断が必要 |
+| スタジオ予約外部連携 | 連携先（VACAN / ResTime 等）の選定が必要 |

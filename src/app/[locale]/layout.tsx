@@ -6,6 +6,7 @@ import { hasLocale } from 'next-intl';
 import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
 import { Header } from '@/components/layout/Header';
+import { ServiceWorkerRegister } from '@/components/layout/ServiceWorkerRegister';
 import { SessionProvider } from 'next-auth/react';
 import '../globals.css';
 
@@ -23,6 +24,13 @@ export const metadata: Metadata = {
   title: 'NearJam — Find your next jam session',
   description:
     'Discover jam session venues, match with musicians, and play the songs you love — near you or online via SYNCROOM.',
+  manifest: '/manifest.json',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'NearJam',
+  },
+  formatDetection: { telephone: false },
 };
 
 export function generateStaticParams() {
@@ -47,9 +55,16 @@ export default async function LocaleLayout({
 
   return (
     <html lang={locale}>
+      <head>
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="theme-color" content="#2563eb" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+      </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen bg-gray-50`}>
         <NextIntlClientProvider messages={messages}>
           <SessionProvider>
+            <ServiceWorkerRegister />
             <Header locale={locale} />
             <main className="mx-auto max-w-6xl px-4 py-6">
               {children}

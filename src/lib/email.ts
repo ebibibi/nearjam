@@ -169,3 +169,29 @@ function buildEnHtml(p: MatchSessionEmailPayload, sessionUrl: string): string {
 </body>
 </html>`;
 }
+
+// ─── 汎用メール送信関数（月次ダイジェスト等で使用）───
+
+export interface GenericEmailPayload {
+  to: string
+  subject: string
+  html: string
+}
+
+export async function sendEmail(payload: GenericEmailPayload): Promise<boolean> {
+  const client = getEmailClient()
+  if (!client) return false
+
+  try {
+    const poller = await client.beginSend({
+      senderAddress: EMAIL_FROM,
+      recipients: { to: [{ address: payload.to }] },
+      content: { subject: payload.subject, html: payload.html },
+    })
+    const result = await poller.pollUntilDone()
+    return result.status === KnownEmailSendStatus.Succeeded
+  } catch (e) {
+    console.error('[email] sendEmail error:', e)
+    return false
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "name": "NearJam",
+  "short_name": "NearJam",
+  "description": "近くのジャムセッションを見つけ、仲間とつながる音楽プラットフォーム",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2563eb",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    }
+  ],
+  "categories": ["music", "social"],
+  "lang": "ja",
+  "dir": "ltr",
+  "shortcuts": [
+    {
+      "name": "セッションを探す",
+      "url": "/sessions",
+      "description": "近くのセッションを検索"
+    },
+    {
+      "name": "マイプロフィール",
+      "url": "/profile",
+      "description": "プロフィールを確認"
+    }
+  ]
+}

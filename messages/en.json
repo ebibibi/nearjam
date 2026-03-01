@@ -35,7 +35,9 @@
     "signIn": "Sign in",
     "signOut": "Sign out",
     "kudos": "Kudos",
-    "recommendations": "Discover"
+    "recommendations": "Discover",
+    "matchSuggestions": "Matches",
+    "sessionSeries": "Series"
   },
   "auth": {
     "signIn": "Sign in",
