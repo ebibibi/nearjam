@@ -25,7 +25,7 @@ export default async function ProfilePage({
   const [user, profile] = await Promise.all([
     prisma.user.findUnique({
       where: { id: session.user.id },
-      select: { id: true, nickname: true, email: true, image: true },
+      select: { id: true, nickname: true, email: true, image: true, stripeAccountId: true },
     }),
     prisma.musicianProfile.findUnique({
       where: { userId: session.user.id },
@@ -197,6 +197,34 @@ export default async function ProfilePage({
         <Link href={`/${locale}/connections`} className="text-sm text-violet-600 hover:underline">
           🤝 {t('connections')} →
         </Link>
+      </div>
+
+      {/* Stripe Connect セクション */}
+      <div className="rounded-xl border p-4">
+        <p className="font-medium text-gray-900 mb-2">💳 有料セッション受け取り設定</p>
+        {user?.stripeAccountId ? (
+          <div className="flex items-center gap-3">
+            <span className="rounded-full bg-green-100 px-3 py-1 text-sm text-green-700">✅ Stripe 接続済み</span>
+            <a
+              href="/api/stripe/connect"
+              className="text-sm text-blue-600 hover:underline"
+            >
+              Stripe ダッシュボードを開く →
+            </a>
+          </div>
+        ) : (
+          <div>
+            <p className="mb-2 text-sm text-gray-500">
+              有料セッションの参加費を受け取るには Stripe Connect への登録が必要です
+            </p>
+            <a
+              href="/api/stripe/connect"
+              className="inline-block rounded-lg bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700"
+            >
+              Stripe で受け取り設定をする →
+            </a>
+          </div>
+        )}
       </div>
 
       {/* SNS links */}

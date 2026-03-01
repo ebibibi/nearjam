@@ -63,6 +63,7 @@ model User {
   name          String?   // NextAuth PrismaAdapter が要求する標準フィールド（OAuth プロファイルの表示名）
   nickname      String?   // ユーザーが自分で設定するアプリ内ニックネーム
   email         String?   @unique
+  stripeAccountId String? // Stripe Connect Express アカウント ID
   emailVerified DateTime?
   image         String?
   role          UserRole  @default(MUSICIAN)
@@ -465,6 +466,9 @@ model JamSession {
   sessionAdminId       String
   sessionSeriesId      String?       // 定期セッションシリーズへの参照
   venueId              String?
+  ticketPriceYen       Int?          // 参加費（円）。null = 無料 or 現地集金
+  // キャンセルポリシー JSON: { freeDaysBeforeSession: number, tiers: [{daysUntil: number, refundPercent: number}] }
+  cancellationPolicy   Json?
   studioId             String?       // v0.3: スタジオ開催の場合
   studioRoomId         String?       // v0.3: 部屋指定
   title                String
@@ -533,6 +537,11 @@ model JamSessionRegistration {
   musicianProfileId String
   status            RegistrationStatus @default(INTERESTED)
   registeredAt      DateTime           @default(now())
+  // Stripe 決済フィールド
+  paymentIntentId   String?            // Stripe PaymentIntent ID
+  paymentStatus     String?            // 'pending' | 'paid' | 'refunded' | 'partially_refunded'
+  paidAmountYen     Int?               // 実際に支払った金額（円）
+  refundedAmountYen Int?               @default(0) // 返金済み金額（円）
 
   jamSession      JamSession      @relation(fields: [jamSessionId], references: [id], onDelete: Cascade)
   musicianProfile MusicianProfile @relation(fields: [musicianProfileId], references: [id], onDelete: Cascade)

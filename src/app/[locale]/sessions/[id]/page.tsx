@@ -10,6 +10,8 @@ import { Button } from '@/components/ui/Button';
 import { MoodFlagBadges } from '@/components/session/MoodFlagBadges';
 import { RegistrationButton } from '@/components/session/RegistrationButton';
 import { SessionAdminPanel } from '@/components/session/SessionAdminPanel';
+import { TicketSection } from '@/components/session/TicketSection';
+import { CancellationPolicy } from '@/lib/stripe';
 
 export default async function SessionDetailPage({
   params,
@@ -26,6 +28,7 @@ export default async function SessionDetailPage({
       include: {
         venue: { select: { id: true, name: true, nearestStation: true, address: true } },
         studio: { select: { id: true, name: true } },
+        sessionAdmin: { select: { id: true, stripeAccountId: true } },
         songs: {
           orderBy: { orderIndex: 'asc' },
           include: { song: { select: { id: true, title: true, artist: true, genre: true } } },
@@ -44,6 +47,7 @@ export default async function SessionDetailPage({
   // Check if current user is registered
   let isRegistered = false;
   let myProfileId: string | null = null;
+  let myRegistration: { id: string; paymentStatus: string | null; status: string } | null = null;
   if (authSession?.user?.id) {
     const profile = await prisma.musicianProfile.findUnique({
       where: { userId: authSession.user.id },
@@ -53,8 +57,10 @@ export default async function SessionDetailPage({
       myProfileId = profile.id;
       const reg = await prisma.jamSessionRegistration.findFirst({
         where: { jamSessionId: id, musicianProfileId: profile.id },
+        select: { id: true, paymentStatus: true, status: true },
       });
       isRegistered = !!reg;
+      myRegistration = reg ?? null;
     }
   }
 
@@ -167,6 +173,18 @@ export default async function SessionDetailPage({
             locale={locale}
           />
         </div>
+      )}
+
+      {/* チケット購入セクション（有料セッションのみ） */}
+      {session.ticketPriceYen && session.ticketPriceYen > 0 && authSession?.user && (
+        <TicketSection
+          sessionId={id}
+          ticketPriceYen={session.ticketPriceYen}
+          cancellationPolicy={session.cancellationPolicy as CancellationPolicy | null}
+          registrationId={myRegistration?.id}
+          paymentStatus={myRegistration?.paymentStatus}
+          hostHasStripe={!!session.sessionAdmin?.stripeAccountId}
+        />
       )}
 
       {/* Song queue */}
