@@ -178,6 +178,10 @@ export default async function SessionsPage({
           sessions.filter((s) => new Date(s.startsAt).getDay() === i).length
         );
         return (
+          <div className="space-y-2">
+            <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+              📅 {locale === 'ja' ? '曜日で絞り込む' : 'Filter by Day'}
+            </p>
           <div className="flex flex-wrap gap-2">
             {hasFilter && (
               <Link
@@ -210,11 +214,16 @@ export default async function SessionsPage({
               );
             })}
           </div>
+          </div>
         );
       })()}
 
       {/* 最寄り駅フィルタチップ */}
       {topStations.length > 0 && (
+        <div className="space-y-2">
+          <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+            📍 {locale === 'ja' ? 'エリアで絞り込む' : 'Filter by Area'}
+          </p>
         <div className="flex flex-wrap gap-2">
           {hasFilter && !sessions.some(() => true) && (
             <Link
@@ -244,6 +253,7 @@ export default async function SessionsPage({
               </Link>
             );
           })}
+        </div>
         </div>
       )}
 
