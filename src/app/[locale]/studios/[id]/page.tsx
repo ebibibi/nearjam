@@ -1,4 +1,5 @@
 export const dynamic = 'force-dynamic';
+import type { Metadata } from 'next';
 import { setRequestLocale } from 'next-intl/server';
 import { getTranslations } from 'next-intl/server';
 import Link from 'next/link';
@@ -7,6 +8,32 @@ import { prisma } from '@/lib/prisma';
 import { Badge } from '@/components/ui/Badge';
 import { RoomList } from '@/components/studio/RoomList';
 import { Button } from '@/components/ui/Button';
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string; id: string }>;
+}): Promise<Metadata> {
+  const { locale, id } = await params;
+  const studio = await prisma.studio.findUnique({
+    where: { id },
+    select: { name: true, address: true, nearestStation: true, rooms: { select: { name: true }, take: 3 } },
+  });
+  if (!studio) return {};
+
+  const desc = locale === 'ja'
+    ? `${studio.name}の練習スタジオ情報。${studio.nearestStation ? `${studio.nearestStation}駅近く。` : ''}${studio.rooms.length > 0 ? `${studio.rooms.length}部屋あり。` : ''}料金・設備・予約方法を掲載中。`
+    : `${studio.name} practice studio. ${studio.nearestStation ? `Near ${studio.nearestStation} station. ` : ''}${studio.rooms.length > 0 ? `${studio.rooms.length} room(s) available. ` : ''}Check rates, equipment, and booking info.`;
+
+  return {
+    title: `${studio.name} — ${locale === 'ja' ? '練習スタジオ' : 'Practice Studio'}`,
+    description: desc.slice(0, 160),
+    openGraph: {
+      title: `${studio.name} | NearJam`,
+      description: desc.slice(0, 160),
+    },
+  };
+}
 
 export default async function StudioDetailPage({
   params,
