@@ -7,7 +7,7 @@ const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://nearjam.app';
 const LOCALES = ['ja', 'en'] as const;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [venues, upcomingSessions] = await Promise.all([
+  const [venues, upcomingSessions, studios] = await Promise.all([
     prisma.venue.findMany({
       select: { id: true, updatedAt: true },
       orderBy: { updatedAt: 'desc' },
@@ -17,6 +17,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       select: { id: true, updatedAt: true },
       orderBy: { startsAt: 'asc' },
       take: 500,
+    }),
+    prisma.studio.findMany({
+      select: { id: true, updatedAt: true },
+      orderBy: { updatedAt: 'desc' },
     }),
   ]);
 
@@ -48,5 +52,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }))
   );
 
-  return [...staticUrls, ...venueUrls, ...sessionUrls];
+  const studioUrls: MetadataRoute.Sitemap = studios.flatMap((studio) =>
+    LOCALES.map((locale) => ({
+      url: `${BASE_URL}/${locale}/studios/${studio.id}`,
+      lastModified: studio.updatedAt,
+      changeFrequency: 'weekly' as const,
+      priority: 0.6,
+    }))
+  );
+
+  return [...staticUrls, ...venueUrls, ...sessionUrls, ...studioUrls];
 }
