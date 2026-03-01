@@ -5,8 +5,10 @@ import { getTranslations } from 'next-intl/server';
 import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
 import { auth } from '@/lib/auth';
+import { Suspense } from 'react';
 import { Button } from '@/components/ui/Button';
 import { SessionCard } from '@/components/session/SessionCard';
+import { SessionSearch } from '@/components/session/SessionSearch';
 
 export async function generateMetadata({
   params,
@@ -53,10 +55,10 @@ export default async function SessionsPage({
   searchParams,
 }: {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ venue?: string; station?: string; dow?: string }>;
+  searchParams: Promise<{ venue?: string; station?: string; dow?: string; q?: string }>;
 }) {
   const { locale } = await params;
-  const { venue: venueFilter, station: stationFilter, dow: dowParam } = await searchParams;
+  const { venue: venueFilter, station: stationFilter, dow: dowParam, q: keywordFilter } = await searchParams;
   const dowFilter = dowParam != null ? parseInt(dowParam, 10) : null;
   setRequestLocale(locale);
   const t = await getTranslations();
@@ -82,7 +84,13 @@ export default async function SessionsPage({
   const sessions = await prisma.jamSession.findMany({
     where: {
       startsAt: { gte: new Date(), lte: eightWeeksLater },
-      ...(venueFilter ? { venue: { name: { contains: venueFilter, mode: 'insensitive' } } } : {}),
+      ...(keywordFilter ? {
+        OR: [
+          { title: { contains: keywordFilter, mode: 'insensitive' } },
+          { venue: { name: { contains: keywordFilter, mode: 'insensitive' } } },
+        ],
+      } : {}),
+      ...(venueFilter && !keywordFilter ? { venue: { name: { contains: venueFilter, mode: 'insensitive' } } } : {}),
       ...(stationFilter ? { venue: { nearestStation: { contains: stationFilter, mode: 'insensitive' } } } : {}),
     },
     orderBy: { startsAt: 'asc' },
@@ -117,7 +125,7 @@ export default async function SessionsPage({
   }
   const weekGroups = [...weekMap.entries()].map(([label, wSessions]) => ({ label, sessions: wSessions }));
 
-  const hasFilter = !!venueFilter || !!stationFilter || dowFilter != null;
+  const hasFilter = !!venueFilter || !!stationFilter || dowFilter != null || !!keywordFilter;
 
   return (
     <div className="space-y-8">
@@ -136,6 +144,11 @@ export default async function SessionsPage({
           </Link>
         )}
       </div>
+
+      {/* キーワード検索 */}
+      <Suspense fallback={null}>
+        <SessionSearch defaultValue={keywordFilter} />
+      </Suspense>
 
       {/* 曜日フィルタチップ */}
       {(() => {
