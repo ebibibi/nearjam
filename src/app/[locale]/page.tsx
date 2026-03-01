@@ -346,6 +346,31 @@ export default async function HomePage({
           </Link>
         </div>
       </section>
+
+      {/* ── 会場投稿CTA ── */}
+      <section className="rounded-2xl bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 p-8 text-center">
+        <div className="text-3xl mb-3">📍</div>
+        <h2 className="text-xl font-bold text-gray-900 mb-2">
+          {locale === 'ja' ? 'お近くの会場を登録しよう' : 'Add a Venue Near You'}
+        </h2>
+        <p className="text-sm text-gray-600 mb-6 max-w-md mx-auto">
+          {locale === 'ja'
+            ? 'ジャムセッション開催会場をご存知ですか？情報をシェアしてコミュニティを育てよう。'
+            : 'Know a venue hosting jam sessions? Share it and help grow the community.'}
+        </p>
+        <div className="flex flex-col sm:flex-row gap-3 justify-center">
+          <Link href={`/${locale}/venues/new`}>
+            <Button variant="primary" size="sm">
+              {locale === 'ja' ? '会場を登録する' : 'Add a Venue'}
+            </Button>
+          </Link>
+          <Link href={`/${locale}/venues`}>
+            <Button variant="secondary" size="sm">
+              {locale === 'ja' ? '会場一覧を見る' : 'Browse Venues'}
+            </Button>
+          </Link>
+        </div>
+      </section>
     </div>
   );
 }
