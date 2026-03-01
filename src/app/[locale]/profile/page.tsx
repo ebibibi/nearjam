@@ -190,12 +190,24 @@ export default async function ProfilePage({
       )}
 
       {/* Quick links */}
-      <div className="flex gap-4">
+      <div className="flex flex-wrap gap-4">
         <Link href={`/${locale}/profile/history`} className="text-sm text-violet-600 hover:underline">
           🎸 {t('myHistory')} →
         </Link>
         <Link href={`/${locale}/connections`} className="text-sm text-violet-600 hover:underline">
           🤝 {t('connections')} →
+        </Link>
+        <Link href={`/${locale}/match-suggestions`} className="text-sm text-violet-600 hover:underline">
+          🎵 {t('matchSuggestions')} →
+        </Link>
+        <Link href={`/${locale}/recommendations`} className="text-sm text-violet-600 hover:underline">
+          ✨ {t('recommendations')} →
+        </Link>
+        <Link href={`/${locale}/kudos`} className="text-sm text-violet-600 hover:underline">
+          🌟 {t('kudos')} →
+        </Link>
+        <Link href={`/${locale}/host-availability`} className="text-sm text-violet-600 hover:underline">
+          📅 {t('hostAvailability')} →
         </Link>
       </div>
 
