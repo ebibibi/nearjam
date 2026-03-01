@@ -195,6 +195,27 @@
       "SLOW": "ゆったり",
       "MODERATE": "普通",
       "FAST": "激しめ"
+    },
+    "stripe": {
+      "title": "💳 有料セッション受け取り設定",
+      "connected": "✅ Stripe 接続済み",
+      "openDashboard": "Stripe ダッシュボードを開く →",
+      "notConnected": "有料セッションの参加費を受け取るには Stripe Connect への登録が必要です",
+      "connect": "Stripe で受け取り設定をする →",
+      "feeTitle": "📋 受取額と手数料について",
+      "stripeFee": "Stripe 決済手数料",
+      "stripeFeeAmount": "−3.6%（Stripe が取得）",
+      "platformFee": "NearJam プラットフォーム手数料",
+      "platformFeeAmount": "−1.0%（NearJam が取得）",
+      "yourPayout": "あなたの受取額（例: 1,000円設定時）",
+      "yourPayoutAmount": "954円",
+      "cancelTitle": "🛡️ キャンセルポリシーとホスト保護",
+      "cancelNoLoss": "キャンセルが発生しても、ホストへの損失はありません",
+      "cancelFeeNote": "手数料（4.6%相当）はキャンセルした参加者が負担します",
+      "cancel72h": "72時間以上前のキャンセル: 参加者へ954円返金（手数料分のみ差し引き）",
+      "cancel24to72h": "24〜72時間前のキャンセル: 参加者へ667円返金（残り287円はあなたへ）",
+      "cancel24h": "24時間未満のキャンセル: 返金なし（954円があなたの手取り）",
+      "cancelNote": "※ 判定はセッション開始時刻からの絶対時間（タイムゾーン不問）"
     }
   },
   "venue": {
@@ -535,7 +556,15 @@
     "notFound": "ページが見つかりません",
     "unauthorized": "このページを見るにはログインが必要です",
     "forbidden": "このページを見る権限がありません",
-    "serverError": "サーバーでエラーが発生しました"
+    "serverError": "サーバーでエラーが発生しました",
+    "errorTitle": "エラーが発生しました",
+    "errorDesc": "ページの読み込みに失敗しました。もう一度お試しください。",
+    "retry": "もう一度試す",
+    "backHome": "ホームへ戻る",
+    "notFoundTitle": "お探しのページが見つかりませんでした。",
+    "notFoundDesc": "会場・セッションが削除されたか、URLが間違っている可能性があります。",
+    "toVenues": "📍 会場一覧へ",
+    "toSessions": "🎷 セッション一覧へ"
   },
   "musician": {
     "backToSessions": "セッション一覧に戻る",

@@ -14,7 +14,7 @@ export default async function MatchSuggestionsPage({
   setRequestLocale(locale)
 
   const session = await auth()
-  if (!session?.user?.id) redirect('/auth/signin')
+  if (!session?.user?.id) redirect(`/${locale}/auth/signin`)
 
   const profile = await prisma.musicianProfile.findUnique({
     where: { userId: session.user.id },
@@ -24,7 +24,7 @@ export default async function MatchSuggestionsPage({
     },
   })
 
-  if (!profile) redirect('/profile/setup')
+  if (!profile) redirect(`/${locale}/profile/setup`)
 
   const t = await getTranslations({ locale })
 

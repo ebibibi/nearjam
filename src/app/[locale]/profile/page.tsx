@@ -201,57 +201,55 @@ export default async function ProfilePage({
 
       {/* Stripe Connect セクション */}
       <div className="rounded-xl border p-4 space-y-3">
-        <p className="font-medium text-gray-900">💳 有料セッション受け取り設定</p>
+        <p className="font-medium text-gray-900">{t('stripe.title')}</p>
 
         {user?.stripeAccountId ? (
           <div className="flex items-center gap-3">
-            <span className="rounded-full bg-green-100 px-3 py-1 text-sm text-green-700">✅ Stripe 接続済み</span>
+            <span className="rounded-full bg-green-100 px-3 py-1 text-sm text-green-700">{t('stripe.connected')}</span>
             <a href="/api/stripe/connect" className="text-sm text-blue-600 hover:underline">
-              Stripe ダッシュボードを開く →
+              {t('stripe.openDashboard')}
             </a>
           </div>
         ) : (
           <div className="space-y-2">
-            <p className="text-sm text-gray-500">
-              有料セッションの参加費を受け取るには Stripe Connect への登録が必要です
-            </p>
+            <p className="text-sm text-gray-500">{t('stripe.notConnected')}</p>
             <a
               href="/api/stripe/connect"
               className="inline-block rounded-lg bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700"
             >
-              Stripe で受け取り設定をする →
+              {t('stripe.connect')}
             </a>
           </div>
         )}
 
         {/* ホスト向け手数料・キャンセルポリシー説明 */}
         <div className="rounded-lg bg-gray-50 border border-gray-200 p-3 text-xs text-gray-600 space-y-2">
-          <p className="font-semibold text-gray-700">📋 受取額と手数料について</p>
+          <p className="font-semibold text-gray-700">{t('stripe.feeTitle')}</p>
           <table className="w-full">
             <tbody className="divide-y divide-gray-100">
               <tr>
-                <td className="py-1 text-gray-500">Stripe 決済手数料</td>
-                <td className="py-1 text-right text-red-500">−3.6%（Stripe が取得）</td>
+                <td className="py-1 text-gray-500">{t('stripe.stripeFee')}</td>
+                <td className="py-1 text-right text-red-500">{t('stripe.stripeFeeAmount')}</td>
               </tr>
               <tr>
-                <td className="py-1 text-gray-500">NearJam プラットフォーム手数料</td>
-                <td className="py-1 text-right text-red-500">−1.0%（NearJam が取得）</td>
+                <td className="py-1 text-gray-500">{t('stripe.platformFee')}</td>
+                <td className="py-1 text-right text-red-500">{t('stripe.platformFeeAmount')}</td>
               </tr>
               <tr className="font-semibold">
-                <td className="py-1 text-blue-700">あなたの受取額（例: 1,000円設定時）</td>
-                <td className="py-1 text-right text-blue-700">954円</td>
+                <td className="py-1 text-blue-700">{t('stripe.yourPayout')}</td>
+                <td className="py-1 text-right text-blue-700">{t('stripe.yourPayoutAmount')}</td>
               </tr>
             </tbody>
           </table>
           <div className="border-t border-gray-200 pt-2 space-y-1">
-            <p className="font-medium text-orange-700">🛡️ キャンセルポリシーとホスト保護</p>
+            <p className="font-medium text-orange-700">{t('stripe.cancelTitle')}</p>
             <ul className="space-y-0.5 text-gray-500">
-              <li>・ キャンセルが発生しても、<span className="font-medium text-gray-700">ホストへの損失はありません</span></li>
-              <li>・ 手数料（4.6%相当）はキャンセルした参加者が負担します</li>
-              <li>・ <span className="font-medium">72時間以上前</span>のキャンセル: 参加者へ954円返金（手数料分のみ差し引き）</li>
-              <li>・ <span className="font-medium">24〜72時間前</span>のキャンセル: 参加者へ667円返金（残り287円はあなたへ）</li>
-              <li>・ <span className="font-medium">24時間未満</span>のキャンセル: 返金なし（954円があなたの手取り）</li>
-              <li className="text-gray-400">※ 判定はセッション開始時刻からの絶対時間（タイムゾーン不問）</li>
+              <li>・ {t('stripe.cancelNoLoss')}</li>
+              <li>・ {t('stripe.cancelFeeNote')}</li>
+              <li>・ {t('stripe.cancel72h')}</li>
+              <li>・ {t('stripe.cancel24to72h')}</li>
+              <li>・ {t('stripe.cancel24h')}</li>
+              <li className="text-gray-400">{t('stripe.cancelNote')}</li>
             </ul>
           </div>
         </div>

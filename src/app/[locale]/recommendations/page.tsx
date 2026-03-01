@@ -13,7 +13,7 @@ export default async function RecommendationsPage({
   setRequestLocale(locale);
 
   const session = await auth();
-  if (!session?.user?.id) redirect('/auth/signin');
+  if (!session?.user?.id) redirect(`/${locale}/auth/signin`);
 
   const t = await getTranslations({ locale, namespace: 'recommendation' });
   const userId = session.user.id;

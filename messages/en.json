@@ -195,6 +195,27 @@
       "SLOW": "Relaxed",
       "MODERATE": "Moderate",
       "FAST": "Intense"
+    },
+    "stripe": {
+      "title": "💳 Payment Settings",
+      "connected": "✅ Stripe Connected",
+      "openDashboard": "Open Stripe dashboard →",
+      "notConnected": "To receive ticket payments, you need to connect a Stripe account.",
+      "connect": "Set up payments with Stripe →",
+      "feeTitle": "📋 Fees & Payout",
+      "stripeFee": "Stripe processing fee",
+      "stripeFeeAmount": "−3.6% (Stripe)",
+      "platformFee": "NearJam platform fee",
+      "platformFeeAmount": "−1.0% (NearJam)",
+      "yourPayout": "Your payout (example: ¥1,000 ticket)",
+      "yourPayoutAmount": "¥954",
+      "cancelTitle": "🛡️ Cancellation Policy & Host Protection",
+      "cancelNoLoss": "No loss for hosts even if participants cancel.",
+      "cancelFeeNote": "The 4.6% fee is borne by the cancelling participant.",
+      "cancel72h": "72+ hours before: participant receives ¥954 refund (fee only deducted)",
+      "cancel24to72h": "24–72 hours before: participant receives ¥667 refund (¥287 goes to you)",
+      "cancel24h": "Under 24 hours: no refund (¥954 is your net payout)",
+      "cancelNote": "※ Timing is absolute hours from session start (timezone-independent)"
     }
   },
   "venue": {
@@ -535,7 +556,15 @@
     "notFound": "Page not found",
     "unauthorized": "You need to sign in to view this page",
     "forbidden": "You don't have permission to view this",
-    "serverError": "Something went wrong on our end"
+    "serverError": "Something went wrong on our end",
+    "errorTitle": "Something went wrong",
+    "errorDesc": "Failed to load the page. Please try again.",
+    "retry": "Try again",
+    "backHome": "Back to home",
+    "notFoundTitle": "Page not found",
+    "notFoundDesc": "The venue or session may have been deleted, or the URL may be incorrect.",
+    "toVenues": "📍 Browse venues",
+    "toSessions": "🎷 Browse sessions"
   },
   "musician": {
     "backToSessions": "Back to sessions",
