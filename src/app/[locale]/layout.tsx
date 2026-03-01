@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { Geist, Geist_Mono } from 'next/font/google';
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, getTranslations, setRequestLocale } from 'next-intl/server';
@@ -114,12 +115,12 @@ export default async function LocaleLayout({
               <div className="mx-auto max-w-6xl px-4 py-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-gray-500">
                 <span>© {new Date().getFullYear()} NearJam</span>
                 <nav className="flex gap-4">
-                  <a href={`/${locale}/privacy`} className="hover:text-gray-700 hover:underline">
+                  <Link href={`/${locale}/privacy`} className="hover:text-gray-700 hover:underline">
                     {t('privacyPolicy')}
-                  </a>
-                  <a href={`/${locale}/terms`} className="hover:text-gray-700 hover:underline">
+                  </Link>
+                  <Link href={`/${locale}/terms`} className="hover:text-gray-700 hover:underline">
                     {t('terms')}
-                  </a>
+                  </Link>
                 </nav>
               </div>
             </footer>
