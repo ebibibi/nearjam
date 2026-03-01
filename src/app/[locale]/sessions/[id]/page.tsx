@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/Button';
 import { MoodFlagBadges } from '@/components/session/MoodFlagBadges';
 import { RegistrationButton } from '@/components/session/RegistrationButton';
 import { SessionAdminPanel } from '@/components/session/SessionAdminPanel';
+import { PrivacySettingsPanel } from '@/components/session/PrivacySettingsPanel';
 import { TicketSection } from '@/components/session/TicketSection';
 import { ShareButton } from '@/components/session/ShareButton';
 import { KudosForm } from '@/components/kudos/KudosForm';
@@ -74,6 +75,7 @@ export default async function SessionDetailPage({
           orderBy: { orderIndex: 'asc' },
           include: { song: { select: { id: true, title: true, artist: true, genre: true } } },
         },
+        adminConsent: { select: { visSessionFact: true, visDatetime: true, visSessionName: true, visSongListVenue: true } },
         _count: { select: { registrations: true } },
       },
     }),
@@ -380,6 +382,10 @@ export default async function SessionDetailPage({
             </Link>
           </div>
           <SessionAdminPanel sessionId={id} registrations={registrations} />
+          <PrivacySettingsPanel
+            sessionId={id}
+            initial={session.adminConsent ?? {}}
+          />
         </div>
       )}
 
