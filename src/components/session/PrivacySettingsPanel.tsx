@@ -53,7 +53,7 @@ export function PrivacySettingsPanel({ sessionId, initial }: PrivacySettingsPane
     <div className="rounded-xl border border-gray-200 bg-white p-5 space-y-4">
       <h3 className="text-sm font-semibold text-gray-700">{t('title')}</h3>
       <p className="text-xs text-gray-400">
-        公開は全関係者の同意が揃ったときのみ有効になります（AND-consent）
+        {t('andConsent')}
       </p>
 
       <div className="space-y-3">
@@ -76,7 +76,7 @@ export function PrivacySettingsPanel({ sessionId, initial }: PrivacySettingsPane
           disabled={saving}
           className="text-sm px-4 py-2 rounded-lg bg-violet-600 text-white hover:bg-violet-700 disabled:opacity-50"
         >
-          {saving ? '…' : '保存'}
+          {saving ? '…' : t('save')}
         </button>
         {saved && <span className="text-sm text-green-600">{t('saved')}</span>}
       </div>

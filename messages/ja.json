@@ -365,6 +365,7 @@
     "titleSingular": "セッション",
     "create": "セッションを作成",
     "edit": "セッションを編集",
+    "searchPlaceholder": "セッション名・会場名で検索…",
     "backToDetail": "セッションに戻る",
     "startTime": "開始時刻",
     "duration": "時間",
@@ -474,7 +475,17 @@
       "scanHint": "参加者にスキャンしてもらうとチェックインできます"
     },
     "checkin": {
-      "notFound": "セッションが見つかりません"
+      "notFound": "セッションが見つかりません",
+      "done": "チェックイン完了！セッションを楽しんでください 🎉",
+      "error": "エラーが発生しました",
+      "loading": "チェックイン中...",
+      "action": "チェックインする"
+    },
+    "turnTracker": {
+      "title": "ターン回数",
+      "noLogs": "まだ演奏ログがありません",
+      "nameNotSet": "名前未設定",
+      "timesCount": "{count}回"
     },
     "ticket": {
       "price": "参加費",
@@ -721,13 +732,15 @@
   },
   "privacy": {
     "title": "プライバシー設定",
+    "andConsent": "公開は全関係者の同意が揃ったときのみ有効になります（AND-consent）",
     "visSessionFact": "このセッションに参加したことを公開",
     "visDatetime": "日時を公開",
     "visSessionName": "セッション名を公開",
     "visSongListVenue": "会場へのセットリスト開示を許可",
     "adminConsentVisSongList": "セットリストを公開",
     "saved": "プライバシー設定を保存しました",
-    "saveFailed": "保存に失敗しました"
+    "saveFailed": "保存に失敗しました",
+    "save": "保存"
   },
   "recommendation": {
     "title": "曲のレコメンデーション",

@@ -1,3 +1,4 @@
+import { getTranslations } from 'next-intl/server'
 import { prisma } from '@/lib/prisma'
 
 interface Props {
@@ -9,6 +10,7 @@ interface Props {
  * LiveSession ダッシュボードから呼び出す
  */
 export async function TurnTracker({ sessionId }: Props) {
+  const t = await getTranslations('session.turnTracker')
   const logs = await prisma.performanceLog.groupBy({
     by: ['musicianProfileId'],
     where: { jamSessionId: sessionId },
@@ -20,7 +22,7 @@ export async function TurnTracker({ sessionId }: Props) {
   if (logs.length === 0) {
     return (
       <div className="text-center text-sm text-gray-400 py-2">
-        まだ演奏ログがありません
+        {t('noLogs')}
       </div>
     )
   }
@@ -40,7 +42,7 @@ export async function TurnTracker({ sessionId }: Props) {
 
   return (
     <div className="space-y-2">
-      <h3 className="text-sm font-semibold text-gray-600">ターン回数</h3>
+      <h3 className="text-sm font-semibold text-gray-600">{t('title')}</h3>
       {logs.map((log) => {
         const profile = profileMap.get(log.musicianProfileId)
         const count = log._count.id
@@ -60,9 +62,9 @@ export async function TurnTracker({ sessionId }: Props) {
             <div className="flex-1 min-w-0">
               <div className="flex items-center justify-between text-sm">
                 <span className="truncate font-medium">
-                  {profile?.user.nickname ?? '名前未設定'}
+                  {profile?.user.nickname ?? t('nameNotSet')}
                 </span>
-                <span className="ml-2 flex-shrink-0 text-gray-500">{count}回</span>
+                <span className="ml-2 flex-shrink-0 text-gray-500">{t('timesCount', { count })}</span>
               </div>
               <div className="mt-0.5 h-1.5 w-full rounded-full bg-gray-100">
                 <div

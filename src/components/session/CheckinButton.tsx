@@ -1,12 +1,14 @@
 'use client'
 
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 
 interface Props {
   sessionId: string
 }
 
 export function CheckinButton({ sessionId }: Props) {
+  const t = useTranslations('session.checkin')
   const [status, setStatus] = useState<'idle' | 'loading' | 'done' | 'error'>('idle')
   const [message, setMessage] = useState<string | null>(null)
 
@@ -19,10 +21,10 @@ export function CheckinButton({ sessionId }: Props) {
 
     if (res.ok) {
       setStatus('done')
-      setMessage('チェックイン完了！セッションを楽しんでください 🎉')
+      setMessage(t('done'))
     } else {
       setStatus('error')
-      setMessage(data.error ?? 'エラーが発生しました')
+      setMessage(data.error ?? t('error'))
     }
   }
 
@@ -45,7 +47,7 @@ export function CheckinButton({ sessionId }: Props) {
         disabled={status === 'loading'}
         className="w-full rounded-xl bg-blue-600 py-4 text-lg font-bold text-white hover:bg-blue-700 disabled:opacity-50"
       >
-        {status === 'loading' ? 'チェックイン中...' : 'チェックインする'}
+        {status === 'loading' ? t('loading') : t('action')}
       </button>
     </div>
   )

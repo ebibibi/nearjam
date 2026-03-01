@@ -365,6 +365,7 @@
     "titleSingular": "Session",
     "create": "Create session",
     "edit": "Edit session",
+    "searchPlaceholder": "Search by session or venue name...",
     "backToDetail": "Back to session",
     "startTime": "Start time",
     "duration": "Duration",
@@ -474,7 +475,17 @@
       "scanHint": "Participants can scan this to check in."
     },
     "checkin": {
-      "notFound": "Session not found."
+      "notFound": "Session not found.",
+      "done": "Check-in complete! Enjoy the session 🎉",
+      "error": "An error occurred",
+      "loading": "Checking in...",
+      "action": "Check In"
+    },
+    "turnTracker": {
+      "title": "Turn count",
+      "noLogs": "No performance logs yet",
+      "nameNotSet": "Name not set",
+      "timesCount": "{count}x"
     },
     "ticket": {
       "price": "Ticket price",
@@ -721,13 +732,15 @@
   },
   "privacy": {
     "title": "Privacy Settings",
+    "andConsent": "Data is only disclosed when all participants have consented (AND-consent)",
     "visSessionFact": "Show that I attended this session",
     "visDatetime": "Show date and time",
     "visSessionName": "Show session name",
     "visSongListVenue": "Allow venue to see setlist",
     "adminConsentVisSongList": "Share setlist publicly",
     "saved": "Privacy settings saved",
-    "saveFailed": "Failed to save"
+    "saveFailed": "Failed to save",
+    "save": "Save"
   },
   "recommendation": {
     "title": "Song Recommendations",

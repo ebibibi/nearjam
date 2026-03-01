@@ -2,9 +2,11 @@
 
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { useTransition } from 'react';
+import { useTranslations } from 'next-intl';
 import { Input } from '@/components/ui/Input';
 
 export function SessionSearch({ defaultValue }: { defaultValue?: string }) {
+  const t = useTranslations('session');
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -28,7 +30,7 @@ export function SessionSearch({ defaultValue }: { defaultValue?: string }) {
       type="search"
       defaultValue={defaultValue}
       onChange={handleChange}
-      placeholder="セッション名・会場名で検索…"
+      placeholder={t('searchPlaceholder')}
       className="max-w-sm"
     />
   );
