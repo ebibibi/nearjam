@@ -1,20 +1,27 @@
-import { getTranslations } from 'next-intl/server';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { auth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import { CollectionQueueActions } from '@/components/admin/CollectionQueueActions';
 
-export default async function CollectionQueuePage() {
+export default async function CollectionQueuePage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  setRequestLocale(locale);
+
   const session = await auth();
-  if (!session?.user?.id) redirect('/auth/signin');
+  if (!session?.user?.id) redirect(`/${locale}/auth/signin`);
 
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
     select: { role: true },
   });
-  if (user?.role !== 'ADMIN') redirect('/');
+  if (user?.role !== 'ADMIN') redirect(`/${locale}`);
 
-  const t = await getTranslations();
+  const t = await getTranslations({ locale });
 
   const tendencies = await prisma.sessionTendency.findMany({
     where: { isActive: false, sourceType: 'AUTO_COLLECTED' },

@@ -1,13 +1,21 @@
-import { getTranslations } from 'next-intl/server';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { auth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 
-export default async function KudosInboxPage() {
-  const session = await auth();
-  if (!session?.user?.id) redirect('/auth/signin');
+export default async function KudosInboxPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  setRequestLocale(locale);
 
-  const t = await getTranslations('kudos');
+  const session = await auth();
+  if (!session?.user?.id) redirect(`/${locale}/auth/signin`);
+
+  const t = await getTranslations({ locale, namespace: 'kudos' });
+  const tMusician = await getTranslations({ locale, namespace: 'musician' });
   const userId = session.user.id;
 
   const kudos = await prisma.kudos.findMany({
@@ -33,13 +41,13 @@ export default async function KudosInboxPage() {
               <div className="text-3xl">{k.stamp}</div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-gray-900">
-                  {k.fromUser.nickname ?? '匿名'}
+                  {k.fromUser.nickname ?? tMusician('anonymous')}
                 </p>
                 {k.message && (
                   <p className="text-sm text-gray-700 mt-1 italic">"{k.message}"</p>
                 )}
                 <p className="text-xs text-gray-400 mt-1">
-                  {k.jamSession.title} · {new Date(k.jamSession.startsAt).toLocaleDateString()}
+                  {k.jamSession.title} · {new Date(k.jamSession.startsAt).toLocaleDateString(locale)}
                 </p>
               </div>
             </div>

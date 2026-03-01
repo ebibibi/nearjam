@@ -261,6 +261,12 @@
       "hasSessions": "Sessions: {names}.",
       "hasGenres": "Genres: {genres}.",
       "ctaRegister": "Find schedules and register on NearJam."
+    },
+    "rules": {
+      "title": "Session Rules Editor",
+      "ownerOnly": "Only the venue owner can edit this.",
+      "verifiedOnly": "The rules page is available after venue verification.",
+      "subtitle": "Edit manner guidelines and session rules"
     }
   },
   "studio": {
@@ -383,7 +389,26 @@
       "stationSuffix": " ({station} Station)",
       "detailDesc2": "{venuePart}{stationSuffix} — Jam session on {dateStr}. Register and check schedule on NearJam."
     },
-    "gcalDetails": "View session details on NearJam: {url}"
+    "gcalDetails": "View session details on NearJam: {url}",
+    "series": {
+      "title": "Recurring Sessions",
+      "create": "New Series",
+      "createTitle": "Create Recurring Series",
+      "empty": "No recurring series yet",
+      "emptyHint": "Manage weekly or monthly sessions as a series",
+      "createCta": "Create a series",
+      "generatedCount": "{n} sessions generated",
+      "startTime": "starts {time}",
+      "duration": "{n} min"
+    },
+    "qr": {
+      "title": "Check-in QR Code",
+      "adminOnly": "Only the session admin can view the QR code.",
+      "scanHint": "Participants can scan this to check in."
+    },
+    "checkin": {
+      "notFound": "Session not found."
+    }
   },
   "song": {
     "title": "Songs",
@@ -581,7 +606,8 @@
     "playedNearby": "times nearby",
     "addToWishlist": "Add to wishlist",
     "noRecommendations": "No recommendations yet",
-    "profileRequired": "Set up your profile to get recommendations"
+    "profileRequired": "Set up your profile to get recommendations",
+    "setupProfile": "Set up your profile"
   },
   "venueVerify": {
     "title": "Verify Venue Ownership",

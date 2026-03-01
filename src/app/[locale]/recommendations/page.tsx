@@ -1,14 +1,21 @@
-import { getTranslations } from 'next-intl/server';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { auth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
 
-export default async function RecommendationsPage() {
+export default async function RecommendationsPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  setRequestLocale(locale);
+
   const session = await auth();
   if (!session?.user?.id) redirect('/auth/signin');
 
-  const t = await getTranslations('recommendation');
+  const t = await getTranslations({ locale, namespace: 'recommendation' });
   const userId = session.user.id;
 
   const profile = await prisma.musicianProfile.findUnique({
@@ -24,8 +31,8 @@ export default async function RecommendationsPage() {
     return (
       <div className="max-w-2xl mx-auto px-4 py-8 text-center">
         <p className="text-gray-500">{t('profileRequired')}</p>
-        <Link href="/profile/setup" className="mt-4 inline-block text-violet-600 hover:underline">
-          プロフィールを設定する
+        <Link href={`/${locale}/profile/setup`} className="mt-4 inline-block text-violet-600 hover:underline">
+          {t('setupProfile')}
         </Link>
       </div>
     );
@@ -90,7 +97,7 @@ export default async function RecommendationsPage() {
                   </p>
                 </div>
                 <Link
-                  href="/songs"
+                  href={`/${locale}/songs`}
                   className="text-xs px-3 py-1.5 rounded-lg bg-violet-50 text-violet-600 hover:bg-violet-100 whitespace-nowrap"
                 >
                   {t('addToWishlist')}

@@ -1,3 +1,4 @@
+import { getTranslations, setRequestLocale } from 'next-intl/server'
 import { auth } from '@/lib/auth'
 import { redirect } from 'next/navigation'
 import { CheckinButton } from '@/components/session/CheckinButton'
@@ -8,9 +9,12 @@ interface Props {
 }
 
 export default async function CheckinPage({ params }: Props) {
-  const { id: sessionId } = await params
+  const { id: sessionId, locale } = await params
+  setRequestLocale(locale)
+
+  const t = await getTranslations({ locale, namespace: 'session' })
   const session = await auth()
-  if (!session?.user?.id) redirect(`/auth/signin?callbackUrl=/sessions/${sessionId}/checkin`)
+  if (!session?.user?.id) redirect(`/${locale}/auth/signin?callbackUrl=/${locale}/sessions/${sessionId}/checkin`)
 
   const jamSession = await prisma.jamSession.findUnique({
     where: { id: sessionId },
@@ -25,7 +29,7 @@ export default async function CheckinPage({ params }: Props) {
   if (!jamSession) {
     return (
       <div className="container mx-auto max-w-md p-8 text-center text-gray-500">
-        セッションが見つかりません
+        {t('checkin.notFound')}
       </div>
     )
   }
@@ -39,7 +43,7 @@ export default async function CheckinPage({ params }: Props) {
           <p className="text-gray-500">{jamSession.venue.name}</p>
         )}
         <p className="text-gray-400">
-          {new Date(jamSession.startsAt).toLocaleString('ja-JP')}
+          {new Date(jamSession.startsAt).toLocaleString(locale)}
         </p>
 
         <div className="mt-8">

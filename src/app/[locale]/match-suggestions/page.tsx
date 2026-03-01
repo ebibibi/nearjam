@@ -130,7 +130,7 @@ async function MatchSuggestionsList({ locale }: { locale: string }) {
             <div className="flex-1">
               <div className="flex items-center gap-2">
                 <Link
-                  href={`/musicians/${profile.user.id}`}
+                  href={`/${locale}/musicians/${profile.user.id}`}
                   className="font-semibold hover:underline"
                 >
                   {profile.user.nickname ?? t('musician.match.nameNotSet')}

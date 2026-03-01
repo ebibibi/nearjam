@@ -261,6 +261,12 @@
       "hasSessions": "定期セッション: {names}。",
       "hasGenres": "ジャンル: {genres}。",
       "ctaRegister": "NearJamでセッションスケジュールを確認・参加申込できます。"
+    },
+    "rules": {
+      "title": "マナーページ・セッションルール編集",
+      "ownerOnly": "この会場のオーナーのみ編集できます",
+      "verifiedOnly": "マナーページの編集は会場認証後に利用できます",
+      "subtitle": "マナーページ・セッションルール編集"
     }
   },
   "studio": {
@@ -383,7 +389,26 @@
       "stationSuffix": "（{station}駅）",
       "detailDesc2": "{dateStr}開催 — {venuePart}{stationSuffix}のジャムセッション。NearJamで参加申込・スケジュール確認。"
     },
-    "gcalDetails": "NearJamでセッション詳細を確認: {url}"
+    "gcalDetails": "NearJamでセッション詳細を確認: {url}",
+    "series": {
+      "title": "定期セッション管理",
+      "create": "+ 新規シリーズ作成",
+      "createTitle": "定期セッションシリーズを作成",
+      "empty": "定期セッションシリーズがありません",
+      "emptyHint": "毎週・毎月開催のセッションをシリーズとして管理できます",
+      "createCta": "シリーズを作成する",
+      "generatedCount": "生成済みセッション: {n}件",
+      "startTime": "開始 {time}",
+      "duration": "{n}分"
+    },
+    "qr": {
+      "title": "チェックイン QR",
+      "adminOnly": "セッション管理者のみ QR コードを表示できます",
+      "scanHint": "参加者にスキャンしてもらうとチェックインできます"
+    },
+    "checkin": {
+      "notFound": "セッションが見つかりません"
+    }
   },
   "song": {
     "title": "曲",
@@ -581,7 +606,8 @@
     "playedNearby": "回近くで演奏",
     "addToWishlist": "ウィッシュリストに追加",
     "noRecommendations": "レコメンデーションはまだありません",
-    "profileRequired": "プロフィールを設定するとレコメンデーションが表示されます"
+    "profileRequired": "プロフィールを設定するとレコメンデーションが表示されます",
+    "setupProfile": "プロフィールを設定する"
   },
   "venueVerify": {
     "title": "会場オーナー認証",
