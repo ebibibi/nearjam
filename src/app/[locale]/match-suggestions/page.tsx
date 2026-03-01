@@ -54,7 +54,7 @@ async function MatchSuggestionsList({ locale }: { locale: string }) {
     return (
       <div className="rounded-lg border border-dashed p-8 text-center text-gray-500">
         <p>{t('musician.match.noWishlist')}</p>
-        <Link href="/songs" className="mt-3 inline-block text-blue-600 hover:underline">
+        <Link href={`/${locale}/songs`} className="mt-3 inline-block text-blue-600 hover:underline">
           {t('musician.match.browseSongs')}
         </Link>
       </div>
