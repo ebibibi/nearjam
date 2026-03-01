@@ -831,6 +831,20 @@
     "privacyTitle": "プライバシーポリシー — NearJam",
     "privacyDesc": "NearJamのプライバシーポリシー。個人情報の収集・利用・保護の方針について。",
     "termsTitle": "利用規約 — NearJam",
-    "termsDesc": "NearJamの利用規約。サービス利用にあたってのルールと条件。"
+    "termsDesc": "NearJamの利用規約。サービス利用にあたってのルールと条件。",
+    "profileTitle": "マイプロフィール — NearJam",
+    "profileDesc": "NearJamでミュージシャンプロフィール、楽器、ウィッシュリスト、設定を管理。",
+    "historyTitle": "演奏履歴 — NearJam",
+    "historyDesc": "NearJamでのジャムセッション演奏履歴。",
+    "matchTitle": "ミュージシャンマッチング — NearJam",
+    "matchDesc": "ウィッシュリストが一致するミュージシャンを見つけてつながろう。",
+    "recommendTitle": "セッション提案 — NearJam",
+    "recommendDesc": "プロフィールとウィッシュリストに基づいたパーソナライズされたジャムセッション提案。",
+    "kudosTitle": "もらったKudos — NearJam",
+    "kudosDesc": "NearJamで仲間のミュージシャンからもらったKudosを確認。",
+    "connectionsTitle": "コネクション — NearJam",
+    "connectionsDesc": "NearJamで一緒に演奏したミュージシャン。",
+    "hostAvailTitle": "ホスト可能日 — NearJam",
+    "hostAvailDesc": "セッションホストとして参加できる日時を登録して、マッチするミュージシャンとつながろう。"
   }
 }

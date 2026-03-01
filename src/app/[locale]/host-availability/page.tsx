@@ -2,8 +2,15 @@ import { getTranslations, setRequestLocale } from 'next-intl/server'
 import { auth } from '@/lib/auth'
 import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
+import type { Metadata } from 'next'
 import { HostAvailabilityForm } from '@/components/host/HostAvailabilityForm'
 import { DeleteAvailabilityButton } from '@/components/host/DeleteAvailabilityButton'
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params
+  const t = await getTranslations({ locale, namespace: 'meta' })
+  return { title: t('hostAvailTitle'), description: t('hostAvailDesc') }
+}
 
 export default async function HostAvailabilityPage({
   params,

@@ -831,6 +831,20 @@
     "privacyTitle": "Privacy Policy — NearJam",
     "privacyDesc": "NearJam privacy policy — how we collect, use, and protect your personal information.",
     "termsTitle": "Terms of Service — NearJam",
-    "termsDesc": "NearJam terms of service — rules and conditions for using the NearJam platform."
+    "termsDesc": "NearJam terms of service — rules and conditions for using the NearJam platform.",
+    "profileTitle": "My Profile — NearJam",
+    "profileDesc": "Manage your musician profile, instruments, wishlist, and preferences on NearJam.",
+    "historyTitle": "Performance History — NearJam",
+    "historyDesc": "Your jam session performance history on NearJam.",
+    "matchTitle": "Musician Matches — NearJam",
+    "matchDesc": "Find musicians who share your song wishlist and connect for jam sessions.",
+    "recommendTitle": "Session Recommendations — NearJam",
+    "recommendDesc": "Personalized jam session recommendations based on your profile and wishlist.",
+    "kudosTitle": "Kudos Inbox — NearJam",
+    "kudosDesc": "View kudos received from fellow musicians on NearJam.",
+    "connectionsTitle": "Connections — NearJam",
+    "connectionsDesc": "Musicians you have played with on NearJam.",
+    "hostAvailTitle": "Host Availability — NearJam",
+    "hostAvailDesc": "Register your availability to host jam sessions and connect with matching musicians."
   }
 }
