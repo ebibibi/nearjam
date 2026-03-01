@@ -1,4 +1,4 @@
-import { chromium, type Browser, type BrowserContext } from '@playwright/test';
+import { chromium } from '@playwright/test';
 import { Readability } from '@mozilla/readability';
 import { JSDOM } from 'jsdom';
 import TurndownService from 'turndown';

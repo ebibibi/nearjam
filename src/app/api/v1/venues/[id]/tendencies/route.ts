@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { requireAuth, getAuthUserId, ok, err } from '@/lib/api-utils';
+import { requireAuth, ok, err } from '@/lib/api-utils';
 import { CreateTendencySchema } from '@/schemas/tendency';
 
 type Params = { params: Promise<{ id: string }> };

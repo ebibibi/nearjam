@@ -1,5 +1,4 @@
 import { useTranslations } from 'next-intl';
-import { Badge } from '@/components/ui/Badge';
 
 const MOOD_FLAGS = [
   'MISTAKES_WELCOME',

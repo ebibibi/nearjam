@@ -1,5 +1,3 @@
-import { Badge } from '@/components/ui/Badge';
-
 interface SongCardProps {
   song: {
     id: string;

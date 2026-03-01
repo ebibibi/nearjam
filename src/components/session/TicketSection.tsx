@@ -16,7 +16,6 @@ interface Props {
 export function TicketSection({
   sessionId,
   ticketPriceYen,
-  cancellationPolicy,
   registrationId,
   paymentStatus,
   hostHasStripe,

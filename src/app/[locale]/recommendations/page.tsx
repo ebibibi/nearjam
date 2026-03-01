@@ -39,7 +39,8 @@ export default async function RecommendationsPage({
   }
 
   const wishlistSongIds = profile.wishlist.map((w) => w.songId);
-  const ninetyDaysAgo = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000);
+  const ninetyDaysAgo = new Date();
+  ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
 
   const difficultyMap: Record<string, string[]> = {
     BEGINNER: ['EASY', 'MEDIUM', 'VARIES'],

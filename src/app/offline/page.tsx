@@ -1,13 +1,11 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
 export default function OfflinePage() {
-  const [isJa, setIsJa] = useState(true)
-
-  useEffect(() => {
-    setIsJa(navigator.language.startsWith('ja'))
-  }, [])
+  const [isJa] = useState(() =>
+    typeof navigator !== 'undefined' && navigator.language.startsWith('ja')
+  )
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center text-center p-4">

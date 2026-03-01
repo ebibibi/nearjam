@@ -26,7 +26,7 @@ import { saveExtractionResult } from '../src/crawler/saver';
 const args = process.argv.slice(2);
 let targetUrl: string | null = null;
 let minConfidence = 0.4;
-let retryLow = args.includes('--retry-low');
+const retryLow = args.includes('--retry-low');
 
 for (let i = 0; i < args.length; i++) {
   if (args[i] === '--min-confidence' && args[i + 1]) {

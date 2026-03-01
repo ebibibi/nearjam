@@ -44,7 +44,7 @@ export default async function KudosInboxPage({
                   {k.fromUser.nickname ?? tMusician('anonymous')}
                 </p>
                 {k.message && (
-                  <p className="text-sm text-gray-700 mt-1 italic">"{k.message}"</p>
+                  <p className="text-sm text-gray-700 mt-1 italic">&ldquo;{k.message}&rdquo;</p>
                 )}
                 <p className="text-xs text-gray-400 mt-1">
                   {k.jamSession.title} · {new Date(k.jamSession.startsAt).toLocaleDateString(locale)}

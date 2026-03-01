@@ -51,6 +51,7 @@ export async function TurnTracker({ sessionId }: Props) {
         return (
           <div key={log.musicianProfileId} className="flex items-center gap-2">
             {profile?.user.image ? (
+              // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={profile.user.image}
                 alt=""
