@@ -113,45 +113,44 @@ export function TicketSection({
         <p className="font-medium text-gray-700">キャンセルポリシー</p>
 
         {/* 返金額の内訳（参加費をベースに計算して表示） */}
-        <table className="w-full text-xs">
-          <thead>
-            <tr className="text-gray-400">
-              <th className="text-left font-normal pb-1">タイミング</th>
-              <th className="text-right font-normal pb-1">あなたへの返金</th>
-              <th className="text-right font-normal pb-1">あなたの負担</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-100">
-            <tr>
-              <td className="py-1">✅ 3日前以前</td>
-              <td className="py-1 text-right text-green-600">
-                ¥{Math.floor((ticketPriceYen - Math.floor(ticketPriceYen * 0.036) - Math.floor(ticketPriceYen * 0.01)) * 1.0).toLocaleString()}
-              </td>
-              <td className="py-1 text-right text-orange-500">
-                ¥{(ticketPriceYen - Math.floor((ticketPriceYen - Math.floor(ticketPriceYen * 0.036) - Math.floor(ticketPriceYen * 0.01)) * 1.0)).toLocaleString()}
-                <span className="text-gray-400 ml-1">（手数料のみ）</span>
-              </td>
-            </tr>
-            <tr>
-              <td className="py-1">⚠️ 1〜2日前</td>
-              <td className="py-1 text-right text-yellow-600">
-                ¥{Math.floor((ticketPriceYen - Math.floor(ticketPriceYen * 0.036) - Math.floor(ticketPriceYen * 0.01)) * 0.7).toLocaleString()}
-              </td>
-              <td className="py-1 text-right text-orange-500">
-                ¥{(ticketPriceYen - Math.floor((ticketPriceYen - Math.floor(ticketPriceYen * 0.036) - Math.floor(ticketPriceYen * 0.01)) * 0.7)).toLocaleString()}
-              </td>
-            </tr>
-            <tr>
-              <td className="py-1">❌ 当日</td>
-              <td className="py-1 text-right text-red-500">¥0</td>
-              <td className="py-1 text-right text-red-500">¥{ticketPriceYen.toLocaleString()}（全額）</td>
-            </tr>
-          </tbody>
-        </table>
+        {(() => {
+          const hostNet = ticketPriceYen - Math.floor(ticketPriceYen * 0.036) - Math.floor(ticketPriceYen * 0.01)
+          return (
+            <table className="w-full text-xs">
+              <thead>
+                <tr className="text-gray-400">
+                  <th className="text-left font-normal pb-1">セッション開始まで</th>
+                  <th className="text-right font-normal pb-1">あなたへの返金</th>
+                  <th className="text-right font-normal pb-1">あなたの負担</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                <tr>
+                  <td className="py-1">✅ 72時間以上前</td>
+                  <td className="py-1 text-right text-green-600">¥{hostNet.toLocaleString()}</td>
+                  <td className="py-1 text-right text-orange-500">
+                    ¥{(ticketPriceYen - hostNet).toLocaleString()}
+                    <span className="text-gray-400 ml-1">（手数料のみ）</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td className="py-1">⚠️ 24〜72時間前</td>
+                  <td className="py-1 text-right text-yellow-600">¥{Math.floor(hostNet * 0.7).toLocaleString()}</td>
+                  <td className="py-1 text-right text-orange-500">¥{(ticketPriceYen - Math.floor(hostNet * 0.7)).toLocaleString()}</td>
+                </tr>
+                <tr>
+                  <td className="py-1">❌ 24時間未満</td>
+                  <td className="py-1 text-right text-red-500">¥0</td>
+                  <td className="py-1 text-right text-red-500">¥{ticketPriceYen.toLocaleString()}（全額）</td>
+                </tr>
+              </tbody>
+            </table>
+          )
+        })()}
 
         <p className="text-xs text-gray-400 border-t border-gray-100 pt-2">
-          ※ Stripe 決済手数料（3.6%）と NearJam 手数料（1%）は、決済を処理するためのコストです。
-          キャンセルした場合でも、これらの手数料はご返金できません。
+          ※ タイミングはセッション開始時刻からの絶対時間で判定します（日付の変わり目・タイムゾーン不問）。
+          Stripe 決済手数料（3.6%）+ NearJam 手数料（1%）はキャンセル時も返金されません。
         </p>
       </div>
 

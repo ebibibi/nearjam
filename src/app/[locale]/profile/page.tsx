@@ -248,9 +248,10 @@ export default async function ProfilePage({
             <ul className="space-y-0.5 text-gray-500">
               <li>・ キャンセルが発生しても、<span className="font-medium text-gray-700">ホストへの損失はありません</span></li>
               <li>・ 手数料（4.6%相当）はキャンセルした参加者が負担します</li>
-              <li>・ 3日前以前のキャンセル: 参加者へ954円返金（手数料分のみ差し引き）</li>
-              <li>・ 1〜2日前のキャンセル: 参加者へ667円返金（残り287円はあなたへ）</li>
-              <li>・ 当日のキャンセル: 返金なし（954円があなたの手取り）</li>
+              <li>・ <span className="font-medium">72時間以上前</span>のキャンセル: 参加者へ954円返金（手数料分のみ差し引き）</li>
+              <li>・ <span className="font-medium">24〜72時間前</span>のキャンセル: 参加者へ667円返金（残り287円はあなたへ）</li>
+              <li>・ <span className="font-medium">24時間未満</span>のキャンセル: 返金なし（954円があなたの手取り）</li>
+              <li className="text-gray-400">※ 判定はセッション開始時刻からの絶対時間（タイムゾーン不問）</li>
             </ul>
           </div>
         </div>

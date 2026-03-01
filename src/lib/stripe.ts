@@ -43,14 +43,20 @@ export function calcHostNetAmount(paidAmountYen: number): number {
 /**
  * キャンセルポリシーに基づいて返金額（円）を計算する
  *
+ * タイムゾーン設計:
+ *   hoursUntil は絶対時間（ミリ秒差）で計算する。
+ *   UTC・JST・その他どのタイムゾーンでも結果は同一。
+ *   「72時間前」はセッション開始の 72時間前の瞬間を指し、
+ *   日付や曜日・タイムゾーンに依存しない。
+ *
  * 返金はホストの純受取額をベースに計算する。
  * これにより、キャンセルした参加者が Stripe 手数料と NearJam 手数料を
  * 全額負担し、ホストは損失を被らない。
  *
  * 例: チケット 1,000 円、ホスト純受取 954 円
- *   - 3日前以前: 返金 954 円（参加者負担: 46 円 = 手数料のみ）
- *   - 1〜2日前: 返金 667 円（参加者負担: 333 円）
- *   - 当日: 返金 0 円（参加者負担: 1,000 円）
+ *   - 72時間以上前: 返金 954 円（参加者負担: 46 円 = 手数料のみ）
+ *   - 24〜72時間前: 返金 667 円（参加者負担: 333 円）
+ *   - 24時間未満:   返金 0 円（参加者負担: 1,000 円）
  */
 export function calcRefundAmount(
   paidAmountYen: number,
@@ -59,24 +65,23 @@ export function calcRefundAmount(
   policy?: CancellationPolicy | null
 ): number {
   const hostNetAmountYen = calcHostNetAmount(paidAmountYen)
-  const daysUntilSession = Math.floor(
-    (sessionStartsAt.getTime() - cancelledAt.getTime()) / (1000 * 60 * 60 * 24)
-  )
+  const hoursUntilSession =
+    (sessionStartsAt.getTime() - cancelledAt.getTime()) / (1000 * 60 * 60)
 
   const tiers = policy?.tiers ?? DEFAULT_CANCELLATION_TIERS
 
-  // daysUntil が大きい順に並んでいる前提で、最初にマッチしたものを適用
-  for (const tier of [...tiers].sort((a, b) => b.daysUntil - a.daysUntil)) {
-    if (daysUntilSession >= tier.daysUntil) {
+  // hoursUntil が大きい順に並べ、最初にマッチしたティアを適用
+  for (const tier of [...tiers].sort((a, b) => b.hoursUntil - a.hoursUntil)) {
+    if (hoursUntilSession >= tier.hoursUntil) {
       return Math.floor(hostNetAmountYen * (tier.refundPercent / 100))
     }
   }
 
-  return 0 // 当日キャンセルは返金なし
+  return 0
 }
 
 export interface CancellationTier {
-  daysUntil: number   // セッション何日前まで
+  hoursUntil: number    // セッション開始の何時間前まで（絶対時間）
   refundPercent: number // 返金率 (0〜100)
 }
 
@@ -85,23 +90,23 @@ export interface CancellationPolicy {
 }
 
 export const DEFAULT_CANCELLATION_TIERS: CancellationTier[] = [
-  { daysUntil: 3, refundPercent: 100 }, // 3日前以前: 全額返金
-  { daysUntil: 1, refundPercent: 70 },  // 1〜2日前: 70%返金
-  { daysUntil: 0, refundPercent: 0 },   // 当日: 返金なし
+  { hoursUntil: 72, refundPercent: 100 }, // 72時間（3日）以上前: 手数料のみ差し引いて返金
+  { hoursUntil: 24, refundPercent: 70 },  // 24〜72時間前: 70%返金
+  { hoursUntil: 0,  refundPercent: 0 },   // 24時間未満: 返金なし
 ]
 
 /**
- * キャンセルポリシーの説明文を生成する
+ * キャンセルポリシーの説明文を生成する（Stripe Checkout の description 等に使用）
  */
 export function describeCancellationPolicy(policy?: CancellationPolicy | null): string {
   const tiers = policy?.tiers ?? DEFAULT_CANCELLATION_TIERS
-  const sorted = [...tiers].sort((a, b) => b.daysUntil - a.daysUntil)
+  const sorted = [...tiers].sort((a, b) => b.hoursUntil - a.hoursUntil)
 
   return sorted
     .map((tier) => {
-      if (tier.refundPercent === 100) return `${tier.daysUntil}日前まで: 全額返金`
-      if (tier.refundPercent === 0) return `当日: 返金なし（100%キャンセル料）`
-      return `${tier.daysUntil}日前〜: ${100 - tier.refundPercent}%キャンセル料（${tier.refundPercent}%返金）`
+      if (tier.refundPercent === 100) return `${tier.hoursUntil}時間前まで: 手数料差し引き返金`
+      if (tier.refundPercent === 0)   return `${tier.hoursUntil}時間未満: 返金なし`
+      return `${tier.hoursUntil}時間前〜: ${100 - tier.refundPercent}%キャンセル料（${tier.refundPercent}%返金）`
     })
     .join(' / ')
 }

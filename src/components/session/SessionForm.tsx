@@ -275,7 +275,9 @@ export function SessionForm({
           )}
           <p className="text-gray-500 border-t border-blue-100 pt-2">
             <span className="font-medium text-orange-600">キャンセルポリシー（NearJam 標準）:</span><br />
-            3日前以前にキャンセルされた場合、手数料（4.6%相当）は参加者が負担します。ホストへの損失はありません。
+            セッション開始の72時間以上前: 手数料のみ参加者負担・ホスト損失ゼロ<br />
+            24〜72時間前: 30%キャンセル料 / 24時間未満: 全額キャンセル料<br />
+            <span className="text-gray-400">判定はセッション開始時刻からの絶対時間で行います</span>
           </p>
         </div>
       </div>
