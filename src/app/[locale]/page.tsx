@@ -59,9 +59,15 @@ export default async function HomePage({
     ).catch(() => null),
     withTimeout(
       Promise.all([
-        prisma.venue.count(),
+        prisma.venue.count({ where: { tendencies: { some: { isActive: true } } } }),
         prisma.sessionTendency.count({ where: { isActive: true } }),
-        prisma.jamSession.count({ where: { startsAt: { gte: new Date() } } }),
+        (() => {
+          const now = new Date();
+          const endOfWeek = new Date(now);
+          endOfWeek.setDate(now.getDate() + (6 - now.getDay()));
+          endOfWeek.setHours(23, 59, 59, 999);
+          return prisma.jamSession.count({ where: { startsAt: { gte: now, lte: endOfWeek } } });
+        })(),
       ]),
       4000
     ).catch(() => null),
@@ -112,7 +118,7 @@ export default async function HomePage({
             </div>
             <div className="rounded-xl border bg-white p-6 shadow-sm">
               <p className="text-3xl font-bold text-violet-700">{upcomingCount}</p>
-              <p className="mt-1 text-sm text-gray-500">{locale === 'ja' ? '今後のセッション' : 'Upcoming Sessions'}</p>
+              <p className="mt-1 text-sm text-gray-500">{locale === 'ja' ? '今週のセッション' : 'Sessions This Week'}</p>
             </div>
           </div>
         </section>
