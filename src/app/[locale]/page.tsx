@@ -25,7 +25,7 @@ export default async function HomePage({
   const [venues, sessions, stats] = await Promise.all([
     withTimeout(
       prisma.venue.findMany({
-        take: 6,
+        take: 9,
         where: {
           tendencies: { some: { isActive: true } },
         },
@@ -42,7 +42,7 @@ export default async function HomePage({
     ).catch(() => null),
     withTimeout(
       prisma.jamSession.findMany({
-        take: 6,
+        take: 9,
         where: { startsAt: { gte: new Date() } },
         orderBy: { startsAt: 'asc' },
         include: {
