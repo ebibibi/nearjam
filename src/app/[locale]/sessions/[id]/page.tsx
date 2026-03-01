@@ -79,6 +79,13 @@ export default async function SessionDetailPage({
   const isAdmin = authSession?.user?.id === session.sessionAdminId;
   const startDate = new Date(session.startsAt);
 
+  // Google Calendar link
+  const gcalFormat = (d: Date) => d.toISOString().replace(/[-:]/g, '').slice(0, 15) + 'Z';
+  const gcalEnd = new Date(startDate.getTime() + (session.durationMinutes ?? 120) * 60 * 1000);
+  const gcalLocation = session.venue?.address ?? session.venue?.name ?? '';
+  const gcalDetails = `NearJam でセッション詳細を確認: ${process.env.NEXT_PUBLIC_APP_URL ?? 'https://nearjam.app'}/${locale}/sessions/${id}`;
+  const gcalUrl = `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(session.title)}&dates=${gcalFormat(startDate)}/${gcalFormat(gcalEnd)}&details=${encodeURIComponent(gcalDetails)}&location=${encodeURIComponent(gcalLocation)}`;
+
   // Check if current user is registered
   let isRegistered = false;
   let myProfileId: string | null = null;
@@ -132,11 +139,19 @@ export default async function SessionDetailPage({
             {session.isSyncroom && <Badge variant="syncroom">SYNCROOM</Badge>}
           </div>
         </div>
-        <div className="mt-2">
+        <div className="mt-2 flex items-center gap-2">
           <ShareButton
             title={session.title}
             url={`${process.env.NEXT_PUBLIC_APP_URL ?? 'https://nearjam.app'}/${locale}/sessions/${id}`}
           />
+          <a
+            href={gcalUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 rounded-full border border-gray-300 bg-white px-3 py-1.5 text-xs text-gray-600 hover:bg-gray-50 transition-colors"
+          >
+            📅 カレンダーに追加
+          </a>
         </div>
       </div>
 
