@@ -12,6 +12,7 @@ import { MoodFlagBadges } from '@/components/session/MoodFlagBadges';
 import { RegistrationButton } from '@/components/session/RegistrationButton';
 import { SessionAdminPanel } from '@/components/session/SessionAdminPanel';
 import { TicketSection } from '@/components/session/TicketSection';
+import { ShareButton } from '@/components/session/ShareButton';
 import { CancellationPolicy } from '@/lib/stripe';
 
 export async function generateMetadata({
@@ -130,6 +131,12 @@ export default async function SessionDetailPage({
             <Badge variant="genre">{t(`session.formats.${session.format}`)}</Badge>
             {session.isSyncroom && <Badge variant="syncroom">SYNCROOM</Badge>}
           </div>
+        </div>
+        <div className="mt-2">
+          <ShareButton
+            title={session.title}
+            url={`${process.env.NEXT_PUBLIC_APP_URL ?? 'https://nearjam.app'}/${locale}/sessions/${id}`}
+          />
         </div>
       </div>
 
