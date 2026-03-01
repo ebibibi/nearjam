@@ -29,13 +29,13 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
-  const isJa = locale === 'ja';
-  const defaultTitle = isJa
-    ? 'NearJam — ジャムセッション会場・スケジュール検索'
-    : 'NearJam — Find Jam Session Venues & Schedules';
-  const description = isJa
-    ? '全国のジャズ・ブルース・ロックのジャムセッション会場を検索。定期開催セッションのスケジュール確認、参加申込み、ミュージシャンとのマッチングができます。'
-    : 'Find jazz, blues, and rock jam session venues across Japan. Check schedules, register for sessions, and connect with musicians.';
+  const t = await getTranslations({ locale });
+  const defaultTitle = t('meta.siteTitle');
+  const description = t('meta.siteDesc');
+  const ogLocale = locale === 'ja' ? 'ja_JP' : 'en_US';
+  const keywords = locale === 'ja'
+    ? ['ジャムセッション', 'ジャズ', 'ブルース', 'セッション', '演奏', 'ライブハウス', 'ジャズバー']
+    : ['jam session', 'jazz', 'blues', 'live music', 'musicians', 'session bar', 'Japan'];
 
   return {
     title: {
@@ -43,9 +43,7 @@ export async function generateMetadata({
       template: '%s | NearJam',
     },
     description,
-    keywords: isJa
-      ? ['ジャムセッション', 'ジャズ', 'ブルース', 'セッション', '演奏', 'ライブハウス', 'ジャズバー']
-      : ['jam session', 'jazz', 'blues', 'live music', 'musicians', 'session bar', 'Japan'],
+    keywords,
     manifest: '/manifest.json',
     alternates: {
       canonical: `${BASE_URL}/${locale}`,
@@ -64,7 +62,7 @@ export async function generateMetadata({
       siteName: 'NearJam',
       title: defaultTitle,
       description,
-      locale: isJa ? 'ja_JP' : 'en_US',
+      locale: ogLocale,
     },
     twitter: {
       card: 'summary',

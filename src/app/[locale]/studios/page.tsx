@@ -13,11 +13,10 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
+  const t = await getTranslations({ locale });
   const count = await prisma.studio.count();
-  const title = locale === 'ja' ? '練習スタジオ一覧' : 'Practice Studios';
-  const desc = locale === 'ja'
-    ? `全国 ${count} 件の練習スタジオを掲載。ジャムセッション練習・バンドリハーサル向けスタジオを検索できます。`
-    : `Browse ${count} practice studios. Find rehearsal spaces for jam sessions and band practice.`;
+  const title = t('studio.meta.title');
+  const desc = t('studio.meta.desc', { count });
   return {
     title,
     description: desc,

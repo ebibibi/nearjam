@@ -31,16 +31,15 @@ export async function generateMetadata({
   });
   if (!session) return {};
 
+  const t = await getTranslations({ locale });
   const dateStr = new Date(session.startsAt).toLocaleDateString(locale, {
     month: 'long', day: 'numeric', weekday: 'short',
   });
-  const venuePart = session.venue ? `${session.venue.name}` : '';
-  const stationPart = session.venue?.nearestStation
-    ? (locale === 'ja' ? `（${session.venue.nearestStation}駅）` : ` (${session.venue.nearestStation} Station)`)
+  const venuePart = session.venue?.name ?? '';
+  const stationSuffix = session.venue?.nearestStation
+    ? t('session.meta.stationSuffix', { station: session.venue.nearestStation })
     : '';
-  const desc = locale === 'ja'
-    ? `${dateStr}開催 — ${venuePart}${stationPart}のジャムセッション。NearJam で参加申込・スケジュール確認。`
-    : `${venuePart}${stationPart} — Jam session on ${dateStr}. Register and check schedule on NearJam.`;
+  const desc = t('session.meta.detailDesc2', { venuePart, stationSuffix, dateStr });
 
   return {
     title: session.title,
@@ -87,9 +86,7 @@ export default async function SessionDetailPage({
   const gcalFormat = (d: Date) => d.toISOString().replace(/[-:]/g, '').slice(0, 15) + 'Z';
   const gcalEnd = new Date(startDate.getTime() + (session.durationMinutes ?? 120) * 60 * 1000);
   const gcalLocation = session.venue?.address ?? session.venue?.name ?? '';
-  const gcalDetails = locale === 'ja'
-    ? `NearJam でセッション詳細を確認: ${process.env.NEXT_PUBLIC_APP_URL ?? 'https://nearjam.app'}/${locale}/sessions/${id}`
-    : `View session details on NearJam: ${process.env.NEXT_PUBLIC_APP_URL ?? 'https://nearjam.app'}/${locale}/sessions/${id}`;
+  const gcalDetails = t('session.gcalDetails', { url: `${process.env.NEXT_PUBLIC_APP_URL ?? 'https://nearjam.app'}/${locale}/sessions/${id}` });
   const gcalUrl = `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(session.title)}&dates=${gcalFormat(startDate)}/${gcalFormat(gcalEnd)}&details=${encodeURIComponent(gcalDetails)}&location=${encodeURIComponent(gcalLocation)}`;
 
   // Check if current user is registered

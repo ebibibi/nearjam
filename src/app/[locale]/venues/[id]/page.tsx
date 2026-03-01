@@ -19,40 +19,32 @@ export async function generateMetadata({
   params: Promise<{ locale: string; id: string }>;
 }): Promise<Metadata> {
   const { locale, id } = await params;
+  const t = await getTranslations({ locale });
   const venue = await prisma.venue.findUnique({
     where: { id },
     select: { name: true, address: true, nearestStation: true, tendencies: { where: { isActive: true }, select: { name: true, genres: true }, take: 3 } },
   });
   if (!venue) return {};
 
-  const genres = [...new Set(venue.tendencies.flatMap(t => t.genres))].slice(0, 5);
+  const genres = [...new Set(venue.tendencies.flatMap((ten) => ten.genres))].slice(0, 5);
+  const sep = locale === 'ja' ? '・' : ', ';
 
-  const desc = locale === 'ja'
-    ? [
-        `${venue.name}のジャムセッション情報。`,
-        venue.nearestStation ? `${venue.nearestStation}駅近く。` : '',
-        venue.tendencies.length > 0 ? `定期セッション: ${venue.tendencies.map(t => t.name).join('、')}。` : '',
-        genres.length > 0 ? `ジャンル: ${genres.join('・')}。` : '',
-        'NearJam でセッションスケジュールを確認・参加申込できます。',
-      ].join('')
-    : [
-        `Jam session info for ${venue.name}.`,
-        venue.nearestStation ? `Near ${venue.nearestStation} station.` : '',
-        venue.tendencies.length > 0 ? `Sessions: ${venue.tendencies.map(t => t.name).join(', ')}.` : '',
-        genres.length > 0 ? `Genres: ${genres.join(', ')}.` : '',
-        'Find schedules and register on NearJam.',
-      ].join(' ');
+  const descParts = [
+    t('venue.meta.detailDesc', { name: venue.name }),
+    venue.nearestStation ? t('venue.meta.nearStation', { station: venue.nearestStation }) : '',
+    venue.tendencies.length > 0 ? t('venue.meta.hasSessions', { names: venue.tendencies.map((ten) => ten.name).join(sep) }) : '',
+    genres.length > 0 ? t('venue.meta.hasGenres', { genres: genres.join(sep) }) : '',
+    t('venue.meta.ctaRegister'),
+  ].filter(Boolean).join(' ');
 
-  const title = locale === 'ja'
-    ? `${venue.name} — ジャムセッション`
-    : `${venue.name} — Jam Sessions`;
+  const title = t('venue.meta.detailTitle', { name: venue.name });
 
   return {
     title,
-    description: desc.slice(0, 160),
+    description: descParts.slice(0, 160),
     openGraph: {
       title: `${title} | NearJam`,
-      description: desc.slice(0, 160),
+      description: descParts.slice(0, 160),
     },
   };
 }

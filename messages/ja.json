@@ -250,7 +250,18 @@
     "searchResults": "「{q}」の検索結果: {n} 件",
     "genreResults": "「{genre}」の会場: {n} 件",
     "allVenues": "全 {n} 件の会場",
-    "withSessions": "セッション情報あり: {n} 件"
+    "withSessions": "セッション情報あり: {n} 件",
+    "meta": {
+      "title": "ジャムセッション会場一覧",
+      "desc": "全国 {count} 件のジャムセッション会場を掲載。ジャズ・ブルース・ポップスのセッションバー・ライブハウスを検索。",
+      "detailDesc": "{name}の会場情報とセッションスケジュール。NearJamでセッション検索・参加申込。",
+      "stationSuffix": "（{station}駅）",
+      "detailTitle": "{name} — ジャムセッション",
+      "nearStation": "{station}駅近く。",
+      "hasSessions": "定期セッション: {names}。",
+      "hasGenres": "ジャンル: {genres}。",
+      "ctaRegister": "NearJamでセッションスケジュールを確認・参加申込できます。"
+    }
   },
   "studio": {
     "title": "練習スタジオ",
@@ -288,7 +299,16 @@
     "website": "ウェブサイト",
     "phone": "電話番号",
     "viewDetails": "詳細を見る",
-    "directions": "経路案内"
+    "directions": "経路案内",
+    "meta": {
+      "title": "練習スタジオ一覧",
+      "desc": "全国 {count} 件の練習スタジオを掲載。ジャムセッション練習・バンドリハーサル向けスタジオを検索。",
+      "detailDesc": "{name}のスタジオ情報とルーム詳細。ジャムセッション・バンドリハーサル向けスタジオ。",
+      "detailTitle": "{name} — 練習スタジオ",
+      "nearStation": "{station}駅近く。",
+      "roomCount": "{n}部屋あり。",
+      "ctaBook": "料金・設備・予約方法を掲載中。"
+    }
   },
   "session": {
     "title": "セッション",
@@ -355,7 +375,15 @@
     "nextWeek": "来週",
     "weekLabel": "{month} 第{n}週",
     "countResults": "{n} 件",
-    "countResultsFiltered": "絞り込み結果: {n} 件"
+    "countResultsFiltered": "絞り込み結果: {n} 件",
+    "meta": {
+      "title": "セッション一覧",
+      "desc": "全国のジャムセッション {count} 件を掲載中。ジャズ・ブルース・ファンク・ラテンなど幅広いジャンルのセッションを検索・参加申込できます。",
+      "detailDesc": "{venuePart}{stationSuffix} — {dateStr}開催のジャムセッション。NearJamで参加申込・スケジュール確認。",
+      "stationSuffix": "（{station}駅）",
+      "detailDesc2": "{dateStr}開催 — {venuePart}{stationSuffix}のジャムセッション。NearJamで参加申込・スケジュール確認。"
+    },
+    "gcalDetails": "NearJamでセッション詳細を確認: {url}"
   },
   "song": {
     "title": "曲",
@@ -494,7 +522,19 @@
       "BEGINNER": "初心者",
       "INTERMEDIATE": "中級者",
       "ADVANCED": "上級者",
-      "PROFESSIONAL": "プロ"
+      "PROFESSIONAL": "プロ",
+      "ANY": "レベル不問"
+    },
+    "match": {
+      "title": "マッチング提案",
+      "subtitle": "あなたとウィッシュリストが重なっているミュージシャンです",
+      "sharedSongs": "共通曲 {n}曲",
+      "moreSongs": "+{n}曲",
+      "noWishlist": "ウィッシュリストに曲を追加すると、マッチングが始まります",
+      "browseSongs": "曲を探す →",
+      "empty": "現在マッチする候補がいません",
+      "emptyHint": "ウィッシュリストを増やすとマッチングが増えます",
+      "nameNotSet": "名前未設定"
     }
   },
   "kudos": {
@@ -567,5 +607,9 @@
     "noItems": "レビュー待ちのアイテムはありません",
     "source": "ソース",
     "collectedAt": "収集日時"
+  },
+  "meta": {
+    "siteTitle": "NearJam — ジャムセッション会場・スケジュール検索",
+    "siteDesc": "全国のジャズ・ブルース・ロックのジャムセッション会場を検索。定期開催セッションのスケジュール確認、参加申込み、ミュージシャンとのマッチングができます。"
   }
 }

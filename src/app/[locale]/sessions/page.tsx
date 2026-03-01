@@ -16,11 +16,10 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
+  const t = await getTranslations({ locale });
   const count = await prisma.jamSession.count({ where: { startsAt: { gte: new Date() } } });
-  const title = locale === 'ja' ? 'セッション一覧' : 'Sessions';
-  const desc = locale === 'ja'
-    ? `全国のジャムセッション ${count} 件を掲載中。ジャズ・ブルース・ファンク・ラテンなど幅広いジャンルのセッションを検索・参加申込できます。`
-    : `Browse ${count} jam sessions. Search and register for jazz, blues, funk, and latin sessions near you.`;
+  const title = t('session.meta.title');
+  const desc = t('session.meta.desc', { count });
   return {
     title,
     description: desc,

@@ -2,8 +2,17 @@ import { auth } from '@/lib/auth'
 import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
+import { getTranslations } from 'next-intl/server'
+import { setRequestLocale } from 'next-intl/server'
 
-export default async function MatchSuggestionsPage() {
+export default async function MatchSuggestionsPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}) {
+  const { locale } = await params
+  setRequestLocale(locale)
+
   const session = await auth()
   if (!session?.user?.id) redirect('/auth/signin')
 
@@ -17,27 +26,24 @@ export default async function MatchSuggestionsPage() {
 
   if (!profile) redirect('/profile/setup')
 
+  const t = await getTranslations({ locale })
+
   return (
     <div className="container mx-auto max-w-3xl p-4">
-      <h1 className="mb-2 text-2xl font-bold">マッチング提案</h1>
-      <p className="mb-6 text-gray-500">
-        あなたとウィッシュリストが重なっているミュージシャンです
-      </p>
-      <MatchSuggestionsList />
+      <h1 className="mb-2 text-2xl font-bold">{t('musician.match.title')}</h1>
+      <p className="mb-6 text-gray-500">{t('musician.match.subtitle')}</p>
+      <MatchSuggestionsList locale={locale} />
     </div>
   )
 }
 
-// ─── クライアントコンポーネントとして切り出し ───
-// サーバー側で直接 API を呼ぶ代わりに、専用 fetch コンポーネントで実装
-async function MatchSuggestionsList() {
-  // サーバーコンポーネントで直接 Prisma 操作
-  // (APIルートと同じロジックをSSRで実行)
+async function MatchSuggestionsList({ locale }: { locale: string }) {
   const { auth: serverAuth } = await import('@/lib/auth')
   const session = await serverAuth()
   if (!session?.user?.id) return null
 
   const { prisma: db } = await import('@/lib/prisma')
+  const t = await getTranslations({ locale })
 
   const myProfile = await db.musicianProfile.findUnique({
     where: { userId: session.user.id },
@@ -47,9 +53,9 @@ async function MatchSuggestionsList() {
   if (!myProfile || myProfile.wishlist.length === 0) {
     return (
       <div className="rounded-lg border border-dashed p-8 text-center text-gray-500">
-        <p>ウィッシュリストに曲を追加すると、マッチングが始まります</p>
+        <p>{t('musician.match.noWishlist')}</p>
         <Link href="/songs" className="mt-3 inline-block text-blue-600 hover:underline">
-          曲を探す →
+          {t('musician.match.browseSongs')}
         </Link>
       </div>
     )
@@ -100,8 +106,8 @@ async function MatchSuggestionsList() {
   if (suggestions.length === 0) {
     return (
       <div className="rounded-lg border border-dashed p-8 text-center text-gray-500">
-        <p>現在マッチする候補がいません</p>
-        <p className="mt-1 text-sm">ウィッシュリストを増やすとマッチングが増えます</p>
+        <p>{t('musician.match.empty')}</p>
+        <p className="mt-1 text-sm">{t('musician.match.emptyHint')}</p>
       </div>
     )
   }
@@ -112,13 +118,6 @@ async function MatchSuggestionsList() {
     select: { id: true, title: true, artist: true },
   })
   const songMap = new Map(songs.map((s) => [s.id, s]))
-
-  const SKILL_LABELS: Record<string, string> = {
-    BEGINNER: '初心者',
-    INTERMEDIATE: '中級',
-    ADVANCED: '上級',
-    ANY: 'レベル不問',
-  }
 
   return (
     <div className="space-y-4">
@@ -134,17 +133,17 @@ async function MatchSuggestionsList() {
                   href={`/musicians/${profile.user.id}`}
                   className="font-semibold hover:underline"
                 >
-                  {profile.user.nickname ?? '名前未設定'}
+                  {profile.user.nickname ?? t('musician.match.nameNotSet')}
                 </Link>
                 <span className="rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-600">
-                  {SKILL_LABELS[profile.skillLevel] ?? profile.skillLevel}
+                  {t(`musician.skillLevel.${profile.skillLevel}` as Parameters<typeof t>[0]) ?? profile.skillLevel}
                 </span>
               </div>
               <p className="text-sm text-gray-500">
                 {profile.instruments.map((i) => i.instrument).join(' · ')}
               </p>
               <p className="mt-1 text-sm text-blue-700 font-medium">
-                共通曲 {sharedSongs.length}曲
+                {t('musician.match.sharedSongs', { n: sharedSongs.length })}
               </p>
               <div className="mt-1 flex flex-wrap gap-1">
                 {sharedSongs.slice(0, 5).map((id) => {
@@ -156,7 +155,9 @@ async function MatchSuggestionsList() {
                   ) : null
                 })}
                 {sharedSongs.length > 5 && (
-                  <span className="text-xs text-gray-400">+{sharedSongs.length - 5}曲</span>
+                  <span className="text-xs text-gray-400">
+                    {t('musician.match.moreSongs', { n: sharedSongs.length - 5 })}
+                  </span>
                 )}
               </div>
             </div>

@@ -250,7 +250,18 @@
     "searchResults": "{n} results for \"{q}\"",
     "genreResults": "{n} venues for \"{genre}\"",
     "allVenues": "All {n} venues",
-    "withSessions": "{n} venues with sessions"
+    "withSessions": "{n} venues with sessions",
+    "meta": {
+      "title": "Jam Session Venues",
+      "desc": "Browse {count} jam session venues. Find jazz, blues, and pop session bars and live houses in Japan.",
+      "detailDesc": "Venue info and session schedule for {name}. Find sessions, check schedules, and register on NearJam.",
+      "stationSuffix": " ({station} Station)",
+      "detailTitle": "{name} — Jam Sessions",
+      "nearStation": "Near {station} station.",
+      "hasSessions": "Sessions: {names}.",
+      "hasGenres": "Genres: {genres}.",
+      "ctaRegister": "Find schedules and register on NearJam."
+    }
   },
   "studio": {
     "title": "Studios",
@@ -288,7 +299,16 @@
     "website": "Website",
     "phone": "Phone",
     "viewDetails": "View details",
-    "directions": "Get directions"
+    "directions": "Get directions",
+    "meta": {
+      "title": "Practice Studios",
+      "desc": "Browse {count} practice studios. Find rehearsal spaces for jam sessions and band practice.",
+      "detailDesc": "Studio info and room details for {name}. Book practice studios for jam sessions and band rehearsal.",
+      "detailTitle": "{name} — Practice Studio",
+      "nearStation": "Near {station} station.",
+      "roomCount": "{n} room(s) available.",
+      "ctaBook": "Check rates, equipment, and booking info on NearJam."
+    }
   },
   "session": {
     "title": "Sessions",
@@ -355,7 +375,15 @@
     "nextWeek": "Next Week",
     "weekLabel": "{month} Week {n}",
     "countResults": "{n} sessions",
-    "countResultsFiltered": "{n} sessions matching filters"
+    "countResultsFiltered": "{n} sessions matching filters",
+    "meta": {
+      "title": "Sessions",
+      "desc": "Browse {count} upcoming jam sessions. Search and register for jazz, blues, funk, and latin sessions near you.",
+      "detailDesc": "{venuePart}{stationSuffix} — Jam session on {dateStr}. Register and check schedule on NearJam.",
+      "stationSuffix": " ({station} Station)",
+      "detailDesc2": "{venuePart}{stationSuffix} — Jam session on {dateStr}. Register and check schedule on NearJam."
+    },
+    "gcalDetails": "View session details on NearJam: {url}"
   },
   "song": {
     "title": "Songs",
@@ -494,7 +522,19 @@
       "BEGINNER": "Beginner",
       "INTERMEDIATE": "Intermediate",
       "ADVANCED": "Advanced",
-      "PROFESSIONAL": "Professional"
+      "PROFESSIONAL": "Professional",
+      "ANY": "Any level"
+    },
+    "match": {
+      "title": "Musician Matches",
+      "subtitle": "Musicians who share songs on your wishlist",
+      "sharedSongs": "{n} songs in common",
+      "moreSongs": "+{n} more",
+      "noWishlist": "Add songs to your wishlist to start matching",
+      "browseSongs": "Browse songs →",
+      "empty": "No matches found yet",
+      "emptyHint": "Add more songs to your wishlist to find matches",
+      "nameNotSet": "Unnamed"
     }
   },
   "kudos": {
@@ -567,5 +607,9 @@
     "noItems": "No items pending review",
     "source": "Source",
     "collectedAt": "Collected at"
+  },
+  "meta": {
+    "siteTitle": "NearJam — Find Jam Session Venues & Schedules",
+    "siteDesc": "Find jazz, blues, and rock jam session venues across Japan. Check schedules, register for sessions, and connect with musicians."
   }
 }
