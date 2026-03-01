@@ -15,7 +15,7 @@ export async function POST(req: NextRequest, { params }: Params) {
   if (!session) return err('Session not found', 404);
 
   const body = await req.json().catch(() => null);
-  const { songId, instrument, keyPlayed, wasSuccessful } = body ?? {};
+  const { songId, instrument, wasSuccessful } = body ?? {};
 
   if (!songId || typeof songId !== 'string') {
     return err('songId required', 400);

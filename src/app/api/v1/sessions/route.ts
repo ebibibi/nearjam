@@ -22,7 +22,6 @@ function checkRateLimit(userId: string, maxPerHour = 5): boolean {
 export async function GET(req: NextRequest) {
   const sp = req.nextUrl.searchParams;
   const { limit, skip } = parsePagination(sp);
-  const genre = sp.get('genre');
   const syncroomOnly = sp.get('syncroom') === 'true';
   const dateFrom = sp.get('from');
 

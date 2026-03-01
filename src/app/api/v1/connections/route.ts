@@ -8,7 +8,7 @@ const CreateConnectionSchema = z.object({
 });
 
 /** 自分のコネクション一覧（pending/accepted）を取得 */
-export async function GET(_req: NextRequest) {
+export async function GET() {
   const authResult = await requireAuth();
   if ('status' in authResult) return authResult;
   const { userId } = authResult;

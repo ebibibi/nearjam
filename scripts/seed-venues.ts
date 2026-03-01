@@ -768,7 +768,6 @@ async function main() {
 
   let venueCreated = 0;
   let venueSkipped = 0;
-  let sessionCreated = 0;
 
   for (const venue of VENUES) {
     const before = await prisma.venue.count();
@@ -776,7 +775,6 @@ async function main() {
     const after = await prisma.venue.count();
     if (after > before) venueCreated++;
     else venueSkipped++;
-    sessionCreated += venue.sessions.length;
   }
 
   const total = await prisma.venue.count();

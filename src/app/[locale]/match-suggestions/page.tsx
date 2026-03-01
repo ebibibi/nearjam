@@ -125,6 +125,7 @@ async function MatchSuggestionsList({ locale }: { locale: string }) {
         <div key={profile.id} className="rounded-lg border p-4">
           <div className="flex items-start gap-3">
             {profile.user.image && (
+              // eslint-disable-next-line @next/next/no-img-element
               <img src={profile.user.image} alt="" className="h-12 w-12 rounded-full object-cover" />
             )}
             <div className="flex-1">
