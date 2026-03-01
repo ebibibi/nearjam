@@ -64,11 +64,14 @@ export default async function SessionsPage({
   const t = await getTranslations();
 
   const authSession = await auth();
-  const eightWeeksLater = new Date(Date.now() + 56 * 24 * 60 * 60 * 1000);
+  const now = new Date();
+  const eightWeeksLater = new Date(now.getTime() + 56 * 24 * 60 * 60 * 1000);
+  const endOfToday = new Date(now);
+  endOfToday.setHours(23, 59, 59, 999);
 
   // 最寄り駅別セッション件数集計 → トップ8
   const sessionVenues = await prisma.jamSession.findMany({
-    where: { startsAt: { gte: new Date(), lte: eightWeeksLater }, venue: { nearestStation: { not: null } } },
+    where: { startsAt: { gte: now, lte: eightWeeksLater }, venue: { nearestStation: { not: null } } },
     select: { venue: { select: { nearestStation: true } } },
   });
   const stationCounts: Record<string, number> = {};
@@ -83,7 +86,7 @@ export default async function SessionsPage({
 
   const sessions = await prisma.jamSession.findMany({
     where: {
-      startsAt: { gte: new Date(), lte: eightWeeksLater },
+      startsAt: { gte: now, lte: eightWeeksLater },
       ...(keywordFilter ? {
         OR: [
           { title: { contains: keywordFilter, mode: 'insensitive' } },
@@ -126,6 +129,11 @@ export default async function SessionsPage({
   const weekGroups = [...weekMap.entries()].map(([label, wSessions]) => ({ label, sessions: wSessions }));
 
   const hasFilter = !!venueFilter || !!stationFilter || dowFilter != null || !!keywordFilter;
+
+  // 今日のセッション（フィルタなし時のみ）
+  const todaySessions = !hasFilter
+    ? sessions.filter((s) => new Date(s.startsAt) <= endOfToday)
+    : [];
 
   return (
     <div className="space-y-8">
@@ -236,6 +244,21 @@ export default async function SessionsPage({
           <span className="rounded-full bg-violet-100 text-violet-700 px-3 py-1">🏠 {venueFilter}</span>
           <Link href={`/${locale}/sessions`} className="text-gray-400 hover:text-gray-600">✕ クリア</Link>
         </div>
+      )}
+
+      {/* 今日のセッション（フィルタなし時のみ） */}
+      {todaySessions.length > 0 && (
+        <section className="rounded-2xl bg-amber-50 border border-amber-200 p-4">
+          <h2 className="text-base font-bold text-amber-900 mb-3">
+            ☀️ {locale === 'ja' ? '今日のセッション' : "Today's Sessions"}
+            <span className="ml-2 text-sm font-normal text-amber-600">{todaySessions.length} 件</span>
+          </h2>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {todaySessions.map((s) => (
+              <SessionCard key={s.id} session={s} locale={locale} />
+            ))}
+          </div>
+        </section>
       )}
 
       {filteredSessions.length === 0 ? (
