@@ -117,7 +117,9 @@ export default async function VenuesPage({
 
       {/* ジャンルフィルタチップ */}
       {topGenres.length > 0 && !q && (
-        <div className="flex flex-wrap gap-2">
+        <div className="space-y-2">
+          <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">🎵 {locale === 'ja' ? 'ジャンルで絞り込む' : 'Filter by Genre'}</p>
+          <div className="flex flex-wrap gap-2">
           {genreFilter && (
             <Link
               href={`/${locale}/venues`}
@@ -143,12 +145,15 @@ export default async function VenuesPage({
               </Link>
             );
           })}
+          </div>
         </div>
       )}
 
       {/* エリアフィルタチップ */}
       {topStations.length > 0 && (
-        <div className="flex flex-wrap gap-2">
+        <div className="space-y-2">
+          <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">📍 {locale === 'ja' ? 'エリアで絞り込む' : 'Filter by Area'}</p>
+          <div className="flex flex-wrap gap-2">
           {q && (
             <Link
               href={`/${locale}/venues`}
@@ -174,6 +179,7 @@ export default async function VenuesPage({
               </Link>
             );
           })}
+          </div>
         </div>
       )}
 
