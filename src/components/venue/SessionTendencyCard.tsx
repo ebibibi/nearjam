@@ -49,8 +49,10 @@ export function SessionTendencyCard({ tendency }: TendencyCardProps) {
       </div>
 
       <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-600">
-        {dayName && (
+        {dayName ? (
           <span>📅 {dayName}{timeRange && ` ${timeRange}`}</span>
+        ) : (
+          <span className="text-gray-400">📅 不定期開催</span>
         )}
         {tendency.levelRange && <span>🎵 {tendency.levelRange}</span>}
         {tendency.entrySystem && <span>🎫 {tendency.entrySystem}</span>}
