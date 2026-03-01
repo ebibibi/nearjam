@@ -13,9 +13,7 @@ dotenv.config({ path: '.env.local' });
 dotenv.config({ path: '.env' });
 
 import { prisma } from '../src/lib/prisma';
-
-export const BOT_USER_ID = 'bot-nearjam-system';
-export const BOT_USER_EMAIL = 'bot@nearjam.app';
+export { BOT_USER_ID, BOT_USER_EMAIL } from './constants';
 
 async function main() {
   const existing = await prisma.user.findUnique({ where: { id: BOT_USER_ID } });

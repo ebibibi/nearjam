@@ -21,7 +21,7 @@ dotenv.config({ path: '.env.local' });
 dotenv.config({ path: '.env' });
 
 import { prisma } from '../src/lib/prisma';
-import { BOT_USER_ID } from './seed-bot-user';
+import { BOT_USER_ID } from './constants';
 
 interface ConnpassEvent {
   event_id: number;

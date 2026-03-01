@@ -752,7 +752,7 @@ async function seedVenue(venue: VenueSeed): Promise<void> {
           atmosphere: session.atmosphere,
           levelRange: session.levelRange,
           entrySystem: session.entrySystem,
-          sourceType: 'MANUAL',
+          sourceType: 'CROWDSOURCED',
           sourceUrl: venue.websiteUrl,
           isActive: true, // シードデータは即承認
         },
