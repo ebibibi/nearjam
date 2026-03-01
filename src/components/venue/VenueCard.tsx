@@ -93,15 +93,10 @@ export function VenueCard({ venue, locale }: VenueCardProps) {
             )}
           </CardContent>
         ) : (
-          <CardContent className="flex-1 text-gray-400 text-sm">
-            {locale === 'ja' ? 'セッション情報なし' : 'No session info'}
-          </CardContent>
-        )}
-
-        {venue.tendencies.length === 0 && (
-          <div className="mt-2">
+          <CardContent className="flex-1 text-gray-400 text-sm space-y-2">
+            <p>{locale === 'ja' ? 'セッション情報なし' : 'No session info'}</p>
             <Badge variant="unverified">{t('venue.unverified')}</Badge>
-          </div>
+          </CardContent>
         )}
       </Card>
     </Link>
