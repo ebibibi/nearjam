@@ -41,6 +41,7 @@ export function SessionForm({
   initialMoodFlags,
 }: SessionFormProps) {
   const t = useTranslations();
+  const tFee = useTranslations('session.feeSection');
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -234,25 +235,25 @@ export function SessionForm({
         </div>
       )}
 
-      {/* 参加費（有料セッション設定） */}
+      {/* Ticket price (paid session settings) */}
       <div className="rounded-xl border border-blue-100 bg-blue-50 p-4 space-y-3">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            💳 参加費（円）
-            <span className="ml-2 text-xs font-normal text-gray-400">空欄 = 無料 or 現地集金</span>
+            {tFee('priceLabel')}
+            <span className="ml-2 text-xs font-normal text-gray-400">{tFee('priceHint')}</span>
           </label>
           <Input
             type="number"
             value={values.ticketPriceYen}
             onChange={set('ticketPriceYen')}
             min={100}
-            placeholder="例: 1500"
+            placeholder="1500"
           />
         </div>
 
-        {/* ホスト向け手数料の内訳説明 */}
+        {/* Host fee breakdown */}
         <div className="rounded-lg bg-white border border-blue-100 p-3 text-xs text-gray-600 space-y-2">
-          <p className="font-semibold text-gray-700">💡 手数料と受取額について（ホスト向け）</p>
+          <p className="font-semibold text-gray-700">{tFee('feeTitle')}</p>
           {values.ticketPriceYen && parseInt(values.ticketPriceYen, 10) > 0 ? (
             (() => {
               const price = parseInt(values.ticketPriceYen, 10);
@@ -262,22 +263,22 @@ export function SessionForm({
               return (
                 <table className="w-full text-xs">
                   <tbody>
-                    <tr><td className="py-0.5 text-gray-500">参加者が支払う</td><td className="text-right font-medium">¥{price.toLocaleString()}</td></tr>
-                    <tr><td className="py-0.5 text-gray-400">　Stripe 決済手数料（3.6%）</td><td className="text-right text-red-400">−¥{stripeFee.toLocaleString()}</td></tr>
-                    <tr><td className="py-0.5 text-gray-400">　NearJam プラットフォーム手数料（1%）</td><td className="text-right text-red-400">−¥{platformFee.toLocaleString()}</td></tr>
-                    <tr className="border-t border-blue-100"><td className="pt-1 font-semibold text-blue-700">あなたの受取額</td><td className="pt-1 text-right font-bold text-blue-700">¥{hostNet.toLocaleString()}</td></tr>
+                    <tr><td className="py-0.5 text-gray-500">{tFee('participantPays')}</td><td className="text-right font-medium">¥{price.toLocaleString()}</td></tr>
+                    <tr><td className="py-0.5 text-gray-400">{tFee('stripeFee')}</td><td className="text-right text-red-400">−¥{stripeFee.toLocaleString()}</td></tr>
+                    <tr><td className="py-0.5 text-gray-400">{tFee('platformFee')}</td><td className="text-right text-red-400">−¥{platformFee.toLocaleString()}</td></tr>
+                    <tr className="border-t border-blue-100"><td className="pt-1 font-semibold text-blue-700">{tFee('hostReceives')}</td><td className="pt-1 text-right font-bold text-blue-700">¥{hostNet.toLocaleString()}</td></tr>
                   </tbody>
                 </table>
               );
             })()
           ) : (
-            <p className="text-gray-400">参加費を入力すると受取額が表示されます</p>
+            <p className="text-gray-400">{tFee('enterPriceToSee')}</p>
           )}
           <p className="text-gray-500 border-t border-blue-100 pt-2">
-            <span className="font-medium text-orange-600">キャンセルポリシー（NearJam 標準）:</span><br />
-            セッション開始の72時間以上前: 手数料のみ参加者負担・ホスト損失ゼロ<br />
-            24〜72時間前: 30%キャンセル料 / 24時間未満: 全額キャンセル料<br />
-            <span className="text-gray-400">判定はセッション開始時刻からの絶対時間で行います</span>
+            <span className="font-medium text-orange-600">{tFee('cancelPolicyLabel')}</span><br />
+            {tFee('cancelPolicy72h')}<br />
+            {tFee('cancelPolicy24to72h')}<br />
+            <span className="text-gray-400">{tFee('cancelPolicyNote')}</span>
           </p>
         </div>
       </div>

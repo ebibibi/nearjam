@@ -504,6 +504,20 @@
       "checkoutFailed": "決済の開始に失敗しました",
       "cancelFailed": "キャンセルに失敗しました",
       "cancelConfirm": "キャンセルします。キャンセルポリシーに基づいて返金されます。よろしいですか？"
+    },
+    "feeSection": {
+      "priceLabel": "💳 参加費（円）",
+      "priceHint": "空欄 = 無料 or 現地集金",
+      "feeTitle": "💡 手数料と受取額について（ホスト向け）",
+      "participantPays": "参加者が支払う",
+      "stripeFee": "　Stripe 決済手数料（3.6%）",
+      "platformFee": "　NearJam プラットフォーム手数料（1%）",
+      "hostReceives": "あなたの受取額",
+      "enterPriceToSee": "参加費を入力すると受取額が表示されます",
+      "cancelPolicyLabel": "キャンセルポリシー（NearJam 標準）:",
+      "cancelPolicy72h": "セッション開始の72時間以上前: 手数料のみ参加者負担・ホスト損失ゼロ",
+      "cancelPolicy24to72h": "24〜72時間前: 30%キャンセル料 / 24時間未満: 全額キャンセル料",
+      "cancelPolicyNote": "判定はセッション開始時刻からの絶対時間で行います"
     }
   },
   "song": {

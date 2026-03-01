@@ -504,6 +504,20 @@
       "checkoutFailed": "Failed to start payment.",
       "cancelFailed": "Failed to cancel.",
       "cancelConfirm": "This will cancel your registration. A refund will be issued per the cancellation policy. Proceed?"
+    },
+    "feeSection": {
+      "priceLabel": "💳 Ticket price (JPY)",
+      "priceHint": "Leave blank for free or pay at venue",
+      "feeTitle": "💡 Fee breakdown (for hosts)",
+      "participantPays": "Participant pays",
+      "stripeFee": "　Stripe processing fee (3.6%)",
+      "platformFee": "　NearJam platform fee (1%)",
+      "hostReceives": "You receive",
+      "enterPriceToSee": "Enter a ticket price to see your earnings",
+      "cancelPolicyLabel": "Cancellation policy (NearJam standard):",
+      "cancelPolicy72h": "72+ hours before session: fees only charged to participant, no loss for host",
+      "cancelPolicy24to72h": "24–72 hours: 30% cancellation fee / under 24 hours: full amount",
+      "cancelPolicyNote": "Determined by absolute hours from session start time"
     }
   },
   "song": {
