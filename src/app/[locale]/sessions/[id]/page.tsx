@@ -126,6 +126,26 @@ export default async function SessionDetailPage({
 
   void myProfileId;
 
+  // この会場の他の今後のセッション
+  const otherVenueSessions = session.venueId
+    ? await prisma.jamSession.findMany({
+        where: {
+          venueId: session.venueId,
+          id: { not: id },
+          startsAt: { gte: new Date() },
+        },
+        orderBy: { startsAt: 'asc' },
+        take: 5,
+        select: {
+          id: true,
+          title: true,
+          startsAt: true,
+          durationMinutes: true,
+          ticketPriceYen: true,
+        },
+      })
+    : [];
+
   return (
     <div className="max-w-3xl space-y-8">
       <div>
@@ -342,6 +362,50 @@ export default async function SessionDetailPage({
           <p className="text-sm text-gray-400 italic">{t('session.participantsPrivate')}</p>
         )}
       </section>
+
+      {/* この会場の他のセッション */}
+      {otherVenueSessions.length > 0 && session.venue && (
+        <section>
+          <h2 className="text-lg font-bold text-gray-900 mb-3">
+            📅 {locale === 'ja' ? `${session.venue.name} の他のセッション` : `More sessions at ${session.venue.name}`}
+          </h2>
+          <div className="space-y-2">
+            {otherVenueSessions.map((s) => (
+              <Link
+                key={s.id}
+                href={`/${locale}/sessions/${s.id}`}
+                className="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 hover:bg-gray-100 transition-colors"
+              >
+                <div>
+                  <p className="text-sm font-medium text-gray-900">{s.title}</p>
+                  <p className="text-xs text-gray-500 mt-0.5">
+                    {new Date(s.startsAt).toLocaleDateString(locale, {
+                      month: 'short',
+                      day: 'numeric',
+                      weekday: 'short',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    })}
+                    {s.durationMinutes && ` (${s.durationMinutes}${t('common.minutes')})`}
+                  </p>
+                </div>
+                {s.ticketPriceYen != null && s.ticketPriceYen > 0 ? (
+                  <span className="text-xs rounded-full bg-blue-100 text-blue-700 px-2 py-0.5 shrink-0">
+                    ¥{s.ticketPriceYen.toLocaleString()}
+                  </span>
+                ) : (
+                  <span className="text-xs rounded-full bg-green-100 text-green-700 px-2 py-0.5 shrink-0">
+                    {locale === 'ja' ? '無料' : 'Free'}
+                  </span>
+                )}
+              </Link>
+            ))}
+          </div>
+          <Link href={`/${locale}/venues/${session.venue.id}`} className="mt-3 inline-block text-sm text-violet-600 hover:underline">
+            {locale === 'ja' ? '会場ページを見る →' : 'View venue page →'}
+          </Link>
+        </section>
+      )}
     </div>
   );
 }
