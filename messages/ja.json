@@ -711,6 +711,12 @@
       "empty": "現在マッチする候補がいません",
       "emptyHint": "ウィッシュリストを増やすとマッチングが増えます",
       "nameNotSet": "名前未設定"
+    },
+    "meta": {
+      "title": "{name} — NearJam",
+      "titleAnon": "ミュージシャンプロフィール — NearJam",
+      "desc": "{name} さんはNearJamに登録しているミュージシャンです。",
+      "descWithInstruments": "{name} さん（{instruments}）のNearJamプロフィール。"
     }
   },
   "kudos": {

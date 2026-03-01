@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { AuthButton } from './AuthButton';
+import { MobileNav } from './MobileNav';
 
 interface HeaderProps {
   locale: string;
@@ -19,7 +20,7 @@ export async function Header({ locale }: HeaderProps) {
 
   return (
     <header className="sticky top-0 z-50 border-b border-gray-200 bg-white/95 backdrop-blur-sm">
-      <div className="mx-auto flex max-w-6xl items-center gap-4 px-4 py-3">
+      <div className="relative mx-auto flex max-w-6xl items-center gap-4 px-4 py-3">
         {/* ロゴ */}
         <Link href={`/${locale}`} className="flex items-center gap-2">
           <span className="text-xl">🎸</span>
@@ -39,10 +40,11 @@ export async function Header({ locale }: HeaderProps) {
           ))}
         </nav>
 
-        {/* 右側: 言語スイッチャー + 認証ボタン */}
+        {/* 右側: モバイルメニュー + 言語スイッチャー + 認証ボタン */}
         <div className="ml-auto flex items-center gap-2">
           <LanguageSwitcher />
           <AuthButton />
+          <MobileNav navLinks={navLinks} />
         </div>
       </div>
     </header>

@@ -711,6 +711,12 @@
       "empty": "No matches found yet",
       "emptyHint": "Add more songs to your wishlist to find matches",
       "nameNotSet": "Unnamed"
+    },
+    "meta": {
+      "title": "{name} — NearJam",
+      "titleAnon": "Musician Profile — NearJam",
+      "desc": "{name} is a musician on NearJam.",
+      "descWithInstruments": "{name} plays {instruments} on NearJam."
     }
   },
   "kudos": {

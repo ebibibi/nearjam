@@ -3,10 +3,40 @@ import { setRequestLocale } from 'next-intl/server';
 import { getTranslations } from 'next-intl/server';
 import { notFound, redirect } from 'next/navigation';
 import Link from 'next/link';
+import type { Metadata } from 'next';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { Badge } from '@/components/ui/Badge';
 import { ConnectionRequestButton } from '@/components/connection/ConnectionRequestButton';
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string; id: string }>;
+}): Promise<Metadata> {
+  const { locale, id } = await params;
+  const t = await getTranslations({ locale, namespace: 'musician' });
+
+  const [user, profile] = await Promise.all([
+    prisma.user.findUnique({ where: { id }, select: { nickname: true } }),
+    prisma.musicianProfile.findUnique({
+      where: { userId: id },
+      select: { profileVisibility: true, instruments: { select: { instrument: true } } },
+    }),
+  ]);
+
+  if (!user || !profile || profile.profileVisibility === 'PRIVATE') return {};
+
+  const name = user.nickname ?? t('anonymous');
+  const instruments = profile.instruments.map((i) => i.instrument);
+
+  const title = user.nickname ? t('meta.title', { name }) : t('meta.titleAnon');
+  const description = instruments.length > 0
+    ? t('meta.descWithInstruments', { name, instruments: instruments.slice(0, 3).join(', ') })
+    : t('meta.desc', { name });
+
+  return { title, description };
+}
 
 export default async function MusicianProfilePage({
   params,
