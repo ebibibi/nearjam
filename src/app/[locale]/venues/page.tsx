@@ -35,8 +35,14 @@ export default async function VenuesPage({
       tendencies: {
         where: { isActive: true },
         orderBy: { createdAt: 'desc' },
-        take: 2,
-        select: { name: true },
+        take: 3,
+        select: {
+          name: true,
+          typicalDayOfWeek: true,
+          typicalStartTime: true,
+          genres: true,
+          entrySystem: true,
+        },
       },
     },
   });

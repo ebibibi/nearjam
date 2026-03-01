@@ -18,12 +18,16 @@ function generateSessionName(
   return null;
 }
 
+// 自動承認しきい値: この信頼度以上であればレビューなしでサイトに表示する
+const AUTO_APPROVE_CONFIDENCE = 0.7;
+
 /**
  * 抽出結果をDBに保存する。
  * - Venue は websiteUrl で重複チェックし、なければ新規作成・あれば更新しない（オーナー編集を上書きしない）
  * - SessionTendency は sourceUrl で重複チェック
  * - いずれも sourceType = AUTO_COLLECTED で保存
- * - isActive = false（人間レビュー待ち）にして本番表示から外す
+ * - confidence >= AUTO_APPROVE_CONFIDENCE なら isActive = true（自動承認）
+ * - それ未満は isActive = false（人間レビュー待ち）
  */
 export async function saveExtractionResult(
   result: ExtractionResult,
@@ -100,6 +104,7 @@ export async function saveExtractionResult(
       continue;
     }
 
+    const autoApproved = result.confidence >= AUTO_APPROVE_CONFIDENCE;
     const created = await prisma.sessionTendency.create({
       data: {
         venueId,
@@ -114,11 +119,12 @@ export async function saveExtractionResult(
         capacity: s.capacity,
         sourceType: 'AUTO_COLLECTED',
         sourceUrl,
-        isActive: false, // 人間レビュー待ち
+        isActive: autoApproved,
       },
     });
     tendencyIds.push(created.id);
-    console.log(`  セッション "${sessionName}" を新規作成 (id=${created.id}) ※レビュー待ち`);
+    const label = autoApproved ? '✅ 自動承認' : '⏳ レビュー待ち';
+    console.log(`  セッション "${sessionName}" を新規作成 (id=${created.id}) ${label}`);
   }
 
   return { venueId, tendencyIds };
