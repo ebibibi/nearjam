@@ -53,10 +53,11 @@ export default async function SessionsPage({
   searchParams,
 }: {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ venue?: string; station?: string }>;
+  searchParams: Promise<{ venue?: string; station?: string; dow?: string }>;
 }) {
   const { locale } = await params;
-  const { venue: venueFilter, station: stationFilter } = await searchParams;
+  const { venue: venueFilter, station: stationFilter, dow: dowParam } = await searchParams;
+  const dowFilter = dowParam != null ? parseInt(dowParam, 10) : null;
   setRequestLocale(locale);
   const t = await getTranslations();
 
@@ -93,16 +94,21 @@ export default async function SessionsPage({
     },
   });
 
+  // 曜日フィルタ（JS側）
+  const filteredSessions = dowFilter != null
+    ? sessions.filter((s) => new Date(s.startsAt).getDay() === dowFilter)
+    : sessions;
+
   // 週別グルーピング
   const weekMap = new Map<string, typeof sessions>();
-  for (const s of sessions) {
+  for (const s of filteredSessions) {
     const label = getWeekLabel(new Date(s.startsAt), locale);
     if (!weekMap.has(label)) weekMap.set(label, []);
     weekMap.get(label)!.push(s);
   }
   const weekGroups = [...weekMap.entries()].map(([label, wSessions]) => ({ label, sessions: wSessions }));
 
-  const hasFilter = !!venueFilter || !!stationFilter;
+  const hasFilter = !!venueFilter || !!stationFilter || dowFilter != null;
 
   return (
     <div className="space-y-8">
@@ -110,7 +116,9 @@ export default async function SessionsPage({
         <div>
           <h1 className="text-2xl font-bold text-gray-900">{t('session.title')}</h1>
           {sessions.length > 0 && (
-            <p className="text-sm text-gray-500 mt-0.5">今後 8 週間で {sessions.length} 件</p>
+            <p className="text-sm text-gray-500 mt-0.5">
+              今後 8 週間で {filteredSessions.length}{dowFilter != null ? ` 件（全 ${sessions.length} 件中）` : ' 件'}
+            </p>
           )}
         </div>
         {authSession?.user && (
@@ -120,10 +128,55 @@ export default async function SessionsPage({
         )}
       </div>
 
+      {/* 曜日フィルタチップ */}
+      {(() => {
+        const days = locale === 'ja'
+          ? ['日', '月', '火', '水', '木', '金', '土']
+          : ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        // 各曜日のセッション件数を事前計算
+        const dowCounts = Array.from({ length: 7 }, (_, i) =>
+          sessions.filter((s) => new Date(s.startsAt).getDay() === i).length
+        );
+        return (
+          <div className="flex flex-wrap gap-2">
+            {hasFilter && (
+              <Link
+                href={`/${locale}/sessions`}
+                className="rounded-full border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 px-3 py-1 text-xs"
+              >
+                ✕ クリア
+              </Link>
+            )}
+            {days.map((day, i) => {
+              const count = dowCounts[i];
+              if (count === 0) return null;
+              const isActive = dowFilter === i;
+              const href = stationFilter
+                ? `/${locale}/sessions?station=${encodeURIComponent(stationFilter)}&dow=${i}`
+                : `/${locale}/sessions?dow=${i}`;
+              return (
+                <Link
+                  key={i}
+                  href={isActive ? (stationFilter ? `/${locale}/sessions?station=${encodeURIComponent(stationFilter)}` : `/${locale}/sessions`) : href}
+                  className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
+                    isActive
+                      ? 'bg-indigo-600 text-white'
+                      : 'border border-indigo-200 bg-indigo-50 text-indigo-700 hover:bg-indigo-100'
+                  }`}
+                >
+                  {day}
+                  <span className="ml-1 opacity-60">({count})</span>
+                </Link>
+              );
+            })}
+          </div>
+        );
+      })()}
+
       {/* 最寄り駅フィルタチップ */}
       {topStations.length > 0 && (
         <div className="flex flex-wrap gap-2">
-          {hasFilter && (
+          {hasFilter && !sessions.some(() => true) && (
             <Link
               href={`/${locale}/sessions`}
               className="rounded-full border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 px-3 py-1 text-xs"
@@ -133,10 +186,13 @@ export default async function SessionsPage({
           )}
           {topStations.map(({ station, count }) => {
             const isActive = stationFilter === station;
+            const href = dowFilter != null
+              ? `/${locale}/sessions?station=${encodeURIComponent(station)}&dow=${dowFilter}`
+              : `/${locale}/sessions?station=${encodeURIComponent(station)}`;
             return (
               <Link
                 key={station}
-                href={`/${locale}/sessions?station=${encodeURIComponent(station)}`}
+                href={isActive ? (dowFilter != null ? `/${locale}/sessions?dow=${dowFilter}` : `/${locale}/sessions`) : href}
                 className={`rounded-full px-3 py-1 text-xs transition-colors ${
                   isActive
                     ? 'bg-violet-600 text-white'
@@ -160,7 +216,7 @@ export default async function SessionsPage({
         </div>
       )}
 
-      {sessions.length === 0 ? (
+      {filteredSessions.length === 0 ? (
         <div className="rounded-xl border border-dashed border-gray-300 py-16 text-center">
           <p className="text-gray-500 mb-4">{t('session.noSessions')}</p>
           {authSession?.user && (
@@ -187,7 +243,7 @@ export default async function SessionsPage({
         </div>
       )}
 
-      {!authSession?.user && sessions.length > 0 && (
+      {!authSession?.user && filteredSessions.length > 0 && (
         <div className="rounded-xl bg-gradient-to-br from-violet-50 to-indigo-50 border border-violet-200 p-6 text-center">
           <p className="text-gray-700 font-medium mb-2">🎷 あなたもセッションを開催しませんか？</p>
           <p className="text-sm text-gray-500 mb-4">アカウント登録すると、セッションの作成・参加申込ができます。</p>
