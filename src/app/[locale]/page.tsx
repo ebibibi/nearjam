@@ -9,13 +9,6 @@ import { Suspense } from 'react';
 import { Badge } from '@/components/ui/Badge';
 import { HomeSearch } from '@/components/home/HomeSearch';
 
-const DAY_NAMES_JA = ['日', '月', '火', '水', '木', '金', '土'] as const;
-const DAY_NAMES_EN = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] as const;
-
-function dayName(dow: number | null | undefined, locale: string): string {
-  if (dow == null) return '';
-  return locale === 'ja' ? DAY_NAMES_JA[dow] : DAY_NAMES_EN[dow];
-}
 
 export default async function HomePage({
   params,
@@ -193,19 +186,19 @@ export default async function HomePage({
                   )}
                   {venue.tendencies.length > 0 ? (
                     <div className="space-y-2 flex-1">
-                      {venue.tendencies.slice(0, 2).map((t, i) => (
+                      {venue.tendencies.slice(0, 2).map((tendency, i) => (
                         <div key={i} className="rounded-lg bg-violet-50 px-3 py-2 text-xs">
-                          <div className="font-medium text-violet-800 mb-0.5">{t.name}</div>
+                          <div className="font-medium text-violet-800 mb-0.5">{tendency.name}</div>
                           <div className="text-violet-600 space-x-2">
-                            {t.typicalDayOfWeek != null && (
-                              <span>毎週{dayName(t.typicalDayOfWeek, locale)}曜</span>
+                            {tendency.typicalDayOfWeek != null && (
+                              <span>{t('venue.everyDay', { day: t(`tendency.shortDays.${tendency.typicalDayOfWeek}` as Parameters<typeof t>[0]) })}</span>
                             )}
-                            {t.typicalStartTime && <span>{t.typicalStartTime}〜</span>}
-                            {t.entrySystem && <span>{t.entrySystem}</span>}
+                            {tendency.typicalStartTime && <span>{tendency.typicalStartTime}〜</span>}
+                            {tendency.entrySystem && <span>{tendency.entrySystem}</span>}
                           </div>
-                          {t.genres && t.genres.length > 0 && (
+                          {tendency.genres && tendency.genres.length > 0 && (
                             <div className="mt-1 flex flex-wrap gap-1">
-                              {t.genres.slice(0, 3).map((g) => (
+                              {tendency.genres.slice(0, 3).map((g) => (
                                 <span key={g} className="rounded bg-violet-100 px-1.5 py-0.5 text-violet-700">
                                   {g}
                                 </span>
