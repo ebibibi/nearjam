@@ -55,12 +55,13 @@ export default async function SessionsPage({
   searchParams,
 }: {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ venue?: string; station?: string; dow?: string; q?: string; free?: string }>;
+  searchParams: Promise<{ venue?: string; station?: string; dow?: string; q?: string; free?: string; syncroom?: string }>;
 }) {
   const { locale } = await params;
-  const { venue: venueFilter, station: stationFilter, dow: dowParam, q: keywordFilter, free: freeParam } = await searchParams;
+  const { venue: venueFilter, station: stationFilter, dow: dowParam, q: keywordFilter, free: freeParam, syncroom: syncroomParam } = await searchParams;
   const dowFilter = dowParam != null ? parseInt(dowParam, 10) : null;
   const freeOnly = freeParam === '1';
+  const syncroomOnly = syncroomParam === '1';
   setRequestLocale(locale);
   const t = await getTranslations();
 
@@ -97,6 +98,7 @@ export default async function SessionsPage({
       ...(venueFilter && !keywordFilter ? { venue: { name: { contains: venueFilter, mode: 'insensitive' } } } : {}),
       ...(stationFilter ? { venue: { nearestStation: { contains: stationFilter, mode: 'insensitive' } } } : {}),
       ...(freeOnly ? { ticketPriceYen: { lte: 0 } } : {}),
+      ...(syncroomOnly ? { isSyncroom: true } : {}),
     },
     orderBy: { startsAt: 'asc' },
     take: 200,
@@ -130,7 +132,7 @@ export default async function SessionsPage({
   }
   const weekGroups = [...weekMap.entries()].map(([label, wSessions]) => ({ label, sessions: wSessions }));
 
-  const hasFilter = !!venueFilter || !!stationFilter || dowFilter != null || !!keywordFilter || freeOnly;
+  const hasFilter = !!venueFilter || !!stationFilter || dowFilter != null || !!keywordFilter || freeOnly || syncroomOnly;
 
   // 今日のセッション（フィルタなし時のみ）
   const todaySessions = !hasFilter
@@ -239,8 +241,8 @@ export default async function SessionsPage({
         </div>
       )}
 
-      {/* 無料フィルタ */}
-      <div className="flex items-center gap-2">
+      {/* 無料 / SYNCROOM フィルタ */}
+      <div className="flex items-center gap-2 flex-wrap">
         <Link
           href={freeOnly
             ? `/${locale}/sessions${stationFilter ? `?station=${encodeURIComponent(stationFilter)}` : ''}`
@@ -252,6 +254,18 @@ export default async function SessionsPage({
           }`}
         >
           💚 {locale === 'ja' ? '無料・現地集金のみ' : 'Free only'}
+        </Link>
+        <Link
+          href={syncroomOnly
+            ? `/${locale}/sessions${stationFilter ? `?station=${encodeURIComponent(stationFilter)}` : ''}`
+            : `/${locale}/sessions?syncroom=1${stationFilter ? `&station=${encodeURIComponent(stationFilter)}` : ''}`}
+          className={`rounded-full px-3 py-1 text-xs transition-colors ${
+            syncroomOnly
+              ? 'bg-blue-600 text-white'
+              : 'border border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100'
+          }`}
+        >
+          🎧 SYNCROOM
         </Link>
       </div>
 
