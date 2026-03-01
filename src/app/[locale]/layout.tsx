@@ -6,6 +6,7 @@ import { hasLocale } from 'next-intl';
 import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
 import { Header } from '@/components/layout/Header';
+import { BottomNav } from '@/components/layout/BottomNav';
 import { ServiceWorkerRegister } from '@/components/layout/ServiceWorkerRegister';
 import { SessionProvider } from 'next-auth/react';
 import '../globals.css';
@@ -97,10 +98,11 @@ export default async function LocaleLayout({
           <SessionProvider>
             <ServiceWorkerRegister />
             <Header locale={locale} />
-            <main className="mx-auto max-w-6xl px-4 py-6">
+            <main className="mx-auto max-w-6xl px-4 py-6 pb-20 md:pb-6">
               {children}
             </main>
-            <footer className="mt-16 border-t border-gray-200 bg-white">
+            <BottomNav />
+            <footer className="mb-16 md:mb-0 mt-8 border-t border-gray-200 bg-white">
               <div className="mx-auto max-w-6xl px-4 py-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-gray-500">
                 <span>© {new Date().getFullYear()} NearJam</span>
                 <nav className="flex gap-4">
