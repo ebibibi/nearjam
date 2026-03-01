@@ -3,6 +3,7 @@ import { getTranslations } from 'next-intl/server';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { AuthButton } from './AuthButton';
 import { MobileNav } from './MobileNav';
+import { NavLink } from './NavLink';
 
 interface HeaderProps {
   locale: string;
@@ -30,13 +31,9 @@ export async function Header({ locale }: HeaderProps) {
         {/* ナビゲーション（デスクトップ） */}
         <nav className="hidden items-center gap-1 md:flex">
           {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="rounded-md px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors"
-            >
+            <NavLink key={link.href} href={link.href}>
               {link.label}
-            </Link>
+            </NavLink>
           ))}
         </nav>
 
