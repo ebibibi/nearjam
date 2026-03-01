@@ -90,11 +90,10 @@ export async function POST(req: NextRequest) {
       if (existingKeys.has(key)) continue
 
       const description = [
+        `${TENDENCY_ID_PREFIX}${tendency.id}]`,
         tendency.atmosphere ?? '',
         tendency.levelRange ? `参加レベル: ${tendency.levelRange}` : '',
         tendency.entrySystem ? `入場: ${tendency.entrySystem}` : '',
-        '',
-        `${TENDENCY_ID_PREFIX}${tendency.id}] 定期セッション: ${tendency.name}`,
       ].filter(Boolean).join('\n').trim()
 
       try {

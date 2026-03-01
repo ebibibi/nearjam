@@ -297,7 +297,7 @@ export default async function SessionDetailPage({
       )}
 
       {/* Description (hide internal tendency markers from bot-generated sessions) */}
-      {session.description && !session.description.startsWith('[tendency:') && (
+      {session.description && !session.description.includes('[tendency:') && (
         <div>
           <p className="text-sm font-medium text-gray-700 mb-1">{t('session.description')}</p>
           <p className="text-sm text-gray-600 whitespace-pre-wrap">{session.description}</p>
@@ -305,7 +305,7 @@ export default async function SessionDetailPage({
       )}
 
       {/* Auto-generated from recurring session info */}
-      {session.description?.startsWith('[tendency:') && session.venue && (
+      {session.description?.includes('[tendency:') && session.venue && (
         <div className="rounded-lg border border-violet-100 bg-violet-50 px-4 py-3 text-sm">
           <p className="text-violet-700 font-medium mb-1">{t('session.recurringSession')}</p>
           <p className="text-violet-600">
