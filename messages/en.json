@@ -27,6 +27,8 @@
     "filterByGenre": "Filter by Genre",
     "filterByArea": "Filter by Area",
     "filterByDay": "Filter by Day",
+    "share": "🔗 Share",
+    "copied": "✓ Copied!",
     "minutes": "min",
     "yen": "¥{amount}",
     "perHour": "{amount}/hr"

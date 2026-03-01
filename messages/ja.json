@@ -27,6 +27,8 @@
     "filterByGenre": "ジャンルで絞り込む",
     "filterByArea": "エリアで絞り込む",
     "filterByDay": "曜日で絞り込む",
+    "share": "🔗 シェア",
+    "copied": "✓ コピーしました",
     "minutes": "分",
     "yen": "¥{amount}",
     "perHour": "{amount}/時間"

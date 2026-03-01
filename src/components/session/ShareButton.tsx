@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useLocale } from 'next-intl';
+import { useTranslations } from 'next-intl';
 
 interface ShareButtonProps {
   title: string;
@@ -10,7 +10,7 @@ interface ShareButtonProps {
 
 export function ShareButton({ title, url }: ShareButtonProps) {
   const [copied, setCopied] = useState(false);
-  const locale = useLocale();
+  const t = useTranslations('common');
 
   async function handleShare() {
     if (navigator.share) {
@@ -31,9 +31,7 @@ export function ShareButton({ title, url }: ShareButtonProps) {
       onClick={handleShare}
       className="inline-flex items-center gap-1.5 rounded-full border border-gray-300 bg-white px-3 py-1.5 text-xs text-gray-600 hover:bg-gray-50 transition-colors"
     >
-      {copied
-        ? (locale === 'ja' ? '✓ コピーしました' : '✓ Copied!')
-        : (locale === 'ja' ? '🔗 シェア' : '🔗 Share')}
+      {copied ? t('copied') : t('share')}
     </button>
   );
 }

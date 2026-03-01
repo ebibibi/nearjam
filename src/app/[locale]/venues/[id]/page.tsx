@@ -293,17 +293,17 @@ export default async function VenueDetailPage({
                   <div className="flex items-center gap-4 rounded-lg border border-gray-100 bg-gray-50 hover:bg-violet-50 hover:border-violet-200 px-4 py-3 transition-colors">
                     <div className="text-center min-w-[3rem]">
                       <div className="text-xs text-gray-400">
-                        {startsAt.toLocaleDateString(locale === 'ja' ? 'ja-JP' : 'en-US', { month: 'short' })}
+                        {startsAt.toLocaleDateString(locale, { month: 'short' })}
                       </div>
                       <div className="text-xl font-bold text-gray-800">{startsAt.getDate()}</div>
                       <div className="text-xs text-gray-400">
-                        {startsAt.toLocaleDateString(locale === 'ja' ? 'ja-JP' : 'en-US', { weekday: 'short' })}
+                        {startsAt.toLocaleDateString(locale, { weekday: 'short' })}
                       </div>
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="font-medium text-gray-900 text-sm truncate">{s.title}</div>
                       <div className="text-xs text-gray-500 mt-0.5">
-                        {startsAt.toLocaleTimeString(locale === 'ja' ? 'ja-JP' : 'en-US', { hour: '2-digit', minute: '2-digit' })}
+                        {startsAt.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' })}
                         {s.durationMinutes && ` (${t('session.durationMinutes', { n: s.durationMinutes })})`}
                       </div>
                     </div>

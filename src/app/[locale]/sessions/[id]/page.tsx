@@ -31,7 +31,7 @@ export async function generateMetadata({
   });
   if (!session) return {};
 
-  const dateStr = new Date(session.startsAt).toLocaleDateString(locale === 'ja' ? 'ja-JP' : 'en-US', {
+  const dateStr = new Date(session.startsAt).toLocaleDateString(locale, {
     month: 'long', day: 'numeric', weekday: 'short',
   });
   const venuePart = session.venue ? `${session.venue.name}` : '';
