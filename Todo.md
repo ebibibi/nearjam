@@ -41,11 +41,11 @@
 
 | ID  | ステータス | 機能 | 詳細 |
 |-----|-----------|------|------|
-| G1  | [ ] | セッション完了ボタン | Live ページの管理者向けに「セッション完了」ボタンを追加。`POST /api/v1/sessions/[id]/complete` はすでに実装済み。`LiveSessionDashboard` に追加するだけ |
-| G2  | [ ] | ブロック機能 API + UI | PRD §5.2。`Block` スキーマは存在。`POST/DELETE /api/v1/users/[id]/block` + コネクションページ or プロフィールページにブロックボタン |
-| G3  | [ ] | 楽器マッチング通知 | PRD Phase 1「セッション近くで自分の楽器が必要」。`MATCH_INSTRUMENT` 通知タイプ。セッション作成時に `JamSessionInstrumentNeed` × ミュージシャン楽器で検索 |
-| G4  | [ ] | ミュージシャン公開プロフィールページ | PRD §2.2 profileVisibility。`/musicians/[id]` ページ。`profileVisibility=PUBLIC or LOGGED_IN` のプロフィールを表示。コネクション申請ボタンも |
-| G5  | [ ] | Connection 30日クールダウン | PRD §5.2「拒否後30日待機」。現在は3回拒否ブロックのみ。`rejectedUntil DateTime?` フィールドを Connection スキーマに追加して実装 |
+| G1  | [x] | セッション完了ボタン | `LiveSessionDashboard` に追加。確認ダイアログ → `POST /api/v1/sessions/[id]/complete` |
+| G2  | [x] | ブロック機能 API + UI | `POST/DELETE /api/v1/users/[id]/block` + `BlockButton.tsx` + コネクションページに表示 |
+| G3  | [x] | 楽器マッチング通知 | `createInstrumentMatchNotifications()` をセッション作成 fire-and-forget で呼び出し |
+| G4  | [x] | ミュージシャン公開プロフィールページ | `/musicians/[id]` 実装。visibility gating + `ConnectionRequestButton` |
+| G5  | [x] | Connection 30日クールダウン | `REJECTED` ステータス + `cooldownUntil` フィールド追加。マイグレーション済み |
 
 ---
 
