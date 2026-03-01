@@ -27,9 +27,10 @@ interface VenueCardProps {
     }[];
   };
   locale: string;
+  upcomingSessionCount?: number;
 }
 
-export function VenueCard({ venue, locale }: VenueCardProps) {
+export function VenueCard({ venue, locale, upcomingSessionCount = 0 }: VenueCardProps) {
   const t = useTranslations();
   const dayNames = locale === 'ja' ? DAY_NAMES_JA : DAY_NAMES_EN;
 
@@ -39,7 +40,14 @@ export function VenueCard({ venue, locale }: VenueCardProps) {
         {/* ヘッダー */}
         <div className="flex items-start justify-between gap-2 mb-1">
           <CardTitle className="flex-1">{venue.name}</CardTitle>
-          <VerificationBadge verifiedAt={venue.verifiedAt} disputedAt={venue.disputedAt} />
+          <div className="flex items-center gap-1 shrink-0">
+            {upcomingSessionCount > 0 && (
+              <span className="rounded-full bg-amber-100 text-amber-700 text-xs px-2 py-0.5 font-medium">
+                📅 {upcomingSessionCount}
+              </span>
+            )}
+            <VerificationBadge verifiedAt={venue.verifiedAt} disputedAt={venue.disputedAt} />
+          </div>
         </div>
 
         {venue.nearestStation && (

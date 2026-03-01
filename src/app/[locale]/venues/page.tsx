@@ -73,6 +73,15 @@ export default async function VenuesPage({
 
   // デフォルトはセッション情報あり会場のみ表示（?all=1 で全会場表示）
   const baseWhere = showAll || q || genreFilter ? undefined : { tendencies: { some: { isActive: true } } };
+  // 各会場の今後30日のセッション件数
+  const now = new Date();
+  const thirtyDaysLater = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+  const upcomingCounts = await prisma.jamSession.groupBy({
+    by: ['venueId'],
+    where: { startsAt: { gte: now, lte: thirtyDaysLater }, venueId: { not: null } },
+    _count: { id: true },
+  }).then((rows) => Object.fromEntries(rows.map((r) => [r.venueId!, r._count.id])));
+
   const venues = await prisma.venue.findMany({
     where: q
       ? {
@@ -221,7 +230,7 @@ export default async function VenuesPage({
         <>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {venues.map((venue) => (
-              <VenueCard key={venue.id} venue={venue} locale={locale} />
+              <VenueCard key={venue.id} venue={venue} locale={locale} upcomingSessionCount={upcomingCounts[venue.id] ?? 0} />
             ))}
           </div>
         </>
