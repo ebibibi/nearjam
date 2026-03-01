@@ -106,6 +106,14 @@ export default async function VenuesPage({
         </div>
       )}
 
+      {/* 件数表示 */}
+      <p className="text-sm text-gray-500">
+        {q
+          ? (locale === 'ja' ? `「${q}」の検索結果: ${venues.length} 件` : `${venues.length} results for "${q}"`)
+          : (locale === 'ja' ? `${venues.length} 件の会場` : `${venues.length} venues`)
+        }
+      </p>
+
       {venues.length === 0 ? (
         <div className="rounded-xl border border-dashed border-gray-300 py-16 text-center">
           <p className="text-gray-500 mb-4">{t('common.noResults')}</p>
@@ -117,11 +125,6 @@ export default async function VenuesPage({
         </div>
       ) : (
         <>
-          {q && (
-            <p className="text-sm text-gray-500">
-              {locale === 'ja' ? `「${q}」の検索結果: ${venues.length} 件` : `${venues.length} results for "${q}"`}
-            </p>
-          )}
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {venues.map((venue) => (
               <VenueCard key={venue.id} venue={venue} locale={locale} />
