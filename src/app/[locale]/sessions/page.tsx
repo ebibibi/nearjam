@@ -184,7 +184,7 @@ export default async function SessionsPage({
                 href={`/${locale}/sessions`}
                 className="rounded-full border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 px-3 py-1 text-xs"
               >
-                ✕ クリア
+                {t('common.clear')}
               </Link>
             )}
             {days.map((day, i) => {
@@ -221,7 +221,7 @@ export default async function SessionsPage({
               href={`/${locale}/sessions`}
               className="rounded-full border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 px-3 py-1 text-xs"
             >
-              ✕ クリア
+              {t('common.clear')}
             </Link>
           )}
           {topStations.map(({ station, count }) => {
@@ -280,7 +280,7 @@ export default async function SessionsPage({
         <div className="flex items-center gap-2 text-sm">
           <span className="text-gray-500">フィルター:</span>
           <span className="rounded-full bg-violet-100 text-violet-700 px-3 py-1">🏠 {venueFilter}</span>
-          <Link href={`/${locale}/sessions`} className="text-gray-400 hover:text-gray-600">✕ クリア</Link>
+          <Link href={`/${locale}/sessions`} className="text-gray-400 hover:text-gray-600">{t('common.clear')}</Link>
         </div>
       )}
 

@@ -134,7 +134,7 @@ export default async function VenuesPage({
               href={`/${locale}/venues`}
               className="rounded-full border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 px-3 py-1 text-xs"
             >
-              ✕ クリア
+              {t('common.clear')}
             </Link>
           )}
           {topGenres.map(({ genre, count }) => {
@@ -168,7 +168,7 @@ export default async function VenuesPage({
               href={`/${locale}/venues`}
               className="rounded-full border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 px-3 py-1 text-xs"
             >
-              ✕ クリア
+              {t('common.clear')}
             </Link>
           )}
           {topStations.map(({ station, count }) => {

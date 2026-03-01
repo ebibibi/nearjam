@@ -21,6 +21,7 @@
     "noResults": "結果が見つかりませんでした",
     "public": "公開",
     "private": "非公開",
+    "clear": "✕ クリア",
     "minutes": "分",
     "yen": "¥{amount}",
     "perHour": "{amount}/時間"

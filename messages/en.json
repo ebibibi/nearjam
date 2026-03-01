@@ -21,6 +21,7 @@
     "noResults": "No results found",
     "public": "Public",
     "private": "Private",
+    "clear": "✕ Clear",
     "minutes": "min",
     "yen": "¥{amount}",
     "perHour": "{amount}/hr"
