@@ -16,16 +16,18 @@ interface SongSearchProps {
   isSignedIn?: boolean;
   wishlistIds?: Set<string>;
   wishlistKeys?: Map<string, string | null>;
+  initialQuery?: string;
 }
 
 export function SongSearch({
   isSignedIn = false,
   wishlistIds = new Set(),
   wishlistKeys = new Map(),
+  initialQuery = '',
 }: SongSearchProps) {
   const t = useTranslations('song');
-  const [query, setQuery] = useState('');
-  const [debouncedQuery, setDebouncedQuery] = useState('');
+  const [query, setQuery] = useState(initialQuery);
+  const [debouncedQuery, setDebouncedQuery] = useState(initialQuery);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   function handleQueryChange(e: React.ChangeEvent<HTMLInputElement>) {

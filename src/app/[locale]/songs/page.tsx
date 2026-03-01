@@ -17,10 +17,13 @@ import { SongSearch } from '@/components/song/SongSearch';
 
 export default async function SongsPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ locale: string }>;
+  searchParams: Promise<{ q?: string }>;
 }) {
   const { locale } = await params;
+  const { q: initialQuery } = await searchParams;
   setRequestLocale(locale);
   const t = await getTranslations();
 
@@ -48,7 +51,7 @@ export default async function SongsPage({
   return (
     <div className="max-w-2xl space-y-6">
       <h1 className="text-2xl font-bold text-gray-900">{t('song.title')}</h1>
-      <SongSearch isSignedIn={isSignedIn} wishlistIds={wishlistIds} wishlistKeys={wishlistKeys} />
+      <SongSearch isSignedIn={isSignedIn} wishlistIds={wishlistIds} wishlistKeys={wishlistKeys} initialQuery={initialQuery} />
     </div>
   );
 }

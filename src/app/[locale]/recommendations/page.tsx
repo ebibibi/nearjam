@@ -105,7 +105,7 @@ export default async function RecommendationsPage({
                   </p>
                 </div>
                 <Link
-                  href={`/${locale}/songs`}
+                  href={`/${locale}/songs?q=${encodeURIComponent(song.title)}`}
                   className="text-xs px-3 py-1.5 rounded-lg bg-violet-50 text-violet-600 hover:bg-violet-100 whitespace-nowrap"
                 >
                   {t('addToWishlist')}
