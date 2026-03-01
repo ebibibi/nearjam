@@ -6,6 +6,13 @@ import { redirect } from 'next/navigation';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { SessionForm } from '@/components/session/SessionForm';
+import type { Metadata } from 'next';
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'meta' });
+  return { title: t('newSessionTitle') };
+}
 
 export default async function NewSessionPage({
   params,

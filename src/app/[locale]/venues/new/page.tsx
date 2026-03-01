@@ -3,6 +3,13 @@ import { setRequestLocale } from 'next-intl/server';
 import { getTranslations } from 'next-intl/server';
 import Link from 'next/link';
 import { VenueForm } from '@/components/venue/VenueForm';
+import type { Metadata } from 'next';
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'meta' });
+  return { title: t('newVenueTitle') };
+}
 
 export default async function NewVenuePage({
   params,

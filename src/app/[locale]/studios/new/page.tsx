@@ -3,6 +3,13 @@ import { setRequestLocale } from 'next-intl/server';
 import { getTranslations } from 'next-intl/server';
 import Link from 'next/link';
 import { StudioForm } from '@/components/studio/StudioForm';
+import type { Metadata } from 'next';
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'meta' });
+  return { title: t('newStudioTitle') };
+}
 
 export default async function NewStudioPage({
   params,

@@ -855,6 +855,11 @@
     "connectionsTitle": "Connections — NearJam",
     "connectionsDesc": "Musicians you have played with on NearJam.",
     "hostAvailTitle": "Host Availability — NearJam",
-    "hostAvailDesc": "Register your availability to host jam sessions and connect with matching musicians."
+    "hostAvailDesc": "Register your availability to host jam sessions and connect with matching musicians.",
+    "seriesTitle": "Recurring Sessions — NearJam",
+    "seriesDesc": "Manage your recurring jam session series and auto-generate upcoming sessions.",
+    "newSessionTitle": "Create Session — NearJam",
+    "newVenueTitle": "Add Venue — NearJam",
+    "newStudioTitle": "Add Studio — NearJam"
   }
 }

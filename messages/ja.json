@@ -855,6 +855,11 @@
     "connectionsTitle": "コネクション — NearJam",
     "connectionsDesc": "NearJamで一緒に演奏したミュージシャン。",
     "hostAvailTitle": "ホスト可能日 — NearJam",
-    "hostAvailDesc": "セッションホストとして参加できる日時を登録して、マッチするミュージシャンとつながろう。"
+    "hostAvailDesc": "セッションホストとして参加できる日時を登録して、マッチするミュージシャンとつながろう。",
+    "seriesTitle": "定期セッション — NearJam",
+    "seriesDesc": "定期セッションシリーズを管理して、今後のセッションを自動生成しよう。",
+    "newSessionTitle": "セッション作成 — NearJam",
+    "newVenueTitle": "会場を追加 — NearJam",
+    "newStudioTitle": "スタジオを追加 — NearJam"
   }
 }

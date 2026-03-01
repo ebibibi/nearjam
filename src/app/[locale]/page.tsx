@@ -8,7 +8,13 @@ import { Card, CardContent, CardTitle } from '@/components/ui/Card';
 import { Suspense } from 'react';
 import { Badge } from '@/components/ui/Badge';
 import { HomeSearch } from '@/components/home/HomeSearch';
+import type { Metadata } from 'next';
 
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'meta' });
+  return { title: t('siteTitle'), description: t('siteDesc') };
+}
 
 export default async function HomePage({
   params,

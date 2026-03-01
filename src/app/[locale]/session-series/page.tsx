@@ -4,6 +4,13 @@ import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import { SeriesGenerateButton } from '@/components/session/SeriesGenerateButton'
+import type { Metadata } from 'next'
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params
+  const t = await getTranslations({ locale, namespace: 'meta' })
+  return { title: t('seriesTitle'), description: t('seriesDesc') }
+}
 
 export default async function SessionSeriesPage({
   params,
