@@ -67,6 +67,7 @@ export default async function SessionDetailPage({
           musicianProfile: {
             select: {
               id: true,
+              userId: true,
               user: { select: { nickname: true, image: true } },
               instruments: { select: { instrument: true } },
             },
@@ -189,10 +190,13 @@ export default async function SessionDetailPage({
         </section>
       )}
 
-      {/* Admin: live view link + admin panel */}
+      {/* Admin: edit / live view link + admin panel */}
       {isAdmin && (
         <div className="space-y-4">
           <div className="flex gap-3">
+            <Link href={`/${locale}/sessions/${id}/edit`}>
+              <Button variant="secondary">{t('session.edit')}</Button>
+            </Link>
             <Link href={`/${locale}/sessions/${id}/live`}>
               <Button variant="secondary">{t('session.live')}</Button>
             </Link>

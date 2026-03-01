@@ -189,10 +189,13 @@ export default async function ProfilePage({
         </div>
       )}
 
-      {/* Performance history link */}
-      <div>
+      {/* Quick links */}
+      <div className="flex gap-4">
         <Link href={`/${locale}/profile/history`} className="text-sm text-violet-600 hover:underline">
           🎸 {t('myHistory')} →
+        </Link>
+        <Link href={`/${locale}/connections`} className="text-sm text-violet-600 hover:underline">
+          🤝 {t('connections')} →
         </Link>
       </div>
 

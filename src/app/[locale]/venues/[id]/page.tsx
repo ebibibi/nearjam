@@ -4,8 +4,10 @@ import { getTranslations } from 'next-intl/server';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
+import { auth } from '@/lib/auth';
 import { VerificationBadge } from '@/components/venue/VerificationBadge';
 import { SessionTendencyCard } from '@/components/venue/SessionTendencyCard';
+import { TendencyOwnerActions } from '@/components/venue/TendencyOwnerActions';
 import { Button } from '@/components/ui/Button';
 
 export default async function VenueDetailPage({
@@ -17,21 +19,56 @@ export default async function VenueDetailPage({
   setRequestLocale(locale);
   const t = await getTranslations();
 
-  const venue = await prisma.venue.findUnique({
-    where: { id },
-    include: {
-      tendencies: {
-        where: { isActive: true },
-        orderBy: [{ sourceType: 'asc' }, { createdAt: 'desc' }],
-        include: { sourceUser: { select: { nickname: true } } },
+  const authSession = await auth();
+  const currentUserId = authSession?.user?.id ?? null;
+
+  const [venue, topSongGroups] = await Promise.all([
+    prisma.venue.findUnique({
+      where: { id },
+      include: {
+        tendencies: {
+          orderBy: [{ sourceType: 'asc' }, { createdAt: 'desc' }],
+          include: { sourceUser: { select: { nickname: true } } },
+        },
       },
-    },
-  });
+    }),
+    prisma.performanceLog.groupBy({
+      by: ['songId'],
+      where: { jamSession: { venueId: id }, songId: { not: null } },
+      _count: { songId: true },
+      orderBy: { _count: { songId: 'desc' } },
+      take: 10,
+    }),
+  ]);
 
   if (!venue) notFound();
 
-  const maps = venue.address
-    ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(venue.address)}`
+  // Top10 曲の詳細を取得
+  const topSongIds = topSongGroups.map((g) => g.songId as string);
+  const topSongs = topSongIds.length > 0
+    ? await prisma.song.findMany({
+        where: { id: { in: topSongIds } },
+        select: { id: true, title: true, artist: true },
+      })
+    : [];
+  // 演奏回数順に並び替え（groupBy の順序を維持）
+  const topSongsOrdered = topSongIds.flatMap((sid) => {
+    const song = topSongs.find((s) => s.id === sid);
+    const count = topSongGroups.find((g) => g.songId === sid)?._count.songId ?? 0;
+    return song ? [{ ...song, count }] : [];
+  });
+
+  const isOwner = !!currentUserId && venue?.ownerId === currentUserId;
+
+  // 座標があれば精度の高いルート案内、なければ住所検索
+  const mapsDestination =
+    venue.lat != null && venue.lng != null
+      ? `${venue.lat},${venue.lng}`
+      : venue.address
+        ? encodeURIComponent(venue.address)
+        : null;
+  const maps = mapsDestination
+    ? `https://www.google.com/maps/dir/?api=1&destination=${mapsDestination}`
     : null;
 
   return (
@@ -130,6 +167,23 @@ export default async function VenueDetailPage({
         )}
       </div>
 
+      {/* Top songs at this venue */}
+      {topSongsOrdered.length > 0 && (
+        <section>
+          <h2 className="text-lg font-bold text-gray-900 mb-3">{t('venue.topSongs')}</h2>
+          <div className="space-y-1.5">
+            {topSongsOrdered.map((song, idx) => (
+              <div key={song.id} className="flex items-center gap-3 text-sm">
+                <span className="text-gray-400 font-mono w-5 text-right">{idx + 1}</span>
+                <span className="font-medium text-gray-900">{song.title}</span>
+                {song.artist && <span className="text-gray-400">— {song.artist}</span>}
+                <span className="ml-auto text-xs text-gray-400">{song.count}x</span>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
       {/* House Rules */}
       {venue.rulesMarkdown && (
         <section>
@@ -149,7 +203,7 @@ export default async function VenueDetailPage({
           </Link>
         </div>
 
-        {venue.tendencies.length === 0 ? (
+        {venue.tendencies.filter((t) => t.isActive).length === 0 ? (
           <div className="rounded-xl border border-dashed border-gray-300 py-8 text-center">
             <p className="text-gray-500 text-sm mb-3">{t('venue.noTendencies')}</p>
             <Link href={`/${locale}/venues/${id}/add-tendency`}>
@@ -159,7 +213,17 @@ export default async function VenueDetailPage({
         ) : (
           <div className="space-y-3">
             {venue.tendencies.map((tendency) => (
-              <SessionTendencyCard key={tendency.id} tendency={tendency} />
+              <div key={tendency.id}>
+                <SessionTendencyCard tendency={tendency} />
+                {isOwner && (
+                  <TendencyOwnerActions
+                    venueId={id}
+                    tendencyId={tendency.id}
+                    currentSourceType={tendency.sourceType}
+                    isActive={tendency.isActive}
+                  />
+                )}
+              </div>
             ))}
           </div>
         )}

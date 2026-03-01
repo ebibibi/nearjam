@@ -6,6 +6,7 @@ import { redirect } from 'next/navigation';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { Badge } from '@/components/ui/Badge';
+import { VisibilityControls } from '@/components/history/VisibilityControls';
 
 export default async function ProfileHistoryPage({
   params,
@@ -32,7 +33,16 @@ export default async function ProfileHistoryPage({
 
   const logs = await prisma.performanceLog.findMany({
     where: { musicianProfileId: profile.id },
-    include: {
+    select: {
+      id: true,
+      instrumentPlayed: true,
+      wasSoloist: true,
+      performedAt: true,
+      createdAt: true,
+      visParticipation: true,
+      visInstrument: true,
+      visSongPerformance: true,
+      visCoPerformers: true,
       song: { select: { id: true, title: true, artist: true } },
       jamSession: {
         select: {
@@ -100,6 +110,15 @@ export default async function ProfileHistoryPage({
                     {t('history.instrument')}: {log.instrumentPlayed}
                   </p>
                 )}
+                <VisibilityControls
+                  logId={log.id}
+                  initial={{
+                    visParticipation: log.visParticipation,
+                    visInstrument: log.visInstrument,
+                    visSongPerformance: log.visSongPerformance,
+                    visCoPerformers: log.visCoPerformers,
+                  }}
+                />
               </div>
             );
           })}

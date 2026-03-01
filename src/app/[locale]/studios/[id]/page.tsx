@@ -26,8 +26,14 @@ export default async function StudioDetailPage({
 
   if (!studio) notFound();
 
-  const maps = studio.address
-    ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(studio.address)}`
+  const mapsDestination =
+    studio.lat != null && studio.lng != null
+      ? `${studio.lat},${studio.lng}`
+      : studio.address
+        ? encodeURIComponent(studio.address)
+        : null;
+  const maps = mapsDestination
+    ? `https://www.google.com/maps/dir/?api=1&destination=${mapsDestination}`
     : null;
 
   return (

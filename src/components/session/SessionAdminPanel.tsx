@@ -9,6 +9,7 @@ interface Registration {
   id: string;
   musicianProfile: {
     id: string;
+    userId: string;
     user: { nickname: string | null; image: string | null };
     instruments: { instrument: string }[];
   };
@@ -25,6 +26,8 @@ export function SessionAdminPanel({ sessionId, registrations: initialRegs }: Ses
   const [registrations, setRegistrations] = useState(initialRegs);
   const [completing, setCompleting] = useState(false);
   const [removingId, setRemovingId] = useState<string | null>(null);
+  const [delegatingTo, setDelegatingTo] = useState('');
+  const [delegating, setDelegating] = useState(false);
 
   async function handleComplete() {
     if (!confirm(t('confirmComplete'))) return;
@@ -39,6 +42,19 @@ export function SessionAdminPanel({ sessionId, registrations: initialRegs }: Ses
     await fetch(`/api/v1/sessions/${sessionId}/registrations/${regId}`, { method: 'DELETE' });
     setRegistrations((prev) => prev.filter((r) => r.id !== regId));
     setRemovingId(null);
+  }
+
+  async function handleDelegate() {
+    if (!delegatingTo) return;
+    if (!confirm(t('confirmDelegate'))) return;
+    setDelegating(true);
+    await fetch(`/api/v1/sessions/${sessionId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sessionAdminId: delegatingTo }),
+    });
+    setDelegating(false);
+    router.refresh();
   }
 
   return (
@@ -76,14 +92,46 @@ export function SessionAdminPanel({ sessionId, registrations: initialRegs }: Ses
           <p className="text-sm text-gray-500 mb-4">{t('noParticipantsYet')}</p>
         )}
 
-        <Button
-          size="sm"
-          variant="secondary"
-          onClick={handleComplete}
-          isLoading={completing}
-        >
-          ✅ {t('declareComplete')}
-        </Button>
+        <div className="flex flex-wrap gap-2">
+          <Button
+            size="sm"
+            variant="secondary"
+            onClick={handleComplete}
+            isLoading={completing}
+          >
+            ✅ {t('declareComplete')}
+          </Button>
+        </div>
+
+        {/* 管理者権限委譲 */}
+        {registrations.length > 0 && (
+          <div className="mt-4 pt-4 border-t border-amber-200">
+            <p className="text-xs text-amber-700 font-medium mb-2">{t('delegateAdmin')}</p>
+            <div className="flex gap-2">
+              <select
+                value={delegatingTo}
+                onChange={(e) => setDelegatingTo(e.target.value)}
+                className="flex-1 text-xs rounded border border-amber-200 bg-white px-2 py-1.5 focus:outline-none"
+              >
+                <option value="">— {t('selectNewAdmin')} —</option>
+                {registrations.map((reg) => (
+                  <option key={reg.id} value={reg.musicianProfile.userId}>
+                    {reg.musicianProfile.user.nickname ?? 'Anonymous'}
+                  </option>
+                ))}
+              </select>
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={handleDelegate}
+                isLoading={delegating}
+                disabled={!delegatingTo}
+              >
+                {t('delegate')}
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

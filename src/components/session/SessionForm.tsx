@@ -8,20 +8,44 @@ import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { MoodFlagBadges } from './MoodFlagBadges';
 
+interface SessionFormValues {
+  title: string;
+  venueId: string;
+  studioId: string;
+  startsAt: string;
+  durationMinutes: string;
+  format: string;
+  isSyncroom: boolean;
+  maxParticipants: string;
+  registrationRequired: boolean;
+  description: string;
+}
+
 interface SessionFormProps {
   locale: string;
   venues: { id: string; name: string }[];
   studios: { id: string; name: string }[];
+  /** 編集モード: セッション ID を渡すと PUT になる */
+  sessionId?: string;
+  initialValues?: Partial<SessionFormValues>;
+  initialMoodFlags?: string[];
 }
 
-export function SessionForm({ locale, venues, studios }: SessionFormProps) {
+export function SessionForm({
+  locale,
+  venues,
+  studios,
+  sessionId,
+  initialValues,
+  initialMoodFlags,
+}: SessionFormProps) {
   const t = useTranslations();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [moodFlags, setMoodFlags] = useState<string[]>([]);
+  const [moodFlags, setMoodFlags] = useState<string[]>(initialMoodFlags ?? []);
 
-  const [values, setValues] = useState({
+  const [values, setValues] = useState<SessionFormValues>({
     title: '',
     venueId: '',
     studioId: '',
@@ -32,13 +56,19 @@ export function SessionForm({ locale, venues, studios }: SessionFormProps) {
     maxParticipants: '',
     registrationRequired: false,
     description: '',
+    ...initialValues,
   });
 
-  const set = (field: keyof typeof values) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
-    setValues((prev) => ({
-      ...prev,
-      [field]: e.target.type === 'checkbox' ? (e.target as HTMLInputElement).checked : e.target.value,
-    }));
+  const set =
+    (field: keyof SessionFormValues) =>
+    (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
+      setValues((prev) => ({
+        ...prev,
+        [field]:
+          e.target.type === 'checkbox'
+            ? (e.target as HTMLInputElement).checked
+            : e.target.value,
+      }));
 
   function toggleMoodFlag(flag: string) {
     setMoodFlags((prev) =>
@@ -65,8 +95,11 @@ export function SessionForm({ locale, venues, studios }: SessionFormProps) {
       description: values.description || undefined,
     };
 
-    const res = await fetch('/api/v1/sessions', {
-      method: 'POST',
+    const url = sessionId ? `/api/v1/sessions/${sessionId}` : '/api/v1/sessions';
+    const method = sessionId ? 'PUT' : 'POST';
+
+    const res = await fetch(url, {
+      method,
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
     });
@@ -79,7 +112,8 @@ export function SessionForm({ locale, venues, studios }: SessionFormProps) {
     }
 
     const data = await res.json();
-    router.push(`/${locale}/sessions/${data.id}`);
+    const id = sessionId ?? data.id;
+    router.push(`/${locale}/sessions/${id}`);
     router.refresh();
   }
 
@@ -109,7 +143,13 @@ export function SessionForm({ locale, venues, studios }: SessionFormProps) {
           <label className="block text-sm font-medium text-gray-700 mb-1">
             {t('session.duration')}
           </label>
-          <Input type="number" value={values.durationMinutes} onChange={set('durationMinutes')} min={30} max={480} />
+          <Input
+            type="number"
+            value={values.durationMinutes}
+            onChange={set('durationMinutes')}
+            min={30}
+            max={480}
+          />
         </div>
       </div>
 
@@ -117,7 +157,11 @@ export function SessionForm({ locale, venues, studios }: SessionFormProps) {
         <label className="block text-sm font-medium text-gray-700 mb-1">{t('session.venue')}</label>
         <Select value={values.venueId} onChange={set('venueId')}>
           <option value="">— {t('session.noVenue')} —</option>
-          {venues.map((v) => <option key={v.id} value={v.id}>{v.name}</option>)}
+          {venues.map((v) => (
+            <option key={v.id} value={v.id}>
+              {v.name}
+            </option>
+          ))}
         </Select>
       </div>
 
@@ -126,7 +170,11 @@ export function SessionForm({ locale, venues, studios }: SessionFormProps) {
           <label className="block text-sm font-medium text-gray-700 mb-1">{t('session.studio')}</label>
           <Select value={values.studioId} onChange={set('studioId')}>
             <option value="">—</option>
-            {studios.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
+            {studios.map((s) => (
+              <option key={s.id} value={s.id}>
+                {s.name}
+              </option>
+            ))}
           </Select>
         </div>
       )}
@@ -135,7 +183,9 @@ export function SessionForm({ locale, venues, studios }: SessionFormProps) {
         <label className="block text-sm font-medium text-gray-700 mb-1">{t('session.format')}</label>
         <Select value={values.format} onChange={set('format')}>
           {(['OPEN', 'INVITE', 'THEME'] as const).map((f) => (
-            <option key={f} value={f}>{t(`session.formats.${f}`)}</option>
+            <option key={f} value={f}>
+              {t(`session.formats.${f}`)}
+            </option>
           ))}
         </Select>
       </div>
@@ -171,7 +221,13 @@ export function SessionForm({ locale, venues, studios }: SessionFormProps) {
           <label className="block text-sm font-medium text-gray-700 mb-1">
             {t('session.maxParticipants')}
           </label>
-          <Input type="number" value={values.maxParticipants} onChange={set('maxParticipants')} min={1} max={200} />
+          <Input
+            type="number"
+            value={values.maxParticipants}
+            onChange={set('maxParticipants')}
+            min={1}
+            max={200}
+          />
         </div>
       )}
 
@@ -188,8 +244,12 @@ export function SessionForm({ locale, venues, studios }: SessionFormProps) {
       </div>
 
       <div className="flex gap-3 pt-2">
-        <Button type="submit" isLoading={isLoading}>{t('common.save')}</Button>
-        <Button type="button" variant="ghost" onClick={() => router.back()}>{t('common.cancel')}</Button>
+        <Button type="submit" isLoading={isLoading}>
+          {sessionId ? t('common.save') : t('session.create')}
+        </Button>
+        <Button type="button" variant="ghost" onClick={() => router.back()}>
+          {t('common.cancel')}
+        </Button>
       </div>
     </form>
   );
