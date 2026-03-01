@@ -217,7 +217,7 @@ export default async function HomePage({
                     </div>
                   ) : (
                     <CardContent className="text-gray-400 text-sm flex-1">
-                      {locale === 'ja' ? 'セッション情報なし' : 'No session info'}
+                      {t('home.noSessionInfo')}
                     </CardContent>
                   )}
                 </Card>
@@ -242,7 +242,7 @@ export default async function HomePage({
             <p className="text-lg">🥁</p>
             <p>{t('home.noSessions')}</p>
             <Link href={`/${locale}/sessions/new`} className="mt-2 inline-block text-sm text-violet-600 hover:underline">
-              {locale === 'ja' ? '最初のセッションを作成 →' : 'Create the first session →'}
+              {t('home.createSession')}
             </Link>
           </div>
         ) : (
@@ -256,11 +256,11 @@ export default async function HomePage({
                     <CardTitle className="mb-2 line-clamp-2">{session.title}</CardTitle>
                     <CardContent className="space-y-1.5 flex-1">
                       <p className="text-sm font-medium text-violet-700">
-                        📅 {startsAt.toLocaleDateString(locale === 'ja' ? 'ja-JP' : 'en-US', {
+                        📅 {startsAt.toLocaleDateString(locale, {
                           month: 'short',
                           day: 'numeric',
                           weekday: 'short',
-                        })} {startsAt.toLocaleTimeString(locale === 'ja' ? 'ja-JP' : 'en-US', {
+                        })} {startsAt.toLocaleTimeString(locale, {
                           hour: '2-digit',
                           minute: '2-digit',
                         })}
@@ -280,7 +280,7 @@ export default async function HomePage({
                           </span>
                         ) : (
                           <span className="text-xs rounded-full bg-green-100 text-green-700 px-2 py-0.5">
-                            {locale === 'ja' ? '無料/現地集金' : 'Free/Pay at door'}
+                            {t('session.freeOrDoorPrice')}
                           </span>
                         )}
                         {session.maxParticipants != null && (

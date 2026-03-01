@@ -24,6 +24,9 @@
     "clear": "✕ クリア",
     "privacyPolicy": "プライバシーポリシー",
     "terms": "利用規約",
+    "filterByGenre": "ジャンルで絞り込む",
+    "filterByArea": "エリアで絞り込む",
+    "filterByDay": "曜日で絞り込む",
     "minutes": "分",
     "yen": "¥{amount}",
     "perHour": "{amount}/時間"
@@ -239,7 +242,13 @@
     "noSessionInfo": "セッション情報なし",
     "irregular": "不定期開催",
     "everyDay": "毎週{day}曜",
-    "moreSessions": "+{n} セッション"
+    "moreSessions": "+{n} セッション",
+    "showWithSessions": "セッション情報あり会場のみ表示",
+    "showAll": "全会場を表示",
+    "searchResults": "「{q}」の検索結果: {n} 件",
+    "genreResults": "「{genre}」の会場: {n} 件",
+    "allVenues": "全 {n} 件の会場",
+    "withSessions": "セッション情報あり: {n} 件"
   },
   "studio": {
     "title": "練習スタジオ",
@@ -337,7 +346,14 @@
     "freeOrDoorPrice": "無料/現地集金",
     "full": "満員",
     "viewVenuePage": "会場ページを見る →",
-    "moreSessionsAt": "{venue} の他のセッション"
+    "moreSessionsAt": "{venue} の他のセッション",
+    "freeOnly": "無料・現地集金のみ",
+    "todaysSessions": "今日のセッション",
+    "thisWeek": "今週",
+    "nextWeek": "来週",
+    "weekLabel": "{month} 第{n}週",
+    "countResults": "{n} 件",
+    "countResultsFiltered": "絞り込み結果: {n} 件"
   },
   "song": {
     "title": "曲",

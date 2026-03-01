@@ -28,7 +28,7 @@ export async function generateMetadata({
   };
 }
 
-function getWeekLabel(date: Date, locale: string): string {
+function getWeekLabel(date: Date, locale: string, t: (key: string, params?: Record<string, unknown>) => string): string {
   const now = new Date();
   const startOfThisWeek = new Date(now);
   startOfThisWeek.setDate(now.getDate() - now.getDay());
@@ -42,12 +42,12 @@ function getWeekLabel(date: Date, locale: string): string {
   const d = new Date(date);
   d.setHours(0, 0, 0, 0);
 
-  if (d < startOfNextWeek) return locale === 'ja' ? '今週' : 'This Week';
-  if (d < startOfWeekAfterNext) return locale === 'ja' ? '来週' : 'Next Week';
+  if (d < startOfNextWeek) return t('session.thisWeek');
+  if (d < startOfWeekAfterNext) return t('session.nextWeek');
 
-  const mo = d.toLocaleDateString(locale === 'ja' ? 'ja-JP' : 'en-US', { month: 'long' });
+  const mo = d.toLocaleDateString(locale, { month: 'long' });
   const wk = Math.floor((d.getDate() - 1) / 7) + 1;
-  return locale === 'ja' ? `${mo} 第${wk}週` : `${mo} Week ${wk}`;
+  return t('session.weekLabel', { month: mo, n: wk });
 }
 
 export default async function SessionsPage({
@@ -126,7 +126,7 @@ export default async function SessionsPage({
   // 週別グルーピング
   const weekMap = new Map<string, typeof sessions>();
   for (const s of filteredSessions) {
-    const label = getWeekLabel(new Date(s.startsAt), locale);
+    const label = getWeekLabel(new Date(s.startsAt), locale, (key, params) => t(key as Parameters<typeof t>[0], params as Parameters<typeof t>[1]));
     if (!weekMap.has(label)) weekMap.set(label, []);
     weekMap.get(label)!.push(s);
   }
@@ -147,12 +147,8 @@ export default async function SessionsPage({
           {sessions.length > 0 && (
             <p className="text-sm text-gray-500 mt-0.5">
               {dowFilter != null
-                ? (locale === 'ja'
-                  ? `今後 8 週間で ${filteredSessions.length} 件（全 ${sessions.length} 件中）`
-                  : `${filteredSessions.length} of ${sessions.length} sessions in the next 8 weeks`)
-                : (locale === 'ja'
-                  ? `今後 8 週間で ${filteredSessions.length} 件`
-                  : `${filteredSessions.length} sessions in the next 8 weeks`)}
+                ? t('session.countResultsFiltered', { n: filteredSessions.length })
+                : t('session.countResults', { n: filteredSessions.length })}
             </p>
           )}
         </div>
@@ -170,9 +166,7 @@ export default async function SessionsPage({
 
       {/* 曜日フィルタチップ */}
       {(() => {
-        const days = locale === 'ja'
-          ? ['日', '月', '火', '水', '木', '金', '土']
-          : ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        const days = [0, 1, 2, 3, 4, 5, 6].map((i) => t(`tendency.shortDays.${i}` as Parameters<typeof t>[0]));
         // 各曜日のセッション件数を事前計算
         const dowCounts = Array.from({ length: 7 }, (_, i) =>
           sessions.filter((s) => new Date(s.startsAt).getDay() === i).length
@@ -180,7 +174,7 @@ export default async function SessionsPage({
         return (
           <div className="space-y-2">
             <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">
-              📅 {locale === 'ja' ? '曜日で絞り込む' : 'Filter by Day'}
+              📅 {t('common.filterByDay')}
             </p>
           <div className="flex flex-wrap gap-2">
             {hasFilter && (
@@ -222,7 +216,7 @@ export default async function SessionsPage({
       {topStations.length > 0 && (
         <div className="space-y-2">
           <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">
-            📍 {locale === 'ja' ? 'エリアで絞り込む' : 'Filter by Area'}
+            📍 {t('common.filterByArea')}
           </p>
         <div className="flex flex-wrap gap-2">
           {hasFilter && !sessions.some(() => true) && (
@@ -269,7 +263,7 @@ export default async function SessionsPage({
               : 'border border-green-200 bg-green-50 text-green-700 hover:bg-green-100'
           }`}
         >
-          💚 {locale === 'ja' ? '無料・現地集金のみ' : 'Free only'}
+          💚 {t('session.freeOnly')}
         </Link>
         <Link
           href={syncroomOnly
@@ -298,7 +292,7 @@ export default async function SessionsPage({
       {todaySessions.length > 0 && (
         <section className="rounded-2xl bg-amber-50 border border-amber-200 p-4">
           <h2 className="text-base font-bold text-amber-900 mb-3">
-            ☀️ {locale === 'ja' ? '今日のセッション' : "Today's Sessions"}
+            ☀️ {t('session.todaysSessions')}
             <span className="ml-2 text-sm font-normal text-amber-600">{todaySessions.length} 件</span>
           </h2>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">

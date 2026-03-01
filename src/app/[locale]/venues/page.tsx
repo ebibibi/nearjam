@@ -127,7 +127,7 @@ export default async function VenuesPage({
       {/* ジャンルフィルタチップ */}
       {topGenres.length > 0 && !q && (
         <div className="space-y-2">
-          <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">🎵 {locale === 'ja' ? 'ジャンルで絞り込む' : 'Filter by Genre'}</p>
+          <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">🎵 {t('common.filterByGenre')}</p>
           <div className="flex flex-wrap gap-2">
           {genreFilter && (
             <Link
@@ -161,7 +161,7 @@ export default async function VenuesPage({
       {/* エリアフィルタチップ */}
       {topStations.length > 0 && (
         <div className="space-y-2">
-          <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">📍 {locale === 'ja' ? 'エリアで絞り込む' : 'Filter by Area'}</p>
+          <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">📍 {t('common.filterByArea')}</p>
           <div className="flex flex-wrap gap-2">
           {q && (
             <Link
@@ -196,22 +196,22 @@ export default async function VenuesPage({
       <div className="flex items-center justify-between gap-3">
         <p className="text-sm text-gray-500">
           {q
-            ? (locale === 'ja' ? `「${q}」の検索結果: ${venues.length} 件` : `${venues.length} results for "${q}"`)
+            ? t('venue.searchResults', { n: venues.length, q })
             : genreFilter
-            ? (locale === 'ja' ? `「${genreFilter}」の会場: ${venues.length} 件` : `${venues.length} venues for "${genreFilter}"`)
+            ? t('venue.genreResults', { n: venues.length, genre: genreFilter })
             : showAll
-            ? (locale === 'ja' ? `全 ${venues.length} 件の会場` : `All ${venues.length} venues`)
-            : (locale === 'ja' ? `セッション情報あり: ${venues.length} 件` : `${venues.length} venues with sessions`)
+            ? t('venue.allVenues', { n: venues.length })
+            : t('venue.withSessions', { n: venues.length })
           }
         </p>
         {!q && (
           showAll ? (
             <Link href={`/${locale}/venues`} className="text-xs text-violet-600 hover:underline">
-              {locale === 'ja' ? 'セッション情報あり会場のみ表示' : 'Show venues with sessions only'}
+              {t('venue.showWithSessions')}
             </Link>
           ) : (
             <Link href={`/${locale}/venues?all=1`} className="text-xs text-gray-400 hover:underline">
-              {locale === 'ja' ? '全会場を表示' : 'Show all venues'}
+              {t('venue.showAll')}
             </Link>
           )
         )}

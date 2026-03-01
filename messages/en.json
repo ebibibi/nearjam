@@ -24,6 +24,9 @@
     "clear": "✕ Clear",
     "privacyPolicy": "Privacy Policy",
     "terms": "Terms of Service",
+    "filterByGenre": "Filter by Genre",
+    "filterByArea": "Filter by Area",
+    "filterByDay": "Filter by Day",
     "minutes": "min",
     "yen": "¥{amount}",
     "perHour": "{amount}/hr"
@@ -239,7 +242,13 @@
     "noSessionInfo": "No session info",
     "irregular": "Irregular",
     "everyDay": "Every {day}",
-    "moreSessions": "+{n} more sessions"
+    "moreSessions": "+{n} more sessions",
+    "showWithSessions": "Show venues with sessions only",
+    "showAll": "Show all venues",
+    "searchResults": "{n} results for \"{q}\"",
+    "genreResults": "{n} venues for \"{genre}\"",
+    "allVenues": "All {n} venues",
+    "withSessions": "{n} venues with sessions"
   },
   "studio": {
     "title": "Studios",
@@ -337,7 +346,14 @@
     "freeOrDoorPrice": "Free/Pay at door",
     "full": "Full",
     "viewVenuePage": "View venue page →",
-    "moreSessionsAt": "More sessions at {venue}"
+    "moreSessionsAt": "More sessions at {venue}",
+    "freeOnly": "Free only",
+    "todaysSessions": "Today's Sessions",
+    "thisWeek": "This Week",
+    "nextWeek": "Next Week",
+    "weekLabel": "{month} Week {n}",
+    "countResults": "{n} sessions",
+    "countResultsFiltered": "{n} sessions matching filters"
   },
   "song": {
     "title": "Songs",
