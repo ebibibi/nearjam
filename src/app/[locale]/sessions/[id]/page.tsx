@@ -13,6 +13,7 @@ import { RegistrationButton } from '@/components/session/RegistrationButton';
 import { SessionAdminPanel } from '@/components/session/SessionAdminPanel';
 import { TicketSection } from '@/components/session/TicketSection';
 import { ShareButton } from '@/components/session/ShareButton';
+import { KudosForm } from '@/components/kudos/KudosForm';
 import { CancellationPolicy } from '@/lib/stripe';
 import ReactMarkdown from 'react-markdown';
 
@@ -82,6 +83,7 @@ export default async function SessionDetailPage({
 
   const isAdmin = authSession?.user?.id === session.sessionAdminId;
   const startDate = new Date(session.startsAt);
+  const isPast = startDate < new Date();
 
   // Google Calendar link
   const gcalFormat = (d: Date) => d.toISOString().replace(/[-:]/g, '').slice(0, 15) + 'Z';
@@ -120,7 +122,7 @@ export default async function SessionDetailPage({
             select: {
               id: true,
               userId: true,
-              user: { select: { nickname: true, image: true } },
+              user: { select: { id: true, nickname: true, image: true } },
               instruments: { select: { instrument: true } },
             },
           },
@@ -402,12 +404,19 @@ export default async function SessionDetailPage({
                       {(reg.musicianProfile.user.nickname ?? 'A')[0]}
                     </div>
                   )}
-                  <div>
+                  <div className="flex-1">
                     <div className="text-sm font-medium">{reg.musicianProfile.user.nickname ?? 'Anonymous'}</div>
                     {reg.musicianProfile.instruments.length > 0 && (
                       <div className="text-xs text-gray-500">
                         {reg.musicianProfile.instruments.slice(0, 2).map(i => i.instrument).join(' / ')}
                       </div>
+                    )}
+                    {isPast && isRegistered && reg.musicianProfile.user.id !== authSession?.user?.id && (
+                      <KudosForm
+                        sessionId={id}
+                        targetUserId={reg.musicianProfile.user.id}
+                        targetName={reg.musicianProfile.user.nickname ?? 'Anonymous'}
+                      />
                     )}
                   </div>
                 </div>
