@@ -11,6 +11,9 @@ export const UpdateProfileSchema = z.object({
   sessionGoal: z.enum(['FUN', 'IMPROVE', 'BOTH']).optional(),
   feedbackPref: z.enum(['WELCOME', 'LIGHT', 'NONE']).optional(),
   sessionStyle: z.enum(['DEEP', 'VARIETY', 'EITHER']).optional(),
+  playVolumePref: z.enum(['LOTS', 'SPECIFIC_ONLY', 'EITHER']).optional(),
+  challengePref: z.enum(['KNOWN_ONLY', 'CHALLENGE', 'EITHER']).optional(),
+  tempoPref: z.enum(['SLOW', 'MODERATE', 'FAST']).optional(),
   snsLinks: z.record(z.string(), z.string().max(500)).optional(),
   instruments: z
     .array(

@@ -24,6 +24,9 @@ interface FormData {
   levelPref: string;
   feedbackPref: string;
   sessionStyle: string;
+  playVolumePref: string;
+  challengePref: string;
+  tempoPref: string;
   snsYoutube: string;
   snsInstagram: string;
   snsX: string;
@@ -57,6 +60,9 @@ export function ProfileSetupWizard({ locale, initialNickname }: ProfileSetupWiza
     levelPref: 'EITHER',
     feedbackPref: 'LIGHT',
     sessionStyle: 'EITHER',
+    playVolumePref: 'EITHER',
+    challengePref: 'EITHER',
+    tempoPref: 'MODERATE',
     snsYoutube: '',
     snsInstagram: '',
     snsX: '',
@@ -90,6 +96,9 @@ export function ProfileSetupWizard({ locale, initialNickname }: ProfileSetupWiza
       levelPref: data.levelPref || undefined,
       feedbackPref: data.feedbackPref || undefined,
       sessionStyle: data.sessionStyle || undefined,
+      playVolumePref: data.playVolumePref || undefined,
+      challengePref: data.challengePref || undefined,
+      tempoPref: data.tempoPref || undefined,
       snsLinks: Object.keys(snsLinks).length > 0 ? snsLinks : undefined,
     };
 

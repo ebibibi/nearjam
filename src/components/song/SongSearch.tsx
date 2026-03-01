@@ -15,9 +15,14 @@ function fetcher(url: string) {
 interface SongSearchProps {
   isSignedIn?: boolean;
   wishlistIds?: Set<string>;
+  wishlistKeys?: Map<string, string | null>;
 }
 
-export function SongSearch({ isSignedIn = false, wishlistIds = new Set() }: SongSearchProps) {
+export function SongSearch({
+  isSignedIn = false,
+  wishlistIds = new Set(),
+  wishlistKeys = new Map(),
+}: SongSearchProps) {
   const t = useTranslations('song');
   const [query, setQuery] = useState('');
   const [debouncedQuery, setDebouncedQuery] = useState('');
@@ -74,6 +79,7 @@ export function SongSearch({ isSignedIn = false, wishlistIds = new Set() }: Song
                 <WishlistButton
                   songId={song.id}
                   initialInWishlist={wishlistIds.has(song.id)}
+                  initialPreferredKey={wishlistKeys.get(song.id) ?? null}
                   isSignedIn={isSignedIn}
                 />
               }

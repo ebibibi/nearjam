@@ -9,6 +9,9 @@ interface StepProps {
     levelPref: string;
     feedbackPref: string;
     sessionStyle: string;
+    playVolumePref: string;
+    challengePref: string;
+    tempoPref: string;
     snsYoutube: string;
     snsInstagram: string;
     snsX: string;
@@ -20,6 +23,9 @@ interface StepProps {
     levelPref?: string;
     feedbackPref?: string;
     sessionStyle?: string;
+    playVolumePref?: string;
+    challengePref?: string;
+    tempoPref?: string;
     snsYoutube?: string;
     snsInstagram?: string;
     snsX?: string;
@@ -104,6 +110,42 @@ export function ProfileSetupStep4({ data, onChange }: StepProps) {
             <option key={v} value={v}>
               {t(`sessionStyles.${v}`)}
             </option>
+          ))}
+        </Select>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">{t('playVolumePrefLabel')}</label>
+        <Select
+          value={data.playVolumePref}
+          onChange={(e) => onChange({ playVolumePref: e.target.value })}
+        >
+          {(['LOTS', 'SPECIFIC_ONLY', 'EITHER'] as const).map((v) => (
+            <option key={v} value={v}>{t(`playVolumePrefs.${v}`)}</option>
+          ))}
+        </Select>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">{t('challengePrefLabel')}</label>
+        <Select
+          value={data.challengePref}
+          onChange={(e) => onChange({ challengePref: e.target.value })}
+        >
+          {(['KNOWN_ONLY', 'CHALLENGE', 'EITHER'] as const).map((v) => (
+            <option key={v} value={v}>{t(`challengePrefs.${v}`)}</option>
+          ))}
+        </Select>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">{t('tempoPrefLabel')}</label>
+        <Select
+          value={data.tempoPref}
+          onChange={(e) => onChange({ tempoPref: e.target.value })}
+        >
+          {(['SLOW', 'MODERATE', 'FAST'] as const).map((v) => (
+            <option key={v} value={v}>{t(`tempoPrefs.${v}`)}</option>
           ))}
         </Select>
       </div>

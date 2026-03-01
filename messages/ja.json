@@ -105,8 +105,10 @@
       "isPublic": "プロフィールに公開",
       "syncroom": "SYNCROOM参加可能",
       "syncroomNotes": "SYNCROOMメモ",
-      "syncroomNotesPlaceholder": "ルーム名、接続環境など..."
+      "syncroomNotesPlaceholder": "ルーム名、接続環境など...",
+      "home": "拠点"
     },
+    "syncroomAvailable": "SYNCROOM参加可能",
     "skillLevels": {
       "BEGINNER": "初心者",
       "INTERMEDIATE": "中級者",
@@ -141,10 +143,29 @@
     },
     "wishlist": "ウィッシュリスト",
     "viewAllSongs": "ウィッシュリストを管理",
+    "myHistory": "演奏履歴",
     "snsLinks": "SNS / リンク",
     "levelPrefLabel": "レベルの好み",
     "feedbackPrefLabel": "フィードバックの好み",
-    "sessionStyleLabel": "セッションスタイル"
+    "sessionStyleLabel": "セッションスタイル",
+    "playVolumePrefLabel": "演奏量の好み",
+    "challengePrefLabel": "曲への挑戦態度",
+    "tempoPrefLabel": "好みのペース",
+    "playVolumePrefs": {
+      "LOTS": "たくさん演りたい",
+      "SPECIFIC_ONLY": "少ない曲数でいい",
+      "EITHER": "どちらでもOK"
+    },
+    "challengePrefs": {
+      "KNOWN_ONLY": "知ってる曲だけでOK",
+      "CHALLENGE": "新しい曲に挑戦したい",
+      "EITHER": "どちらでもOK"
+    },
+    "tempoPrefs": {
+      "SLOW": "ゆったり",
+      "MODERATE": "普通",
+      "FAST": "激しめ"
+    }
   },
   "venue": {
     "title": "セッション会場",
@@ -261,6 +282,12 @@
     "viewDetails": "詳細を見る",
     "live": "ライブ管理画面を開く",
     "noSessions": "セッションが見つかりません。作成しませんか？",
+    "participantsPrivate": "参加者リストは参加登録済みの方のみ閲覧できます。",
+    "noParticipantsYet": "まだ参加者がいません。",
+    "adminPanel": "セッション管理",
+    "removeParticipant": "除名",
+    "declareComplete": "セッション完了を宣言",
+    "confirmComplete": "全参加者を「参加済み」にしてセッションを終了しますか？",
     "filterByGenre": "ジャンル",
     "filterByDate": "日付",
     "filterSyncroom": "SYNCROOMのみ"
@@ -286,7 +313,9 @@
       "VARIES": "曲による"
     },
     "noSongs": "曲が見つかりませんでした",
-    "signInToWishlist": "ウィッシュリストへの追加にはログインが必要です"
+    "signInToWishlist": "ウィッシュリストへの追加にはログインが必要です",
+    "preferredKey": "希望キー",
+    "keyAny": "キー不問"
   },
   "maps": {
     "viewMap": "地図で見る",
@@ -333,6 +362,14 @@
     "balance": "演奏バランス",
     "turns": "{n}回",
     "noQueue": "まだキューに曲がありません"
+  },
+  "history": {
+    "title": "マイ演奏履歴",
+    "noHistory": "まだ演奏記録がありません",
+    "instrument": "楽器",
+    "session": "セッション",
+    "performedAt": "演奏日",
+    "soloistBadge": "ソロイスト"
   },
   "errors": {
     "notFound": "ページが見つかりません",

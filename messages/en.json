@@ -105,8 +105,10 @@
       "isPublic": "Show on public profile",
       "syncroom": "SYNCROOM available",
       "syncroomNotes": "SYNCROOM notes",
-      "syncroomNotesPlaceholder": "Room name, connection notes..."
+      "syncroomNotesPlaceholder": "Room name, connection notes...",
+      "home": "home"
     },
+    "syncroomAvailable": "SYNCROOM available",
     "skillLevels": {
       "BEGINNER": "Beginner",
       "INTERMEDIATE": "Intermediate",
@@ -141,10 +143,29 @@
     },
     "wishlist": "My Wishlist",
     "viewAllSongs": "Manage wishlist",
+    "myHistory": "Performance history",
     "snsLinks": "SNS / Links",
     "levelPrefLabel": "Level preference",
     "feedbackPrefLabel": "Feedback preference",
-    "sessionStyleLabel": "Session style"
+    "sessionStyleLabel": "Session style",
+    "playVolumePrefLabel": "Playing volume",
+    "challengePrefLabel": "Song challenge attitude",
+    "tempoPrefLabel": "Preferred pace",
+    "playVolumePrefs": {
+      "LOTS": "Play a lot",
+      "SPECIFIC_ONLY": "Just a few songs is fine",
+      "EITHER": "No preference"
+    },
+    "challengePrefs": {
+      "KNOWN_ONLY": "Only songs I know",
+      "CHALLENGE": "Happy to try new things",
+      "EITHER": "No preference"
+    },
+    "tempoPrefs": {
+      "SLOW": "Relaxed",
+      "MODERATE": "Moderate",
+      "FAST": "Intense"
+    }
   },
   "venue": {
     "title": "Venues",
@@ -261,6 +282,12 @@
     "viewDetails": "View details",
     "live": "Open live view",
     "noSessions": "No sessions found. Create one!",
+    "participantsPrivate": "Participant list is visible to registered members only.",
+    "noParticipantsYet": "No participants yet.",
+    "adminPanel": "Session admin controls",
+    "removeParticipant": "Remove",
+    "declareComplete": "Declare session complete",
+    "confirmComplete": "Mark all participants as ATTENDED and close the session?",
     "filterByGenre": "Genre",
     "filterByDate": "Date",
     "filterSyncroom": "SYNCROOM only"
@@ -286,7 +313,9 @@
       "VARIES": "Varies"
     },
     "noSongs": "No songs found",
-    "signInToWishlist": "Sign in to add songs to your wishlist"
+    "signInToWishlist": "Sign in to add songs to your wishlist",
+    "preferredKey": "My preferred key",
+    "keyAny": "Any key"
   },
   "maps": {
     "viewMap": "View map",
@@ -333,6 +362,14 @@
     "balance": "Performance balance",
     "turns": "{n} turns",
     "noQueue": "No songs in queue yet"
+  },
+  "history": {
+    "title": "My Performance History",
+    "noHistory": "No performances recorded yet",
+    "instrument": "Instrument",
+    "session": "Session",
+    "performedAt": "Performed",
+    "soloistBadge": "Soloist"
   },
   "errors": {
     "notFound": "Page not found",

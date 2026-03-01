@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { MoodFlagBadges } from '@/components/session/MoodFlagBadges';
 import { RegistrationButton } from '@/components/session/RegistrationButton';
+import { SessionAdminPanel } from '@/components/session/SessionAdminPanel';
 
 export default async function SessionDetailPage({
   params,
@@ -29,17 +30,6 @@ export default async function SessionDetailPage({
           orderBy: { orderIndex: 'asc' },
           include: { song: { select: { id: true, title: true, artist: true, genre: true } } },
         },
-        registrations: {
-          include: {
-            musicianProfile: {
-              select: {
-                id: true,
-                user: { select: { nickname: true, image: true } },
-                instruments: { select: { instrument: true } },
-              },
-            },
-          },
-        },
         _count: { select: { registrations: true } },
       },
     }),
@@ -53,18 +43,39 @@ export default async function SessionDetailPage({
 
   // Check if current user is registered
   let isRegistered = false;
+  let myProfileId: string | null = null;
   if (authSession?.user?.id) {
     const profile = await prisma.musicianProfile.findUnique({
       where: { userId: authSession.user.id },
       select: { id: true },
     });
     if (profile) {
+      myProfileId = profile.id;
       const reg = await prisma.jamSessionRegistration.findFirst({
         where: { jamSessionId: id, musicianProfileId: profile.id },
       });
       isRegistered = !!reg;
     }
   }
+
+  // Participant details only visible to registered participants or admin (PRD §5.1)
+  const canSeeParticipants = isAdmin || isRegistered;
+  const registrations = canSeeParticipants
+    ? await prisma.jamSessionRegistration.findMany({
+        where: { jamSessionId: id },
+        include: {
+          musicianProfile: {
+            select: {
+              id: true,
+              user: { select: { nickname: true, image: true } },
+              instruments: { select: { instrument: true } },
+            },
+          },
+        },
+      })
+    : [];
+
+  void myProfileId;
 
   return (
     <div className="max-w-3xl space-y-8">
@@ -178,36 +189,47 @@ export default async function SessionDetailPage({
         </section>
       )}
 
-      {/* Admin: live view link */}
+      {/* Admin: live view link + admin panel */}
       {isAdmin && (
-        <div className="flex gap-3">
-          <Link href={`/${locale}/sessions/${id}/live`}>
-            <Button variant="secondary">{t('session.live')}</Button>
-          </Link>
+        <div className="space-y-4">
+          <div className="flex gap-3">
+            <Link href={`/${locale}/sessions/${id}/live`}>
+              <Button variant="secondary">{t('session.live')}</Button>
+            </Link>
+          </div>
+          <SessionAdminPanel sessionId={id} registrations={registrations} />
         </div>
       )}
 
       {/* Participants */}
-      {session.registrations.length > 0 && (
-        <section>
-          <h2 className="text-lg font-bold text-gray-900 mb-3">{t('session.participants', { n: session.registrations.length })}</h2>
-          <div className="flex flex-wrap gap-3">
-            {session.registrations.map((reg) => (
-              <div key={reg.id} className="flex items-center gap-2 rounded-full bg-gray-100 px-3 py-1.5">
-                {reg.musicianProfile.user.image && (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={reg.musicianProfile.user.image}
-                    alt=""
-                    className="h-5 w-5 rounded-full object-cover"
-                  />
-                )}
-                <span className="text-sm">{reg.musicianProfile.user.nickname ?? 'Anonymous'}</span>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
+      <section>
+        <h2 className="text-lg font-bold text-gray-900 mb-3">
+          {t('session.participants', { n: session._count.registrations })}
+        </h2>
+        {canSeeParticipants ? (
+          registrations.length > 0 ? (
+            <div className="flex flex-wrap gap-3">
+              {registrations.map((reg) => (
+                <div key={reg.id} className="flex items-center gap-2 rounded-full bg-gray-100 px-3 py-1.5">
+                  {reg.musicianProfile.user.image && (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={reg.musicianProfile.user.image}
+                      alt=""
+                      className="h-5 w-5 rounded-full object-cover"
+                    />
+                  )}
+                  <span className="text-sm">{reg.musicianProfile.user.nickname ?? 'Anonymous'}</span>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-gray-500">{t('session.noParticipantsYet')}</p>
+          )
+        ) : (
+          <p className="text-sm text-gray-400 italic">{t('session.participantsPrivate')}</p>
+        )}
+      </section>
     </div>
   );
 }
