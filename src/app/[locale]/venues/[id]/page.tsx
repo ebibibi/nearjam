@@ -12,6 +12,7 @@ import { TendencyOwnerActions } from '@/components/venue/TendencyOwnerActions';
 import { Button } from '@/components/ui/Button';
 import { VenueClaimButton } from '@/components/venue/VenueClaimButton';
 import { ShareButton } from '@/components/session/ShareButton';
+import ReactMarkdown from 'react-markdown';
 
 export async function generateMetadata({
   params,
@@ -345,8 +346,8 @@ export default async function VenueDetailPage({
       {venue.rulesMarkdown && (
         <section>
           <h2 className="text-lg font-bold text-gray-900 mb-3">{t('venue.rulesPage')}</h2>
-          <div className="rounded-lg border border-gray-200 bg-gray-50 p-4 text-sm text-gray-700 whitespace-pre-wrap">
-            {venue.rulesMarkdown}
+          <div className="rounded-lg border border-gray-200 bg-gray-50 p-4 text-sm text-gray-700 prose prose-sm max-w-none">
+            <ReactMarkdown>{venue.rulesMarkdown}</ReactMarkdown>
           </div>
         </section>
       )}
