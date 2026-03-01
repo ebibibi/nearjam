@@ -13,10 +13,11 @@ export default async function VenuesPage({
   searchParams,
 }: {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ q?: string }>;
+  searchParams: Promise<{ q?: string; all?: string }>;
 }) {
   const { locale } = await params;
-  const { q } = await searchParams;
+  const { q, all } = await searchParams;
+  const showAll = all === '1';
   setRequestLocale(locale);
   const t = await getTranslations();
 
@@ -35,6 +36,8 @@ export default async function VenuesPage({
     .slice(0, 8)
     .map(([station, count]) => ({ station, count }));
 
+  // デフォルトはセッション情報あり会場のみ表示（?all=1 で全会場表示）
+  const baseWhere = showAll || q ? undefined : { tendencies: { some: { isActive: true } } };
   const venues = await prisma.venue.findMany({
     where: q
       ? {
@@ -44,7 +47,7 @@ export default async function VenuesPage({
             { address: { contains: q, mode: 'insensitive' } },
           ],
         }
-      : undefined,
+      : baseWhere,
     orderBy: [{ verifiedAt: 'desc' }, { name: 'asc' }],
     include: {
       tendencies: {
@@ -106,13 +109,28 @@ export default async function VenuesPage({
         </div>
       )}
 
-      {/* 件数表示 */}
-      <p className="text-sm text-gray-500">
-        {q
-          ? (locale === 'ja' ? `「${q}」の検索結果: ${venues.length} 件` : `${venues.length} results for "${q}"`)
-          : (locale === 'ja' ? `${venues.length} 件の会場` : `${venues.length} venues`)
-        }
-      </p>
+      {/* 件数表示 + 全会場切り替え */}
+      <div className="flex items-center justify-between gap-3">
+        <p className="text-sm text-gray-500">
+          {q
+            ? (locale === 'ja' ? `「${q}」の検索結果: ${venues.length} 件` : `${venues.length} results for "${q}"`)
+            : showAll
+            ? (locale === 'ja' ? `全 ${venues.length} 件の会場` : `All ${venues.length} venues`)
+            : (locale === 'ja' ? `セッション情報あり: ${venues.length} 件` : `${venues.length} venues with sessions`)
+          }
+        </p>
+        {!q && (
+          showAll ? (
+            <Link href={`/${locale}/venues`} className="text-xs text-violet-600 hover:underline">
+              {locale === 'ja' ? 'セッション情報あり会場のみ表示' : 'Show venues with sessions only'}
+            </Link>
+          ) : (
+            <Link href={`/${locale}/venues?all=1`} className="text-xs text-gray-400 hover:underline">
+              {locale === 'ja' ? '全会場を表示' : 'Show all venues'}
+            </Link>
+          )
+        )}
+      </div>
 
       {venues.length === 0 ? (
         <div className="rounded-xl border border-dashed border-gray-300 py-16 text-center">
