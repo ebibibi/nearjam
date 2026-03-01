@@ -9,6 +9,7 @@ import { VerificationBadge } from '@/components/venue/VerificationBadge';
 import { SessionTendencyCard } from '@/components/venue/SessionTendencyCard';
 import { TendencyOwnerActions } from '@/components/venue/TendencyOwnerActions';
 import { Button } from '@/components/ui/Button';
+import { VenueClaimButton } from '@/components/venue/VenueClaimButton';
 
 export default async function VenueDetailPage({
   params,
@@ -90,6 +91,12 @@ export default async function VenueDetailPage({
           <p className="mt-2 text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-md px-3 py-2">
             {t('venue.unverifiedNotice')}
           </p>
+        )}
+        {/* オーナー未設定 & ログイン済み → 申請ボタン */}
+        {!venue.ownerId && currentUserId && (
+          <div className="mt-3">
+            <VenueClaimButton venueId={id} />
+          </div>
         )}
       </div>
 

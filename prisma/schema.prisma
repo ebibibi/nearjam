@@ -703,3 +703,19 @@ model Notification {
   @@index([userId, sent])
   @@index([scheduledFor, sent])
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 会場認証コード（一時保存 — メール確認コード）
+// ─────────────────────────────────────────────────────────────────────────────
+
+model VenueVerificationCode {
+  id        String   @id @default(cuid())
+  venueId   String
+  claimerId String   // 申請者（会場オーナー候補）
+  email     String   // 送信先メールアドレス（HP から抽出）
+  code      String   // 6桁確認コード
+  expiresAt DateTime // 発行から15分で失効
+  createdAt DateTime @default(now())
+
+  @@index([venueId, claimerId])
+}

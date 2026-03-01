@@ -33,7 +33,9 @@
     "songs": "曲",
     "profile": "マイプロフィール",
     "signIn": "ログイン",
-    "signOut": "ログアウト"
+    "signOut": "ログアウト",
+    "kudos": "Kudos",
+    "recommendations": "発見"
   },
   "auth": {
     "signIn": "ログイン",
@@ -433,5 +435,76 @@
       "ADVANCED": "上級者",
       "PROFESSIONAL": "プロ"
     }
+  },
+  "kudos": {
+    "title": "Kudos",
+    "send": "Kudosを送る",
+    "sent": "Kudosを送りました！",
+    "inbox": "受け取ったKudos",
+    "noKudos": "まだKudosはありません",
+    "stamp": "スタンプを選んでください",
+    "messageLabel": "メッセージ（任意）",
+    "messagePlaceholder": "一言添えてみましょう...",
+    "stamps": {
+      "👍": "いいね！",
+      "🎵": "演奏よかった！",
+      "🎉": "また一緒に！",
+      "🌱": "勉強になった",
+      "✨": "雰囲気最高"
+    },
+    "alreadySent": "すでにKudosを送っています",
+    "sendFailed": "Kudosの送信に失敗しました"
+  },
+  "feedback": {
+    "title": "匿名フィードバック",
+    "send": "フィードバックを送る",
+    "sent": "匿名で送信しました",
+    "noFeedback": "フィードバックはまだありません",
+    "messagePlaceholder": "感想や改善案を書いてください...",
+    "toSession": "セッション管理者へ",
+    "toVenue": "会場へ"
+  },
+  "privacy": {
+    "title": "プライバシー設定",
+    "visSessionFact": "このセッションに参加したことを公開",
+    "visDatetime": "日時を公開",
+    "visSessionName": "セッション名を公開",
+    "visSongListVenue": "会場へのセットリスト開示を許可",
+    "adminConsentVisSongList": "セットリストを公開",
+    "saved": "プライバシー設定を保存しました",
+    "saveFailed": "保存に失敗しました"
+  },
+  "recommendation": {
+    "title": "曲のレコメンデーション",
+    "subtitle": "近くで演奏されたがウィッシュリスト未登録の曲",
+    "playedNearby": "回近くで演奏",
+    "addToWishlist": "ウィッシュリストに追加",
+    "noRecommendations": "レコメンデーションはまだありません",
+    "profileRequired": "プロフィールを設定するとレコメンデーションが表示されます"
+  },
+  "venueVerify": {
+    "title": "会場オーナー認証",
+    "step1": "HP URLを入力",
+    "step2": "メールを選択",
+    "step3": "確認コードを入力",
+    "hpUrl": "会場のHP URL",
+    "email": "メールアドレス",
+    "code": "確認コード",
+    "extracting": "HPからメールアドレスを抽出中...",
+    "noEmailsFound": "HPにメールアドレスが見つかりません",
+    "codeSent": "確認コードを送信しました",
+    "verified": "会場が認証されました！",
+    "invalidCode": "確認コードが無効または期限切れです",
+    "claim": "オーナー申請する",
+    "claimSuccess": "オーナー申請しました。管理者の確認後に認証されます。",
+    "alreadyOwned": "この会場はすでにオーナーがいます"
+  },
+  "admin": {
+    "collectionQueue": "自動収集レビューキュー",
+    "approve": "承認",
+    "reject": "却下",
+    "noItems": "レビュー待ちのアイテムはありません",
+    "source": "ソース",
+    "collectedAt": "収集日時"
   }
 }

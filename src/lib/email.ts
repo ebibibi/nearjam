@@ -71,6 +71,45 @@ export async function sendMatchSessionEmail(payload: MatchSessionEmailPayload): 
   }
 }
 
+export interface VerificationEmailPayload {
+  to: string;
+  venueName: string;
+  code: string;
+}
+
+export async function sendVerificationEmail(payload: VerificationEmailPayload): Promise<boolean> {
+  const client = getEmailClient();
+  if (!client) return false;
+
+  const subject = `【NearJam】会場オーナー確認コード: ${payload.code}`;
+  const htmlBody = `<!DOCTYPE html>
+<html lang="ja">
+<head><meta charset="UTF-8"></head>
+<body style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:24px;color:#1a1a1a">
+  <h2 style="color:#4f46e5">NearJam 会場オーナー確認</h2>
+  <p>「${payload.venueName}」のオーナー申請ありがとうございます。</p>
+  <p>以下の確認コードを入力してください（<strong>15分間</strong>有効）:</p>
+  <div style="font-size:36px;font-weight:bold;letter-spacing:8px;padding:16px;background:#f5f5f5;text-align:center;border-radius:8px;margin:16px 0">
+    ${payload.code}
+  </div>
+  <p style="font-size:12px;color:#888">このメールに心当たりがない場合は無視してください。</p>
+</body>
+</html>`;
+
+  try {
+    const poller = await client.beginSend({
+      senderAddress: `DoNotReply <${EMAIL_FROM}>`,
+      recipients: { to: [{ address: payload.to }] },
+      content: { subject, html: htmlBody, plainText: `確認コード: ${payload.code}` },
+    });
+    const result = await poller.pollUntilDone();
+    return result.status === KnownEmailSendStatus.Succeeded;
+  } catch (e) {
+    console.error('[email] verification email error:', e);
+    return false;
+  }
+}
+
 function buildJaHtml(p: MatchSessionEmailPayload, sessionUrl: string): string {
   return `<!DOCTYPE html>
 <html lang="ja">

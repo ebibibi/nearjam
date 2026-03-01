@@ -33,7 +33,9 @@
     "songs": "Songs",
     "profile": "My Profile",
     "signIn": "Sign in",
-    "signOut": "Sign out"
+    "signOut": "Sign out",
+    "kudos": "Kudos",
+    "recommendations": "Discover"
   },
   "auth": {
     "signIn": "Sign in",
@@ -433,5 +435,76 @@
       "ADVANCED": "Advanced",
       "PROFESSIONAL": "Professional"
     }
+  },
+  "kudos": {
+    "title": "Kudos",
+    "send": "Send kudos",
+    "sent": "Kudos sent!",
+    "inbox": "Received kudos",
+    "noKudos": "No kudos yet",
+    "stamp": "Select a stamp",
+    "messageLabel": "Message (optional)",
+    "messagePlaceholder": "Add a short message...",
+    "stamps": {
+      "👍": "Nice!",
+      "🎵": "Great playing!",
+      "🎉": "Let's play again!",
+      "🌱": "I learned a lot",
+      "✨": "Great atmosphere"
+    },
+    "alreadySent": "Already sent kudos",
+    "sendFailed": "Failed to send kudos"
+  },
+  "feedback": {
+    "title": "Anonymous Feedback",
+    "send": "Send feedback",
+    "sent": "Feedback sent anonymously",
+    "noFeedback": "No feedback yet",
+    "messagePlaceholder": "Share your thoughts or suggestions...",
+    "toSession": "To session admin",
+    "toVenue": "To venue"
+  },
+  "privacy": {
+    "title": "Privacy Settings",
+    "visSessionFact": "Show that I attended this session",
+    "visDatetime": "Show date and time",
+    "visSessionName": "Show session name",
+    "visSongListVenue": "Allow venue to see setlist",
+    "adminConsentVisSongList": "Share setlist publicly",
+    "saved": "Privacy settings saved",
+    "saveFailed": "Failed to save"
+  },
+  "recommendation": {
+    "title": "Song Recommendations",
+    "subtitle": "Songs played nearby but not in your wishlist",
+    "playedNearby": "times nearby",
+    "addToWishlist": "Add to wishlist",
+    "noRecommendations": "No recommendations yet",
+    "profileRequired": "Set up your profile to get recommendations"
+  },
+  "venueVerify": {
+    "title": "Verify Venue Ownership",
+    "step1": "Enter HP URL",
+    "step2": "Select email",
+    "step3": "Enter confirmation code",
+    "hpUrl": "Venue HP URL",
+    "email": "Contact email",
+    "code": "Confirmation code",
+    "extracting": "Extracting emails from HP...",
+    "noEmailsFound": "No email addresses found on the HP",
+    "codeSent": "Confirmation code sent",
+    "verified": "Venue verified!",
+    "invalidCode": "Invalid or expired code",
+    "claim": "Claim ownership",
+    "claimSuccess": "Ownership claimed. Awaiting admin verification.",
+    "alreadyOwned": "This venue already has an owner"
+  },
+  "admin": {
+    "collectionQueue": "Collection Review Queue",
+    "approve": "Approve",
+    "reject": "Reject",
+    "noItems": "No items pending review",
+    "source": "Source",
+    "collectedAt": "Collected at"
   }
 }
