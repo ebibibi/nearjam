@@ -10,7 +10,7 @@ interface Props {
 }
 
 export function FeedbackForm({ sessionId, toUserId, toVenueId }: Props) {
-  const t = useTranslations('feedback')
+  const t = useTranslations('session')
   const [open, setOpen] = useState(false)
   const [message, setMessage] = useState('')
   const [submitting, setSubmitting] = useState(false)
@@ -35,12 +35,12 @@ export function FeedbackForm({ sessionId, toUserId, toVenueId }: Props) {
       setDone(true)
       setMessage('')
     } else {
-      setError('Failed to send feedback')
+      setError(t('feedback.error'))
     }
   }
 
   if (done) {
-    return <p className="text-xs text-green-600 mt-2">{t('sent')}</p>
+    return <p className="text-xs text-green-600 mt-2">{t('feedback.sent')}</p>
   }
 
   if (!open) {
@@ -49,7 +49,7 @@ export function FeedbackForm({ sessionId, toUserId, toVenueId }: Props) {
         onClick={() => setOpen(true)}
         className="mt-1 text-xs text-gray-400 hover:text-gray-600 underline"
       >
-        {t('send')}
+        {t('feedback.expand')}
       </button>
     )
   }
@@ -59,7 +59,7 @@ export function FeedbackForm({ sessionId, toUserId, toVenueId }: Props) {
       <textarea
         value={message}
         onChange={(e) => setMessage(e.target.value)}
-        placeholder={t('messagePlaceholder')}
+        placeholder={t('feedback.placeholder')}
         rows={3}
         maxLength={500}
         required
@@ -72,7 +72,7 @@ export function FeedbackForm({ sessionId, toUserId, toVenueId }: Props) {
           disabled={submitting || !message.trim()}
           className="rounded bg-gray-700 px-3 py-1 text-xs text-white hover:bg-gray-800 disabled:opacity-50"
         >
-          {submitting ? '…' : t('send')}
+          {submitting ? t('feedback.sending') : t('feedback.send')}
         </button>
         <button
           type="button"

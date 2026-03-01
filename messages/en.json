@@ -545,6 +545,16 @@
       "cancelPolicy72h": "72+ hours before session: fees only charged to participant, no loss for host",
       "cancelPolicy24to72h": "24–72 hours: 30% cancellation fee / under 24 hours: full amount",
       "cancelPolicyNote": "Determined by absolute hours from session start time"
+    },
+    "feedback": {
+      "title": "Anonymous Feedback",
+      "toSession": "Your feedback is sent anonymously to the host.",
+      "placeholder": "How was the session? Feel free to share anything...",
+      "send": "Send Feedback",
+      "sending": "Sending...",
+      "sent": "Feedback sent anonymously ✓",
+      "error": "Failed to send. Please try again.",
+      "expand": "Send anonymous feedback"
     }
   },
   "song": {

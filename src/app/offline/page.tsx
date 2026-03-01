@@ -20,7 +20,7 @@ export default function OfflinePage() {
       </p>
       <button
         onClick={() => window.location.reload()}
-        className="rounded-lg bg-blue-600 px-6 py-2 text-white hover:bg-blue-700"
+        className="rounded-lg bg-violet-600 px-6 py-2 text-white hover:bg-violet-700"
       >
         {isJa ? '再読み込み' : 'Reload'}
       </button>
