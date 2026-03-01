@@ -223,6 +223,8 @@
     "title": "Venues",
     "titleSingular": "Venue",
     "add": "Add venue",
+    "timeFrom": "{time}~",
+    "nearStationParens": "({station})",
     "searchPlaceholder": "Search by name, station, or area...",
     "name": "Venue name",
     "namePlaceholder": "e.g. Bar Example",

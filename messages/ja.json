@@ -223,6 +223,8 @@
     "title": "セッション会場",
     "titleSingular": "会場",
     "add": "会場を追加",
+    "timeFrom": "{time}〜",
+    "nearStationParens": "（{station}）",
     "searchPlaceholder": "会場名・駅名・エリアで検索...",
     "name": "会場名",
     "namePlaceholder": "例：バー○○",

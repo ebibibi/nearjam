@@ -91,7 +91,7 @@ export function VenueCard({ venue, locale, upcomingSessionCount = 0 }: VenueCard
                   ) : (
                     <span className="text-violet-400">{tVenue('irregular')}</span>
                   )}
-                  {tendency.typicalStartTime && <span>{tendency.typicalStartTime}〜</span>}
+                  {tendency.typicalStartTime && <span>{tVenue('timeFrom', { time: tendency.typicalStartTime })}</span>}
                   {tendency.entrySystem && <span>{tendency.entrySystem}</span>}
                 </div>
                 {tendency.genres.length > 0 && (

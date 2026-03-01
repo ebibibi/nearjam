@@ -193,7 +193,7 @@ export default async function HomePage({
                             {tendency.typicalDayOfWeek != null && (
                               <span>{t('venue.everyDay', { day: t(`tendency.shortDays.${tendency.typicalDayOfWeek}` as Parameters<typeof t>[0]) })}</span>
                             )}
-                            {tendency.typicalStartTime && <span>{tendency.typicalStartTime}〜</span>}
+                            {tendency.typicalStartTime && <span>{t('venue.timeFrom', { time: tendency.typicalStartTime })}</span>}
                             {tendency.entrySystem && <span>{tendency.entrySystem}</span>}
                           </div>
                           {tendency.genres && tendency.genres.length > 0 && (

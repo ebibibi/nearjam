@@ -61,7 +61,7 @@ export function SessionCard({ session, locale }: SessionCardProps) {
             <p className="text-sm text-gray-600">
               📍 {session.venue.name}
               {session.venue.nearestStation && (
-                <span className="text-gray-400 text-xs ml-1">（{session.venue.nearestStation}）</span>
+                <span className="text-gray-400 text-xs ml-1">{t('venue.nearStationParens', { station: session.venue.nearestStation })}</span>
               )}
             </p>
           )}
