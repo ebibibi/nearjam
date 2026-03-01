@@ -211,7 +211,11 @@
     },
     "unverifiedNotice": "⚠️ This venue has not completed identity verification.",
     "listView": "List",
-    "mapView": "Map"
+    "mapView": "Map",
+    "upcomingSessions": "Upcoming Sessions",
+    "viewAllSessions": "View all sessions at this venue →",
+    "freeEntry": "Free",
+    "similarVenues": "Similar Venues"
   },
   "studio": {
     "title": "Studios",

@@ -211,7 +211,11 @@
     },
     "unverifiedNotice": "⚠️ この会場は本人確認が完了していません。",
     "listView": "リスト",
-    "mapView": "地図"
+    "mapView": "地図",
+    "upcomingSessions": "今後のセッション",
+    "viewAllSessions": "この会場の全セッションを見る →",
+    "freeEntry": "無料",
+    "similarVenues": "同ジャンルの他の会場"
   },
   "studio": {
     "title": "練習スタジオ",

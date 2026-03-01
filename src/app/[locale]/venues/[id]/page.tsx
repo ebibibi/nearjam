@@ -272,7 +272,7 @@ export default async function VenueDetailPage({
       {/* 今後のセッション */}
       {upcomingSessions.length > 0 && (
         <section>
-          <h2 className="text-lg font-bold text-gray-900 mb-3">📅 今後のセッション</h2>
+          <h2 className="text-lg font-bold text-gray-900 mb-3">📅 {t('venue.upcomingSessions')}</h2>
           <div className="space-y-2">
             {upcomingSessions.map((s) => {
               const startsAt = new Date(s.startsAt);
@@ -292,14 +292,14 @@ export default async function VenueDetailPage({
                       <div className="font-medium text-gray-900 text-sm truncate">{s.title}</div>
                       <div className="text-xs text-gray-500 mt-0.5">
                         {startsAt.toLocaleTimeString(locale === 'ja' ? 'ja-JP' : 'en-US', { hour: '2-digit', minute: '2-digit' })}
-                        {s.durationMinutes && ` （${s.durationMinutes}分）`}
+                        {s.durationMinutes && ` (${t('session.durationMinutes', { n: s.durationMinutes })})`}
                       </div>
                     </div>
                     <div className="text-right shrink-0">
                       {s.ticketPriceYen != null && s.ticketPriceYen > 0 ? (
                         <span className="text-xs rounded-full bg-blue-100 text-blue-700 px-2 py-1">¥{s.ticketPriceYen.toLocaleString()}</span>
                       ) : (
-                        <span className="text-xs rounded-full bg-green-100 text-green-700 px-2 py-1">無料</span>
+                        <span className="text-xs rounded-full bg-green-100 text-green-700 px-2 py-1">{t('venue.freeEntry')}</span>
                       )}
                       {s.maxParticipants != null && (
                         <div className="text-xs text-gray-400 mt-1">
@@ -314,7 +314,7 @@ export default async function VenueDetailPage({
           </div>
           <div className="mt-3 text-center">
             <Link href={`/${locale}/sessions?venue=${encodeURIComponent(venue.name)}`} className="text-sm text-violet-600 hover:underline">
-              この会場の全セッションを見る →
+              {t('venue.viewAllSessions')}
             </Link>
           </div>
         </section>
@@ -386,7 +386,7 @@ export default async function VenueDetailPage({
       {relatedVenues.length > 0 && (
         <section>
           <h2 className="text-lg font-bold text-gray-900 mb-3">
-            🎵 {locale === 'ja' ? '同ジャンルの他の会場' : 'Similar Venues'}
+            🎵 {t('venue.similarVenues')}
           </h2>
           <div className="grid gap-3 sm:grid-cols-2">
             {relatedVenues.map((rv) => {

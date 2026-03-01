@@ -2,17 +2,18 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useLocale } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 
 export function BottomNav() {
   const pathname = usePathname();
   const locale = useLocale();
+  const t = useTranslations('nav');
 
   const links = [
-    { href: `/${locale}`, label: 'ホーム', icon: '🏠', exact: true },
-    { href: `/${locale}/venues`, label: '会場', icon: '📍', exact: false },
-    { href: `/${locale}/sessions`, label: 'セッション', icon: '🎷', exact: false },
-    { href: `/${locale}/studios`, label: 'スタジオ', icon: '🎸', exact: false },
+    { href: `/${locale}`, label: t('home'), icon: '🏠', exact: true },
+    { href: `/${locale}/venues`, label: t('venues'), icon: '📍', exact: false },
+    { href: `/${locale}/sessions`, label: t('sessions'), icon: '🎷', exact: false },
+    { href: `/${locale}/studios`, label: t('studios'), icon: '🎸', exact: false },
   ];
 
   return (

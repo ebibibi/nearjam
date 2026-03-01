@@ -146,7 +146,13 @@ export default async function SessionsPage({
           <h1 className="text-2xl font-bold text-gray-900">{t('session.title')}</h1>
           {sessions.length > 0 && (
             <p className="text-sm text-gray-500 mt-0.5">
-              今後 8 週間で {filteredSessions.length}{dowFilter != null ? ` 件（全 ${sessions.length} 件中）` : ' 件'}
+              {dowFilter != null
+                ? (locale === 'ja'
+                  ? `今後 8 週間で ${filteredSessions.length} 件（全 ${sessions.length} 件中）`
+                  : `${filteredSessions.length} of ${sessions.length} sessions in the next 8 weeks`)
+                : (locale === 'ja'
+                  ? `今後 8 週間で ${filteredSessions.length} 件`
+                  : `${filteredSessions.length} sessions in the next 8 weeks`)}
             </p>
           )}
         </div>
