@@ -200,21 +200,19 @@ export default async function ProfilePage({
       </div>
 
       {/* Stripe Connect セクション */}
-      <div className="rounded-xl border p-4">
-        <p className="font-medium text-gray-900 mb-2">💳 有料セッション受け取り設定</p>
+      <div className="rounded-xl border p-4 space-y-3">
+        <p className="font-medium text-gray-900">💳 有料セッション受け取り設定</p>
+
         {user?.stripeAccountId ? (
           <div className="flex items-center gap-3">
             <span className="rounded-full bg-green-100 px-3 py-1 text-sm text-green-700">✅ Stripe 接続済み</span>
-            <a
-              href="/api/stripe/connect"
-              className="text-sm text-blue-600 hover:underline"
-            >
+            <a href="/api/stripe/connect" className="text-sm text-blue-600 hover:underline">
               Stripe ダッシュボードを開く →
             </a>
           </div>
         ) : (
-          <div>
-            <p className="mb-2 text-sm text-gray-500">
+          <div className="space-y-2">
+            <p className="text-sm text-gray-500">
               有料セッションの参加費を受け取るには Stripe Connect への登録が必要です
             </p>
             <a
@@ -225,6 +223,37 @@ export default async function ProfilePage({
             </a>
           </div>
         )}
+
+        {/* ホスト向け手数料・キャンセルポリシー説明 */}
+        <div className="rounded-lg bg-gray-50 border border-gray-200 p-3 text-xs text-gray-600 space-y-2">
+          <p className="font-semibold text-gray-700">📋 受取額と手数料について</p>
+          <table className="w-full">
+            <tbody className="divide-y divide-gray-100">
+              <tr>
+                <td className="py-1 text-gray-500">Stripe 決済手数料</td>
+                <td className="py-1 text-right text-red-500">−3.6%（Stripe が取得）</td>
+              </tr>
+              <tr>
+                <td className="py-1 text-gray-500">NearJam プラットフォーム手数料</td>
+                <td className="py-1 text-right text-red-500">−1.0%（NearJam が取得）</td>
+              </tr>
+              <tr className="font-semibold">
+                <td className="py-1 text-blue-700">あなたの受取額（例: 1,000円設定時）</td>
+                <td className="py-1 text-right text-blue-700">954円</td>
+              </tr>
+            </tbody>
+          </table>
+          <div className="border-t border-gray-200 pt-2 space-y-1">
+            <p className="font-medium text-orange-700">🛡️ キャンセルポリシーとホスト保護</p>
+            <ul className="space-y-0.5 text-gray-500">
+              <li>・ キャンセルが発生しても、<span className="font-medium text-gray-700">ホストへの損失はありません</span></li>
+              <li>・ 手数料（4.6%相当）はキャンセルした参加者が負担します</li>
+              <li>・ 3日前以前のキャンセル: 参加者へ954円返金（手数料分のみ差し引き）</li>
+              <li>・ 1〜2日前のキャンセル: 参加者へ667円返金（残り287円はあなたへ）</li>
+              <li>・ 当日のキャンセル: 返金なし（954円があなたの手取り）</li>
+            </ul>
+          </div>
+        </div>
       </div>
 
       {/* SNS links */}

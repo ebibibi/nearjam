@@ -109,15 +109,49 @@ export function TicketSection({
       </div>
 
       {/* キャンセルポリシー */}
-      <div className="text-sm text-gray-500">
-        <p className="font-medium text-gray-600 mb-1">キャンセルポリシー</p>
-        <ul className="space-y-0.5">
-          <li>✅ 3日前以前: Stripe 決済手数料（約4.6%）のみ差し引いて返金</li>
-          <li>⚠️ 1〜2日前: 30%キャンセル料（実質手数料込みで約32%差し引き）</li>
-          <li>❌ 当日: 返金なし</li>
-        </ul>
-        <p className="mt-2 text-xs text-gray-400">
-          ※ Stripe 決済手数料（3.6%）+ NearJam 手数料（1%）はキャンセル時も返金されません
+      <div className="rounded-lg bg-gray-50 border border-gray-100 p-3 space-y-2 text-sm">
+        <p className="font-medium text-gray-700">キャンセルポリシー</p>
+
+        {/* 返金額の内訳（参加費をベースに計算して表示） */}
+        <table className="w-full text-xs">
+          <thead>
+            <tr className="text-gray-400">
+              <th className="text-left font-normal pb-1">タイミング</th>
+              <th className="text-right font-normal pb-1">あなたへの返金</th>
+              <th className="text-right font-normal pb-1">あなたの負担</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-100">
+            <tr>
+              <td className="py-1">✅ 3日前以前</td>
+              <td className="py-1 text-right text-green-600">
+                ¥{Math.floor((ticketPriceYen - Math.floor(ticketPriceYen * 0.036) - Math.floor(ticketPriceYen * 0.01)) * 1.0).toLocaleString()}
+              </td>
+              <td className="py-1 text-right text-orange-500">
+                ¥{(ticketPriceYen - Math.floor((ticketPriceYen - Math.floor(ticketPriceYen * 0.036) - Math.floor(ticketPriceYen * 0.01)) * 1.0)).toLocaleString()}
+                <span className="text-gray-400 ml-1">（手数料のみ）</span>
+              </td>
+            </tr>
+            <tr>
+              <td className="py-1">⚠️ 1〜2日前</td>
+              <td className="py-1 text-right text-yellow-600">
+                ¥{Math.floor((ticketPriceYen - Math.floor(ticketPriceYen * 0.036) - Math.floor(ticketPriceYen * 0.01)) * 0.7).toLocaleString()}
+              </td>
+              <td className="py-1 text-right text-orange-500">
+                ¥{(ticketPriceYen - Math.floor((ticketPriceYen - Math.floor(ticketPriceYen * 0.036) - Math.floor(ticketPriceYen * 0.01)) * 0.7)).toLocaleString()}
+              </td>
+            </tr>
+            <tr>
+              <td className="py-1">❌ 当日</td>
+              <td className="py-1 text-right text-red-500">¥0</td>
+              <td className="py-1 text-right text-red-500">¥{ticketPriceYen.toLocaleString()}（全額）</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p className="text-xs text-gray-400 border-t border-gray-100 pt-2">
+          ※ Stripe 決済手数料（3.6%）と NearJam 手数料（1%）は、決済を処理するためのコストです。
+          キャンセルした場合でも、これらの手数料はご返金できません。
         </p>
       </div>
 
