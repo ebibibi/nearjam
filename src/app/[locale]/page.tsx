@@ -77,6 +77,16 @@ export default async function HomePage({
   const tendencyCount = stats?.[1] ?? 0;
   const upcomingCount = stats?.[2] ?? 0;
 
+  // ジャンル集計（トップ6）
+  const topGenres = await withTimeout(
+    prisma.sessionTendency.findMany({ where: { isActive: true }, select: { genres: true } }).then((ts) => {
+      const counts: Record<string, number> = {};
+      for (const t of ts) for (const g of t.genres) counts[g] = (counts[g] ?? 0) + 1;
+      return Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, 6).map(([genre]) => genre);
+    }),
+    3000
+  ).catch(() => [] as string[]);
+
   return (
     <div className="space-y-16">
       {/* ── Hero ── */}
@@ -120,6 +130,26 @@ export default async function HomePage({
               <p className="text-3xl font-bold text-violet-700">{upcomingCount}</p>
               <p className="mt-1 text-sm text-gray-500">{locale === 'ja' ? '今週のセッション' : 'Sessions This Week'}</p>
             </div>
+          </div>
+        </section>
+      )}
+
+      {/* ── ジャンルクイックリンク ── */}
+      {topGenres && topGenres.length > 0 && (
+        <section>
+          <h2 className="text-lg font-bold text-gray-900 mb-3">
+            🎵 {locale === 'ja' ? 'ジャンルから探す' : 'Browse by Genre'}
+          </h2>
+          <div className="flex flex-wrap gap-2">
+            {topGenres.map((genre) => (
+              <Link
+                key={genre}
+                href={`/${locale}/venues?genre=${encodeURIComponent(genre)}`}
+                className="rounded-full border border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 px-4 py-2 text-sm font-medium transition-colors"
+              >
+                {genre}
+              </Link>
+            ))}
           </div>
         </section>
       )}
