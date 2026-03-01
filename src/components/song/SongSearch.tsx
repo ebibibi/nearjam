@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useRef } from 'react';
 import { useTranslations } from 'next-intl';
 import useSWR from 'swr';
 import { Input } from '@/components/ui/Input';
@@ -26,18 +26,14 @@ export function SongSearch({
   const t = useTranslations('song');
   const [query, setQuery] = useState('');
   const [debouncedQuery, setDebouncedQuery] = useState('');
-  const [timer, setTimer] = useState<ReturnType<typeof setTimeout> | null>(null);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const handleQueryChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const value = e.target.value;
-      setQuery(value);
-      if (timer) clearTimeout(timer);
-      const t = setTimeout(() => setDebouncedQuery(value), 400);
-      setTimer(t);
-    },
-    [timer]
-  );
+  function handleQueryChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const value = e.target.value;
+    setQuery(value);
+    if (timerRef.current) clearTimeout(timerRef.current);
+    timerRef.current = setTimeout(() => setDebouncedQuery(value), 400);
+  }
 
   const url = `/api/v1/songs?limit=20${debouncedQuery ? `&q=${encodeURIComponent(debouncedQuery)}` : ''}`;
   const { data, isLoading } = useSWR<{ id: string; title: string; artist: string | null; genre: string | null; typicalKey: string | null; typicalBpmMin: number | null; typicalBpmMax: number | null; difficulty: string; wishlistCount: number }[]>(
