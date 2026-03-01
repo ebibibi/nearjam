@@ -53,20 +53,36 @@ export default async function SessionsPage({
   searchParams,
 }: {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ venue?: string }>;
+  searchParams: Promise<{ venue?: string; station?: string }>;
 }) {
   const { locale } = await params;
-  const { venue: venueFilter } = await searchParams;
+  const { venue: venueFilter, station: stationFilter } = await searchParams;
   setRequestLocale(locale);
   const t = await getTranslations();
 
   const authSession = await auth();
   const eightWeeksLater = new Date(Date.now() + 56 * 24 * 60 * 60 * 1000);
 
+  // 最寄り駅別セッション件数集計 → トップ8
+  const sessionVenues = await prisma.jamSession.findMany({
+    where: { startsAt: { gte: new Date(), lte: eightWeeksLater }, venue: { nearestStation: { not: null } } },
+    select: { venue: { select: { nearestStation: true } } },
+  });
+  const stationCounts: Record<string, number> = {};
+  for (const s of sessionVenues) {
+    const station = s.venue?.nearestStation?.replace(/駅$/, '');
+    if (station) stationCounts[station] = (stationCounts[station] ?? 0) + 1;
+  }
+  const topStations = Object.entries(stationCounts)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 8)
+    .map(([station, count]) => ({ station, count }));
+
   const sessions = await prisma.jamSession.findMany({
     where: {
       startsAt: { gte: new Date(), lte: eightWeeksLater },
       ...(venueFilter ? { venue: { name: { contains: venueFilter, mode: 'insensitive' } } } : {}),
+      ...(stationFilter ? { venue: { nearestStation: { contains: stationFilter, mode: 'insensitive' } } } : {}),
     },
     orderBy: { startsAt: 'asc' },
     take: 200,
@@ -86,6 +102,8 @@ export default async function SessionsPage({
   }
   const weekGroups = [...weekMap.entries()].map(([label, wSessions]) => ({ label, sessions: wSessions }));
 
+  const hasFilter = !!venueFilter || !!stationFilter;
+
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">
@@ -102,10 +120,42 @@ export default async function SessionsPage({
         )}
       </div>
 
+      {/* 最寄り駅フィルタチップ */}
+      {topStations.length > 0 && (
+        <div className="flex flex-wrap gap-2">
+          {hasFilter && (
+            <Link
+              href={`/${locale}/sessions`}
+              className="rounded-full border border-gray-300 bg-white text-gray-600 hover:bg-gray-50 px-3 py-1 text-xs"
+            >
+              ✕ クリア
+            </Link>
+          )}
+          {topStations.map(({ station, count }) => {
+            const isActive = stationFilter === station;
+            return (
+              <Link
+                key={station}
+                href={`/${locale}/sessions?station=${encodeURIComponent(station)}`}
+                className={`rounded-full px-3 py-1 text-xs transition-colors ${
+                  isActive
+                    ? 'bg-violet-600 text-white'
+                    : 'border border-violet-200 bg-violet-50 text-violet-700 hover:bg-violet-100'
+                }`}
+              >
+                📍 {station}
+                <span className="ml-1 opacity-60">({count})</span>
+              </Link>
+            );
+          })}
+        </div>
+      )}
+
+      {/* 会場フィルターバッジ */}
       {venueFilter && (
         <div className="flex items-center gap-2 text-sm">
           <span className="text-gray-500">フィルター:</span>
-          <span className="rounded-full bg-violet-100 text-violet-700 px-3 py-1">📍 {venueFilter}</span>
+          <span className="rounded-full bg-violet-100 text-violet-700 px-3 py-1">🏠 {venueFilter}</span>
           <Link href={`/${locale}/sessions`} className="text-gray-400 hover:text-gray-600">✕ クリア</Link>
         </div>
       )}
