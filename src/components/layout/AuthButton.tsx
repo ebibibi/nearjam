@@ -17,14 +17,23 @@ export function AuthButton() {
   if (session) {
     return (
       <div className="flex items-center gap-2">
-        {session.user?.image && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={session.user.image}
-            alt={session.user.name ?? ''}
-            className="h-8 w-8 rounded-full"
-          />
-        )}
+        <Link href={`/${locale}/profile`} className="flex items-center gap-1.5 rounded-lg px-2 py-1.5 hover:bg-gray-100 transition-colors">
+          {session.user?.image ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={session.user.image}
+              alt={session.user.name ?? ''}
+              className="h-7 w-7 rounded-full"
+            />
+          ) : (
+            <div className="h-7 w-7 rounded-full bg-violet-200 flex items-center justify-center text-violet-700 text-xs font-bold">
+              {(session.user?.name ?? 'U')[0]}
+            </div>
+          )}
+          <span className="text-sm text-gray-700 hidden sm:block max-w-[80px] truncate">
+            {session.user?.nickname ?? session.user?.name ?? t('profile')}
+          </span>
+        </Link>
         <Button
           variant="ghost"
           size="sm"
