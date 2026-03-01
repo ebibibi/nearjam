@@ -92,7 +92,7 @@ export default async function ProfileHistoryPage({
                         {log.jamSession.venue?.name ?? t('session.noVenue')}
                       </Link>
                       <span className="mx-2 text-gray-300">·</span>
-                      {displayDate.toLocaleDateString(locale === 'ja' ? 'ja-JP' : 'en-US', {
+                      {displayDate.toLocaleDateString(locale, {
                         year: 'numeric',
                         month: 'short',
                         day: 'numeric',

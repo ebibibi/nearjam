@@ -181,7 +181,7 @@ export default async function HomePage({
                   {venue.nearestStation && (
                     <p className="text-xs text-gray-500 mb-3">
                       📍 {venue.nearestStation}
-                      {venue.walkMinutes != null && ` 徒歩${venue.walkMinutes}分`}
+                      {venue.walkMinutes != null && ` ${venue.walkMinutes}${t('common.minutes')}`}
                     </p>
                   )}
                   {venue.tendencies.length > 0 ? (

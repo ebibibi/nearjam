@@ -14,7 +14,7 @@ export default async function CollectionQueuePage() {
   });
   if (user?.role !== 'ADMIN') redirect('/');
 
-  const t = await getTranslations('admin');
+  const t = await getTranslations();
 
   const tendencies = await prisma.sessionTendency.findMany({
     where: { isActive: false, sourceType: 'AUTO_COLLECTED' },
@@ -25,10 +25,10 @@ export default async function CollectionQueuePage() {
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8 space-y-6">
-      <h1 className="text-2xl font-bold text-gray-900">{t('collectionQueue')}</h1>
+      <h1 className="text-2xl font-bold text-gray-900">{t('admin.collectionQueue')}</h1>
 
       {tendencies.length === 0 ? (
-        <p className="text-gray-400 text-center py-12">{t('noItems')}</p>
+        <p className="text-gray-400 text-center py-12">{t('admin.noItems')}</p>
       ) : (
         <div className="space-y-4">
           {tendencies.map((tendency) => (
@@ -45,7 +45,7 @@ export default async function CollectionQueuePage() {
                   )}
                   <div className="text-xs text-gray-400 mt-1 space-x-3">
                     {tendency.typicalDayOfWeek != null && (
-                      <span>🗓 {['日', '月', '火', '水', '木', '金', '土'][tendency.typicalDayOfWeek]}曜</span>
+                      <span>🗓 {t('venue.everyDay', { day: t(`tendency.shortDays.${tendency.typicalDayOfWeek}` as Parameters<typeof t>[0]) })}</span>
                     )}
                     {tendency.typicalStartTime && <span>⏰ {tendency.typicalStartTime}</span>}
                     {tendency.genres.length > 0 && <span>🎵 {tendency.genres.join(', ')}</span>}
