@@ -16,6 +16,7 @@ interface TendencyCardProps {
     capacity: number | null;
     houseEquipment: string | null;
     sourceType: SourceType;
+    sourceUrl?: string | null;
     sourceUser?: { nickname: string | null } | null;
     createdAt: Date;
   };
@@ -73,16 +74,28 @@ export function SessionTendencyCard({ tendency }: TendencyCardProps) {
       )}
 
       {/* Attribution */}
-      <p className="text-xs text-gray-400">
-        {tendency.sourceType === 'CROWDSOURCED' && tendency.sourceUser
-          ? t('tendency.attribution', {
-              name: tendency.sourceUser.nickname ?? 'Anonymous',
-              date: new Date(tendency.createdAt).toLocaleDateString(),
-            })
-          : tendency.sourceType === 'AUTO_COLLECTED'
-          ? t('tendency.attributionAuto', { source: 'SNS/HP' })
-          : t('tendency.attributionOwner')}
-      </p>
+      <div className="flex items-center justify-between gap-2">
+        <p className="text-xs text-gray-400">
+          {tendency.sourceType === 'CROWDSOURCED' && tendency.sourceUser
+            ? t('tendency.attribution', {
+                name: tendency.sourceUser.nickname ?? 'Anonymous',
+                date: new Date(tendency.createdAt).toLocaleDateString(),
+              })
+            : tendency.sourceType === 'AUTO_COLLECTED'
+            ? t('tendency.attributionAuto', { source: 'SNS/HP' })
+            : t('tendency.attributionOwner')}
+        </p>
+        {tendency.sourceUrl && tendency.sourceType === 'AUTO_COLLECTED' && (
+          <a
+            href={tendency.sourceUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-xs text-violet-500 hover:underline shrink-0"
+          >
+            元ページ →
+          </a>
+        )}
+      </div>
     </div>
   );
 }
