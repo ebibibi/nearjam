@@ -11,6 +11,10 @@ export const stripe = process.env.STRIPE_SECRET_KEY
 // NearJam プラットフォーム手数料: 1%（Stripe の 3.6% に加算）
 export const PLATFORM_FEE_PERCENT = 0.01
 
+// Stripe 決済手数料率（JPY カード決済）
+// キャンセル時の返金計算に使用。実際の Stripe 手数料は Stripe ダッシュボードで確認のこと。
+export const STRIPE_FEE_RATE = 0.036
+
 /**
  * プラットフォーム手数料（円）を計算する
  * Stripe の application_fee_amount に設定する値
@@ -20,12 +24,33 @@ export function calcPlatformFee(amountYen: number): number {
 }
 
 /**
+ * ホストの純受取額（円）を計算する
+ *
+ * 設計原則: キャンセルした参加者がすべての手数料を負担する。
+ * ホストはどのタイミングでキャンセルされても損失を被らない。
+ *
+ * 例: チケット 1,000 円
+ *   Stripe 手数料: 36 円（3.6%）
+ *   NearJam 手数料: 10 円（1%）
+ *   ホスト純受取: 954 円
+ */
+export function calcHostNetAmount(paidAmountYen: number): number {
+  const stripeFee = Math.floor(paidAmountYen * STRIPE_FEE_RATE)
+  const platformFee = calcPlatformFee(paidAmountYen)
+  return paidAmountYen - stripeFee - platformFee
+}
+
+/**
  * キャンセルポリシーに基づいて返金額（円）を計算する
  *
- * デフォルトポリシー（ticketPriceYen が設定されている場合）:
- *   - 3日前以前: 全額返金（100%）
- *   - 1〜2日前: 70%返金（30%キャンセル料）
- *   - 当日（0日前）: 返金なし（100%キャンセル料）
+ * 返金はホストの純受取額をベースに計算する。
+ * これにより、キャンセルした参加者が Stripe 手数料と NearJam 手数料を
+ * 全額負担し、ホストは損失を被らない。
+ *
+ * 例: チケット 1,000 円、ホスト純受取 954 円
+ *   - 3日前以前: 返金 954 円（参加者負担: 46 円 = 手数料のみ）
+ *   - 1〜2日前: 返金 667 円（参加者負担: 333 円）
+ *   - 当日: 返金 0 円（参加者負担: 1,000 円）
  */
 export function calcRefundAmount(
   paidAmountYen: number,
@@ -33,6 +58,7 @@ export function calcRefundAmount(
   cancelledAt: Date = new Date(),
   policy?: CancellationPolicy | null
 ): number {
+  const hostNetAmountYen = calcHostNetAmount(paidAmountYen)
   const daysUntilSession = Math.floor(
     (sessionStartsAt.getTime() - cancelledAt.getTime()) / (1000 * 60 * 60 * 24)
   )
@@ -42,7 +68,7 @@ export function calcRefundAmount(
   // daysUntil が大きい順に並んでいる前提で、最初にマッチしたものを適用
   for (const tier of [...tiers].sort((a, b) => b.daysUntil - a.daysUntil)) {
     if (daysUntilSession >= tier.daysUntil) {
-      return Math.floor(paidAmountYen * (tier.refundPercent / 100))
+      return Math.floor(hostNetAmountYen * (tier.refundPercent / 100))
     }
   }
 

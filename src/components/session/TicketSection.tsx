@@ -112,10 +112,13 @@ export function TicketSection({
       <div className="text-sm text-gray-500">
         <p className="font-medium text-gray-600 mb-1">キャンセルポリシー</p>
         <ul className="space-y-0.5">
-          <li>✅ 3日前以前: 全額返金</li>
-          <li>⚠️ 1〜2日前: 30%キャンセル料（70%返金）</li>
-          <li>❌ 当日: 返金なし（100%キャンセル料）</li>
+          <li>✅ 3日前以前: Stripe 決済手数料（約4.6%）のみ差し引いて返金</li>
+          <li>⚠️ 1〜2日前: 30%キャンセル料（実質手数料込みで約32%差し引き）</li>
+          <li>❌ 当日: 返金なし</li>
         </ul>
+        <p className="mt-2 text-xs text-gray-400">
+          ※ Stripe 決済手数料（3.6%）+ NearJam 手数料（1%）はキャンセル時も返金されません
+        </p>
       </div>
 
       {error && (

@@ -71,10 +71,16 @@ export async function POST(
     refundedAmountYen = refundAmount
 
     if (refundAmount > 0) {
-      await stripe.refunds.create({
-        payment_intent: registration.paymentIntentId,
-        amount: refundAmount,
-      })
+      // refund_application_fee: false → NearJam の手数料（application_fee）は返金しない
+      // stripeAccount → ダイレクトチャージモデルではホストのアカウントに対して返金操作が必要
+      await stripe.refunds.create(
+        {
+          payment_intent: registration.paymentIntentId,
+          amount: refundAmount,
+          refund_application_fee: false,
+        },
+        { stripeAccount: registration.jamSession.sessionAdmin.stripeAccountId ?? undefined }
+      )
     }
   }
 
