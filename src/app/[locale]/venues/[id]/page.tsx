@@ -146,7 +146,22 @@ export default async function VenueDetailPage({
     ? `https://www.google.com/maps/dir/?api=1&destination=${mapsDestination}`
     : null;
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'MusicVenue',
+    name: venue.name,
+    ...(venue.address ? { address: { '@type': 'PostalAddress', streetAddress: venue.address } } : {}),
+    ...(venue.websiteUrl ? { url: venue.websiteUrl } : {}),
+    ...(venue.lat && venue.lng ? { geo: { '@type': 'GeoCoordinates', latitude: venue.lat, longitude: venue.lng } } : {}),
+    ...(venue.nearestStation ? { publicTransportAccess: venue.nearestStation } : {}),
+  };
+
   return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
     <div className="max-w-3xl space-y-8">
       {/* Back + header */}
       <div>
@@ -400,5 +415,6 @@ export default async function VenueDetailPage({
         </section>
       )}
     </div>
+    </>
   );
 }

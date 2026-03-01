@@ -146,7 +146,40 @@ export default async function SessionDetailPage({
       })
     : [];
 
+  const gcalEnd2 = new Date(startDate.getTime() + (session.durationMinutes ?? 120) * 60 * 1000);
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'MusicEvent',
+    name: session.title,
+    startDate: startDate.toISOString(),
+    endDate: gcalEnd2.toISOString(),
+    eventStatus: 'https://schema.org/EventScheduled',
+    eventAttendanceMode: session.isSyncroom
+      ? 'https://schema.org/OnlineEventAttendanceMode'
+      : 'https://schema.org/OfflineEventAttendanceMode',
+    ...(session.venue ? {
+      location: {
+        '@type': 'MusicVenue',
+        name: session.venue.name,
+        ...(session.venue.address ? { address: session.venue.address } : {}),
+      },
+    } : {}),
+    ...(session.ticketPriceYen != null ? {
+      offers: {
+        '@type': 'Offer',
+        price: session.ticketPriceYen,
+        priceCurrency: 'JPY',
+        availability: 'https://schema.org/InStock',
+      },
+    } : {}),
+  };
+
   return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
     <div className="max-w-3xl space-y-8">
       <div>
         <Link href={`/${locale}/sessions`} className="text-sm text-violet-600 hover:underline mb-3 inline-block">
@@ -407,5 +440,6 @@ export default async function SessionDetailPage({
         </section>
       )}
     </div>
+    </>
   );
 }
