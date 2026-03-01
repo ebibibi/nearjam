@@ -309,7 +309,8 @@
     "confirmDelegate": "Transfer admin rights to this person? You will no longer be the admin.",
     "filterByGenre": "Genre",
     "filterByDate": "Date",
-    "filterSyncroom": "SYNCROOM only"
+    "filterSyncroom": "SYNCROOM only",
+    "freeOrDoorPrice": "Free/Pay at door"
   },
   "song": {
     "title": "Songs",

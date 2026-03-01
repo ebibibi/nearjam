@@ -309,7 +309,8 @@
     "confirmDelegate": "この方に管理者権限を移しますか？あなたは管理者でなくなります。",
     "filterByGenre": "ジャンル",
     "filterByDate": "日付",
-    "filterSyncroom": "SYNCROOMのみ"
+    "filterSyncroom": "SYNCROOMのみ",
+    "freeOrDoorPrice": "無料/現地集金"
   },
   "song": {
     "title": "曲",

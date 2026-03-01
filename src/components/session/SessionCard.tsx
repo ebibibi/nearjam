@@ -79,7 +79,7 @@ export function SessionCard({ session, locale }: SessionCardProps) {
               </span>
             ) : (
               <span className="text-xs rounded-full bg-green-100 text-green-700 px-2 py-0.5">
-                {locale === 'ja' ? '無料/現地集金' : 'Free/Pay at door'}
+                {t('session.freeOrDoorPrice')}
               </span>
             )}
             <span className="text-xs text-gray-500">{t(`session.formats.${session.format}`)}</span>
