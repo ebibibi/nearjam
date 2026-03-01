@@ -41,9 +41,19 @@ export async function saveExtractionResult(
   if (result.venue) {
     const v = result.venue;
 
-    // websiteUrl か sourceUrl で既存会場を検索
+    // 1. websiteUrl で既存会場を検索
+    // 2. websiteUrl がない場合は name + address で重複チェック
     const existing = v.websiteUrl
       ? await prisma.venue.findFirst({ where: { websiteUrl: v.websiteUrl } })
+      : v.address && v.name
+      ? await prisma.venue.findFirst({
+          where: {
+            name: v.name,
+            address: { contains: v.address.slice(0, 10), mode: 'insensitive' },
+          },
+        })
+      : v.name
+      ? await prisma.venue.findFirst({ where: { name: v.name } })
       : null;
 
     if (existing) {
