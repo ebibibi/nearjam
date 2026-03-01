@@ -4,9 +4,6 @@ import { Card, CardTitle, CardContent } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { VerificationBadge } from './VerificationBadge';
 
-const DAY_NAMES_JA = ['日', '月', '火', '水', '木', '金', '土'] as const;
-const DAY_NAMES_EN = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] as const;
-
 interface VenueCardProps {
   venue: {
     id: string;
@@ -33,7 +30,8 @@ interface VenueCardProps {
 
 export function VenueCard({ venue, locale, upcomingSessionCount = 0 }: VenueCardProps) {
   const t = useTranslations();
-  const dayNames = locale === 'ja' ? DAY_NAMES_JA : DAY_NAMES_EN;
+  const tTendency = useTranslations('tendency');
+  const tVenue = useTranslations('venue');
 
   return (
     <Link href={`/${locale}/venues/${venue.id}`}>
@@ -60,7 +58,7 @@ export function VenueCard({ venue, locale, upcomingSessionCount = 0 }: VenueCard
         {venue.nearestStation && (
           <p className="text-xs text-gray-500 mb-2">
             📍 {venue.nearestStation}
-            {venue.walkMinutes != null && ` ${t('common.minutes', { count: venue.walkMinutes })}`}
+            {venue.walkMinutes != null && ` ${venue.walkMinutes}${t('common.minutes')}`}
           </p>
         )}
 
@@ -88,12 +86,10 @@ export function VenueCard({ venue, locale, upcomingSessionCount = 0 }: VenueCard
                 <div className="text-violet-600 flex flex-wrap gap-x-2 gap-y-0.5">
                   {tendency.typicalDayOfWeek != null ? (
                     <span>
-                      {locale === 'ja'
-                        ? `毎週${dayNames[tendency.typicalDayOfWeek]}曜`
-                        : `Every ${dayNames[tendency.typicalDayOfWeek]}`}
+                      {tVenue('everyDay', { day: tTendency(`shortDays.${tendency.typicalDayOfWeek}`) })}
                     </span>
                   ) : (
-                    <span className="text-violet-400">{locale === 'ja' ? '不定期開催' : 'Irregular'}</span>
+                    <span className="text-violet-400">{tVenue('irregular')}</span>
                   )}
                   {tendency.typicalStartTime && <span>{tendency.typicalStartTime}〜</span>}
                   {tendency.entrySystem && <span>{tendency.entrySystem}</span>}
@@ -110,12 +106,12 @@ export function VenueCard({ venue, locale, upcomingSessionCount = 0 }: VenueCard
               </div>
             ))}
             {venue.tendencies.length > 2 && (
-              <p className="text-xs text-gray-400">+{venue.tendencies.length - 2} {locale === 'ja' ? 'セッション' : 'sessions'}</p>
+              <p className="text-xs text-gray-400">{tVenue('moreSessions', { n: venue.tendencies.length - 2 })}</p>
             )}
           </CardContent>
         ) : (
           <CardContent className="flex-1 text-gray-400 text-sm space-y-2">
-            <p>{locale === 'ja' ? 'セッション情報なし' : 'No session info'}</p>
+            <p>{tVenue('noSessionInfo')}</p>
             <Badge variant="unverified">{t('venue.unverified')}</Badge>
           </CardContent>
         )}

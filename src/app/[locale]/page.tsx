@@ -125,15 +125,15 @@ export default async function HomePage({
           <div className="grid grid-cols-3 gap-4 text-center">
             <div className="rounded-xl border bg-white p-6 shadow-sm">
               <p className="text-3xl font-bold text-violet-700">{venueCount}</p>
-              <p className="mt-1 text-sm text-gray-500">{locale === 'ja' ? '登録会場' : 'Venues'}</p>
+              <p className="mt-1 text-sm text-gray-500">{t('home.statsVenues')}</p>
             </div>
             <div className="rounded-xl border bg-white p-6 shadow-sm">
               <p className="text-3xl font-bold text-violet-700">{tendencyCount}</p>
-              <p className="mt-1 text-sm text-gray-500">{locale === 'ja' ? '定期セッション情報' : 'Regular Sessions'}</p>
+              <p className="mt-1 text-sm text-gray-500">{t('home.statsRegularSessions')}</p>
             </div>
             <div className="rounded-xl border bg-white p-6 shadow-sm">
               <p className="text-3xl font-bold text-violet-700">{upcomingCount}</p>
-              <p className="mt-1 text-sm text-gray-500">{locale === 'ja' ? '今週のセッション' : 'Sessions This Week'}</p>
+              <p className="mt-1 text-sm text-gray-500">{t('home.statsThisWeek')}</p>
             </div>
           </div>
         </section>
@@ -143,7 +143,7 @@ export default async function HomePage({
       {topGenres && topGenres.length > 0 && (
         <section>
           <h2 className="text-lg font-bold text-gray-900 mb-3">
-            🎵 {locale === 'ja' ? 'ジャンルから探す' : 'Browse by Genre'}
+            🎵 {t('home.browseByGenre')}
           </h2>
           <div className="flex flex-wrap gap-2">
             {topGenres.map((genre) => (
@@ -304,49 +304,28 @@ export default async function HomePage({
       {/* ── 使い方 ── */}
       <section className="rounded-2xl bg-gray-50 border border-gray-100 p-8">
         <h2 className="text-xl font-bold text-gray-900 mb-6 text-center">
-          🎵 {locale === 'ja' ? 'NearJam の使い方' : 'How NearJam Works'}
+          🎵 {t('home.howItWorks')}
         </h2>
         <div className="grid gap-6 sm:grid-cols-3">
           {[
-            {
-              step: '1',
-              icon: '🔍',
-              title: locale === 'ja' ? '会場を探す' : 'Find a Venue',
-              desc: locale === 'ja'
-                ? '近くのジャズバーやライブハウスを検索。毎週開催のセッション情報を確認できます。'
-                : 'Search for jazz bars and live houses near you. Check recurring session info.',
-            },
-            {
-              step: '2',
-              icon: '🎸',
-              title: locale === 'ja' ? 'セッションに参加' : 'Join a Session',
-              desc: locale === 'ja'
-                ? 'セッションに参加登録。Stripe で事前決済すれば当日キャンセル料も安心。'
-                : 'Register for a session. Pre-pay with Stripe for secure cancellation protection.',
-            },
-            {
-              step: '3',
-              icon: '🎶',
-              title: locale === 'ja' ? '一緒に演奏' : 'Play Together',
-              desc: locale === 'ja'
-                ? '楽器を持って会場へ！新しいミュージシャンと出会い、音楽でつながろう。'
-                : 'Bring your instrument and meet new musicians. Connect through music!',
-            },
-          ].map(({ step, icon, title, desc }) => (
+            { step: '1', icon: '🔍', titleKey: 'home.howStep1Title', descKey: 'home.howStep1Desc' },
+            { step: '2', icon: '🎸', titleKey: 'home.howStep2Title', descKey: 'home.howStep2Desc' },
+            { step: '3', icon: '🎶', titleKey: 'home.howStep3Title', descKey: 'home.howStep3Desc' },
+          ].map(({ step, icon, titleKey, descKey }) => (
             <div key={step} className="text-center space-y-3">
               <div className="mx-auto w-12 h-12 rounded-full bg-violet-100 flex items-center justify-center text-2xl">
                 {icon}
               </div>
               <div className="text-xs font-medium text-violet-500 uppercase tracking-wide">Step {step}</div>
-              <h3 className="font-semibold text-gray-800">{title}</h3>
-              <p className="text-sm text-gray-500 leading-relaxed">{desc}</p>
+              <h3 className="font-semibold text-gray-800">{t(titleKey as Parameters<typeof t>[0])}</h3>
+              <p className="text-sm text-gray-500 leading-relaxed">{t(descKey as Parameters<typeof t>[0])}</p>
             </div>
           ))}
         </div>
         <div className="mt-8 text-center">
           <Link href={`/${locale}/sessions/new`}>
             <Button variant="primary">
-              {locale === 'ja' ? 'セッションを作成する →' : 'Create a Session →'}
+              {t('home.createSession')}
             </Button>
           </Link>
         </div>
@@ -356,22 +335,20 @@ export default async function HomePage({
       <section className="rounded-2xl bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 p-8 text-center">
         <div className="text-3xl mb-3">📍</div>
         <h2 className="text-xl font-bold text-gray-900 mb-2">
-          {locale === 'ja' ? 'お近くの会場を登録しよう' : 'Add a Venue Near You'}
+          {t('home.addVenueTitle')}
         </h2>
         <p className="text-sm text-gray-600 mb-6 max-w-md mx-auto">
-          {locale === 'ja'
-            ? 'ジャムセッション開催会場をご存知ですか？情報をシェアしてコミュニティを育てよう。'
-            : 'Know a venue hosting jam sessions? Share it and help grow the community.'}
+          {t('home.addVenueDesc')}
         </p>
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <Link href={`/${locale}/venues/new`}>
             <Button variant="primary" size="sm">
-              {locale === 'ja' ? '会場を登録する' : 'Add a Venue'}
+              {t('home.addVenue')}
             </Button>
           </Link>
           <Link href={`/${locale}/venues`}>
             <Button variant="secondary" size="sm">
-              {locale === 'ja' ? '会場一覧を見る' : 'Browse Venues'}
+              {t('home.browseVenues')}
             </Button>
           </Link>
         </div>

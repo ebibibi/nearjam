@@ -425,7 +425,7 @@ export default async function SessionDetailPage({
       {otherVenueSessions.length > 0 && session.venue && (
         <section>
           <h2 className="text-lg font-bold text-gray-900 mb-3">
-            📅 {locale === 'ja' ? `${session.venue.name} の他のセッション` : `More sessions at ${session.venue.name}`}
+            📅 {t('session.moreSessionsAt', { venue: session.venue.name })}
           </h2>
           <div className="space-y-2">
             {otherVenueSessions.map((s) => (

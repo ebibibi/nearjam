@@ -22,6 +22,8 @@
     "public": "Public",
     "private": "Private",
     "clear": "✕ Clear",
+    "privacyPolicy": "Privacy Policy",
+    "terms": "Terms of Service",
     "minutes": "min",
     "yen": "¥{amount}",
     "perHour": "{amount}/hr"
@@ -73,7 +75,24 @@
     "featuredVenues": "Featured Venues",
     "upcomingSessions": "Upcoming Sessions",
     "noVenues": "No venues registered yet",
-    "noSessions": "No upcoming sessions"
+    "noSessions": "No upcoming sessions",
+    "statsVenues": "Venues",
+    "statsRegularSessions": "Regular Sessions",
+    "statsThisWeek": "Sessions This Week",
+    "browseByGenre": "Browse by Genre",
+    "howItWorks": "How NearJam Works",
+    "howStep1Title": "Find a Venue",
+    "howStep1Desc": "Browse jam session spots and filter by genre, area, or day of the week.",
+    "howStep2Title": "Join a Session",
+    "howStep2Desc": "Register for a session that fits your schedule and level.",
+    "howStep3Title": "Play Together",
+    "howStep3Desc": "Meet musicians, build the setlist, and make music together.",
+    "createSession": "Create a Session →",
+    "addVenueTitle": "Add a Venue Near You",
+    "addVenueDesc": "Know a venue that hosts jam sessions? Add it to NearJam and help musicians find it.",
+    "addVenue": "Add a Venue",
+    "browseVenues": "Browse Venues",
+    "noSessionInfo": "No session info"
   },
   "profile": {
     "setup": {
@@ -216,7 +235,11 @@
     "upcomingSessions": "Upcoming Sessions",
     "viewAllSessions": "View all sessions at this venue →",
     "freeEntry": "Free",
-    "similarVenues": "Similar Venues"
+    "similarVenues": "Similar Venues",
+    "noSessionInfo": "No session info",
+    "irregular": "Irregular",
+    "everyDay": "Every {day}",
+    "moreSessions": "+{n} more sessions"
   },
   "studio": {
     "title": "Studios",
@@ -313,7 +336,8 @@
     "filterSyncroom": "SYNCROOM only",
     "freeOrDoorPrice": "Free/Pay at door",
     "full": "Full",
-    "viewVenuePage": "View venue page →"
+    "viewVenuePage": "View venue page →",
+    "moreSessionsAt": "More sessions at {venue}"
   },
   "song": {
     "title": "Songs",
@@ -373,6 +397,15 @@
       "4": "Thursday",
       "5": "Friday",
       "6": "Saturday"
+    },
+    "shortDays": {
+      "0": "Sun",
+      "1": "Mon",
+      "2": "Tue",
+      "3": "Wed",
+      "4": "Thu",
+      "5": "Fri",
+      "6": "Sat"
     }
   },
   "live": {

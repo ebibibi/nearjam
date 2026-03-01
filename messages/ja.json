@@ -22,6 +22,8 @@
     "public": "公開",
     "private": "非公開",
     "clear": "✕ クリア",
+    "privacyPolicy": "プライバシーポリシー",
+    "terms": "利用規約",
     "minutes": "分",
     "yen": "¥{amount}",
     "perHour": "{amount}/時間"
@@ -73,7 +75,24 @@
     "featuredVenues": "ピックアップ会場",
     "upcomingSessions": "今後のセッション",
     "noVenues": "まだ会場が登録されていません",
-    "noSessions": "今後のセッションはありません"
+    "noSessions": "今後のセッションはありません",
+    "statsVenues": "登録会場",
+    "statsRegularSessions": "定期セッション情報",
+    "statsThisWeek": "今週のセッション",
+    "browseByGenre": "ジャンルから探す",
+    "howItWorks": "NearJam の使い方",
+    "howStep1Title": "会場を探す",
+    "howStep1Desc": "ジャムセッション会場をジャンル・エリア・曜日で絞り込んで探せます。",
+    "howStep2Title": "セッションに参加",
+    "howStep2Desc": "自分のスケジュールとレベルに合ったセッションに登録しましょう。",
+    "howStep3Title": "一緒に演奏",
+    "howStep3Desc": "ミュージシャンと出会い、セットリストを組み立て、一緒に音楽を楽しもう。",
+    "createSession": "セッションを作成する →",
+    "addVenueTitle": "お近くの会場を登録しよう",
+    "addVenueDesc": "ジャムセッションが開催されている会場をご存知ですか？NearJamに追加して、みんなが見つけられるようにしましょう。",
+    "addVenue": "会場を登録する",
+    "browseVenues": "会場一覧を見る",
+    "noSessionInfo": "セッション情報なし"
   },
   "profile": {
     "setup": {
@@ -216,7 +235,11 @@
     "upcomingSessions": "今後のセッション",
     "viewAllSessions": "この会場の全セッションを見る →",
     "freeEntry": "無料",
-    "similarVenues": "同ジャンルの他の会場"
+    "similarVenues": "同ジャンルの他の会場",
+    "noSessionInfo": "セッション情報なし",
+    "irregular": "不定期開催",
+    "everyDay": "毎週{day}曜",
+    "moreSessions": "+{n} セッション"
   },
   "studio": {
     "title": "練習スタジオ",
@@ -313,7 +336,8 @@
     "filterSyncroom": "SYNCROOMのみ",
     "freeOrDoorPrice": "無料/現地集金",
     "full": "満員",
-    "viewVenuePage": "会場ページを見る →"
+    "viewVenuePage": "会場ページを見る →",
+    "moreSessionsAt": "{venue} の他のセッション"
   },
   "song": {
     "title": "曲",
@@ -373,6 +397,15 @@
       "4": "木曜日",
       "5": "金曜日",
       "6": "土曜日"
+    },
+    "shortDays": {
+      "0": "日",
+      "1": "月",
+      "2": "火",
+      "3": "水",
+      "4": "木",
+      "5": "金",
+      "6": "土"
     }
   },
   "live": {

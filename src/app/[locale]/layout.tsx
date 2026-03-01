@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import { NextIntlClientProvider } from 'next-intl';
-import { getMessages, setRequestLocale } from 'next-intl/server';
+import { getMessages, getTranslations, setRequestLocale } from 'next-intl/server';
 import { hasLocale } from 'next-intl';
 import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
@@ -93,6 +93,7 @@ export default async function LocaleLayout({
 
   setRequestLocale(locale);
   const messages = await getMessages();
+  const t = await getTranslations({ locale, namespace: 'common' });
 
   return (
     <html lang={locale}>
@@ -116,10 +117,10 @@ export default async function LocaleLayout({
                 <span>© {new Date().getFullYear()} NearJam</span>
                 <nav className="flex gap-4">
                   <a href={`/${locale}/privacy`} className="hover:text-gray-700 hover:underline">
-                    {locale === 'ja' ? 'プライバシーポリシー' : 'Privacy Policy'}
+                    {t('privacyPolicy')}
                   </a>
                   <a href={`/${locale}/terms`} className="hover:text-gray-700 hover:underline">
-                    {locale === 'ja' ? '利用規約' : 'Terms of Service'}
+                    {t('terms')}
                   </a>
                 </nav>
               </div>
