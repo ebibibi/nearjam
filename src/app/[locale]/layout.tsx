@@ -20,32 +20,49 @@ const geistMono = Geist_Mono({
   subsets: ['latin'],
 });
 
-export const metadata: Metadata = {
-  title: {
-    default: 'NearJam — ジャムセッション会場・スケジュール検索',
-    template: '%s | NearJam',
-  },
-  description:
-    '全国のジャズ・ブルース・ロックのジャムセッション会場を検索。定期開催セッションのスケジュール確認、参加申込み、ミュージシャンとのマッチングができます。',
-  keywords: ['ジャムセッション', 'ジャズ', 'ブルース', 'セッション', '演奏', 'ライブハウス', 'ジャズバー'],
-  manifest: '/manifest.json',
-  appleWebApp: {
-    capable: true,
-    statusBarStyle: 'default',
-    title: 'NearJam',
-  },
-  openGraph: {
-    type: 'website',
-    siteName: 'NearJam',
-    title: 'NearJam — ジャムセッション会場・スケジュール検索',
-    description: '全国のジャズ・ブルース・ロックのジャムセッション会場を検索。定期開催セッションのスケジュール確認、参加申込みができます。',
-  },
-  twitter: {
-    card: 'summary',
-    title: 'NearJam — ジャムセッション会場・スケジュール検索',
-  },
-  formatDetection: { telephone: false },
-};
+const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://nearjam.app';
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return {
+    title: {
+      default: 'NearJam — ジャムセッション会場・スケジュール検索',
+      template: '%s | NearJam',
+    },
+    description:
+      '全国のジャズ・ブルース・ロックのジャムセッション会場を検索。定期開催セッションのスケジュール確認、参加申込み、ミュージシャンとのマッチングができます。',
+    keywords: ['ジャムセッション', 'ジャズ', 'ブルース', 'セッション', '演奏', 'ライブハウス', 'ジャズバー'],
+    manifest: '/manifest.json',
+    alternates: {
+      canonical: `${BASE_URL}/${locale}`,
+      languages: {
+        ja: `${BASE_URL}/ja`,
+        en: `${BASE_URL}/en`,
+      },
+    },
+    appleWebApp: {
+      capable: true,
+      statusBarStyle: 'default',
+      title: 'NearJam',
+    },
+    openGraph: {
+      type: 'website',
+      siteName: 'NearJam',
+      title: 'NearJam — ジャムセッション会場・スケジュール検索',
+      description: '全国のジャズ・ブルース・ロックのジャムセッション会場を検索。定期開催セッションのスケジュール確認、参加申込みができます。',
+      locale: locale === 'ja' ? 'ja_JP' : 'en_US',
+    },
+    twitter: {
+      card: 'summary',
+      title: 'NearJam — ジャムセッション会場・スケジュール検索',
+    },
+    formatDetection: { telephone: false },
+  };
+}
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
