@@ -281,7 +281,7 @@ export default async function SessionsPage({
       {/* 会場フィルターバッジ */}
       {venueFilter && (
         <div className="flex items-center gap-2 text-sm">
-          <span className="text-gray-500">フィルター:</span>
+          <span className="text-gray-500">{t('session.filterLabel')}</span>
           <span className="rounded-full bg-violet-100 text-violet-700 px-3 py-1">🏠 {venueFilter}</span>
           <Link href={`/${locale}/sessions`} className="text-gray-400 hover:text-gray-600">{t('common.clear')}</Link>
         </div>
@@ -292,7 +292,7 @@ export default async function SessionsPage({
         <section className="rounded-2xl bg-amber-50 border border-amber-200 p-4">
           <h2 className="text-base font-bold text-amber-900 mb-3">
             ☀️ {t('session.todaysSessions')}
-            <span className="ml-2 text-sm font-normal text-amber-600">{todaySessions.length} 件</span>
+            <span className="ml-2 text-sm font-normal text-amber-600">{t('session.sessionCount', { n: todaySessions.length })}</span>
           </h2>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {todaySessions.map((s) => (
@@ -317,7 +317,7 @@ export default async function SessionsPage({
             <section key={label}>
               <h2 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
                 <span className="rounded-lg bg-violet-100 text-violet-700 px-3 py-1 text-base">{label}</span>
-                <span className="text-sm font-normal text-gray-400">{weekSessions.length} 件</span>
+                <span className="text-sm font-normal text-gray-400">{t('session.sessionCount', { n: weekSessions.length })}</span>
               </h2>
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {weekSessions.map((s) => (
@@ -331,10 +331,10 @@ export default async function SessionsPage({
 
       {!authSession?.user && filteredSessions.length > 0 && (
         <div className="rounded-xl bg-gradient-to-br from-violet-50 to-indigo-50 border border-violet-200 p-6 text-center">
-          <p className="text-gray-700 font-medium mb-2">🎷 あなたもセッションを開催しませんか？</p>
-          <p className="text-sm text-gray-500 mb-4">アカウント登録すると、セッションの作成・参加申込ができます。</p>
+          <p className="text-gray-700 font-medium mb-2">{t('session.ctaHostTitle')}</p>
+          <p className="text-sm text-gray-500 mb-4">{t('session.ctaHostDesc')}</p>
           <Link href={`/${locale}/auth/signin`}>
-            <Button variant="primary">登録・ログインする</Button>
+            <Button variant="primary">{t('session.ctaHostButton')}</Button>
           </Link>
         </div>
       )}
