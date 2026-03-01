@@ -262,6 +262,25 @@ export default async function SessionDetailPage({
             <p className="mt-0.5 text-gray-600">
               {t('session.participants', { n: session._count.registrations })}/{session.maxParticipants}
             </p>
+            {(() => {
+              const pct = Math.min(100, Math.round((session._count.registrations / session.maxParticipants!) * 100));
+              const isFull = session._count.registrations >= session.maxParticipants!;
+              return (
+                <div className="mt-1.5">
+                  <div className="h-1.5 rounded-full bg-gray-200 overflow-hidden">
+                    <div
+                      className={`h-full rounded-full transition-all ${isFull ? 'bg-red-500' : pct >= 80 ? 'bg-amber-500' : 'bg-emerald-500'}`}
+                      style={{ width: `${pct}%` }}
+                    />
+                  </div>
+                  {isFull && (
+                    <p className="text-xs text-red-600 font-medium mt-0.5">
+                      {locale === 'ja' ? '満員' : 'Full'}
+                    </p>
+                  )}
+                </div>
+              );
+            })()}
           </div>
         )}
       </div>
