@@ -30,11 +30,11 @@ export default async function VenuesPage({
           ],
         }
       : undefined,
-    orderBy: { createdAt: 'desc' },
+    orderBy: [{ verifiedAt: 'desc' }, { name: 'asc' }],
     include: {
       tendencies: {
         where: { isActive: true },
-        orderBy: { createdAt: 'desc' },
+        orderBy: [{ sourceType: 'asc' }, { createdAt: 'desc' }],
         take: 3,
         select: {
           name: true,

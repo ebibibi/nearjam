@@ -1,4 +1,5 @@
 export const dynamic = 'force-dynamic';
+import type { Metadata } from 'next';
 import { setRequestLocale } from 'next-intl/server';
 import { getTranslations } from 'next-intl/server';
 import Link from 'next/link';
@@ -12,6 +13,39 @@ import { RegistrationButton } from '@/components/session/RegistrationButton';
 import { SessionAdminPanel } from '@/components/session/SessionAdminPanel';
 import { TicketSection } from '@/components/session/TicketSection';
 import { CancellationPolicy } from '@/lib/stripe';
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string; id: string }>;
+}): Promise<Metadata> {
+  const { id, locale } = await params;
+  const session = await prisma.jamSession.findUnique({
+    where: { id },
+    select: {
+      title: true,
+      startsAt: true,
+      venue: { select: { name: true, nearestStation: true } },
+    },
+  });
+  if (!session) return {};
+
+  const dateStr = new Date(session.startsAt).toLocaleDateString(locale === 'ja' ? 'ja-JP' : 'en-US', {
+    month: 'long', day: 'numeric', weekday: 'short',
+  });
+  const venuePart = session.venue ? `${session.venue.name}` : '';
+  const stationPart = session.venue?.nearestStation ? `（${session.venue.nearestStation}駅）` : '';
+  const desc = `${dateStr}開催 — ${venuePart}${stationPart}のジャムセッション。NearJam で参加申込・スケジュール確認。`;
+
+  return {
+    title: session.title,
+    description: desc.slice(0, 160),
+    openGraph: {
+      title: `${session.title} | NearJam`,
+      description: desc.slice(0, 160),
+    },
+  };
+}
 
 export default async function SessionDetailPage({
   params,
@@ -155,8 +189,8 @@ export default async function SessionDetailPage({
         </div>
       )}
 
-      {/* Description */}
-      {session.description && (
+      {/* Description (hide internal tendency markers from bot-generated sessions) */}
+      {session.description && !session.description.startsWith('[tendency:') && (
         <div>
           <p className="text-sm font-medium text-gray-700 mb-1">{t('session.description')}</p>
           <p className="text-sm text-gray-600 whitespace-pre-wrap">{session.description}</p>
