@@ -98,12 +98,20 @@ export const DEFAULT_CANCELLATION_TIERS: CancellationTier[] = [
 /**
  * キャンセルポリシーの説明文を生成する（Stripe Checkout の description 等に使用）
  */
-export function describeCancellationPolicy(policy?: CancellationPolicy | null): string {
+export function describeCancellationPolicy(
+  policy?: CancellationPolicy | null,
+  locale: 'ja' | 'en' = 'ja',
+): string {
   const tiers = policy?.tiers ?? DEFAULT_CANCELLATION_TIERS
   const sorted = [...tiers].sort((a, b) => b.hoursUntil - a.hoursUntil)
 
   return sorted
     .map((tier) => {
+      if (locale === 'en') {
+        if (tier.refundPercent === 100) return `Up to ${tier.hoursUntil}h before: full refund (minus fees)`
+        if (tier.refundPercent === 0)   return `Under ${tier.hoursUntil}h: no refund`
+        return `${tier.hoursUntil}h+: ${100 - tier.refundPercent}% fee (${tier.refundPercent}% refund)`
+      }
       if (tier.refundPercent === 100) return `${tier.hoursUntil}時間前まで: 手数料差し引き返金`
       if (tier.refundPercent === 0)   return `${tier.hoursUntil}時間未満: 返金なし`
       return `${tier.hoursUntil}時間前〜: ${100 - tier.refundPercent}%キャンセル料（${tier.refundPercent}%返金）`

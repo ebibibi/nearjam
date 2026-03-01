@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useTranslations, useLocale } from 'next-intl'
-import { describeCancellationPolicy, CancellationPolicy } from '@/lib/stripe'
+import type { CancellationPolicy } from '@/lib/stripe'
 
 interface Props {
   sessionId: string
@@ -30,9 +30,6 @@ export function TicketSection({
     cancelFeeYen: number
   } | null>(null)
   const [error, setError] = useState<string | null>(null)
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const _policyText = describeCancellationPolicy(cancellationPolicy)
 
   const handlePurchase = async () => {
     setLoading(true)

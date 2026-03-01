@@ -87,7 +87,8 @@ export async function POST(
 
   const baseUrl = process.env.NEXTAUTH_URL ?? 'https://nearjam.ebisuda.net'
   const policyText = describeCancellationPolicy(
-    jamSession.cancellationPolicy as Parameters<typeof describeCancellationPolicy>[0]
+    jamSession.cancellationPolicy as Parameters<typeof describeCancellationPolicy>[0],
+    locale as 'ja' | 'en',
   )
 
   const dateStr = new Date(jamSession.startsAt).toLocaleDateString(locale === 'en' ? 'en-US' : 'ja-JP')
