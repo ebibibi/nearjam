@@ -642,17 +642,19 @@ model AnonymousFeedback {
 enum ConnectionStatus {
   PENDING
   ACCEPTED
+  REJECTED
 }
 
 model Connection {
-  id          String           @id @default(cuid())
-  fromUserId  String
-  toUserId    String
-  status      ConnectionStatus @default(PENDING)
-  requestedAt DateTime         @default(now())
-  acceptedAt  DateTime?
-  rejectedAt  DateTime?
-  rejectCount Int              @default(0)
+  id            String           @id @default(cuid())
+  fromUserId    String
+  toUserId      String
+  status        ConnectionStatus @default(PENDING)
+  requestedAt   DateTime         @default(now())
+  acceptedAt    DateTime?
+  rejectedAt    DateTime?
+  rejectCount   Int              @default(0)
+  cooldownUntil DateTime?        // 拒否後30日間の再申請クールダウン期限
 
   fromUser User @relation("ConnectionFrom", fields: [fromUserId], references: [id], onDelete: Cascade)
   toUser   User @relation("ConnectionTo", fields: [toUserId], references: [id], onDelete: Cascade)

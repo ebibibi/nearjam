@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import useSWR from 'swr';
 import { SongQueue } from './SongQueue';
@@ -28,7 +29,9 @@ interface LiveSessionDashboardProps {
 
 export function LiveSessionDashboard({ sessionId, sessionTitle }: LiveSessionDashboardProps) {
   const t = useTranslations('live');
+  const router = useRouter();
   const [localQueue, setLocalQueue] = useState<QueueItem[] | null>(null);
+  const [completing, setCompleting] = useState(false);
 
   const { data, mutate } = useSWR<QueueItem[]>(
     `/api/v1/sessions/${sessionId}/queue`,
@@ -50,6 +53,21 @@ export function LiveSessionDashboard({ sessionId, sessionTitle }: LiveSessionDas
     setLocalQueue(null);
     await mutate();
   }, [mutate]);
+
+  const handleComplete = useCallback(async () => {
+    if (!confirm(t('confirmComplete'))) return;
+    setCompleting(true);
+    try {
+      const res = await fetch(`/api/v1/sessions/${sessionId}/complete`, { method: 'POST' });
+      if (res.ok) {
+        router.push(`/sessions/${sessionId}`);
+      } else {
+        alert(t('completeFailed'));
+      }
+    } finally {
+      setCompleting(false);
+    }
+  }, [sessionId, router, t]);
 
   return (
     <div className="space-y-6">
@@ -74,6 +92,17 @@ export function LiveSessionDashboard({ sessionId, sessionTitle }: LiveSessionDas
       <section>
         <h2 className="text-lg font-semibold text-gray-900 mb-3">{t('addToQueue')}</h2>
         <AddSongToQueue sessionId={sessionId} onAdded={handleAdded} />
+      </section>
+
+      <section className="border-t border-gray-200 pt-6">
+        <button
+          onClick={handleComplete}
+          disabled={completing}
+          className="w-full rounded-lg bg-red-600 px-4 py-3 text-sm font-semibold text-white hover:bg-red-700 disabled:opacity-50"
+        >
+          {completing ? t('completing') : t('completeSession')}
+        </button>
+        <p className="mt-2 text-center text-xs text-gray-400">{t('completeHint')}</p>
       </section>
     </div>
   );

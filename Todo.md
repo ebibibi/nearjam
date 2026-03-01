@@ -1,6 +1,6 @@
 # NearJam 実装 Todo（PRD v0.4 差分）
 
-> 生成日: 2026-03-01
+> 生成日: 2026-03-01（PRD v0.4 再照合 更新）
 > PRD との差異分析から抽出。Phase 1 MVP の未実装機能を Sprint 単位で管理する。
 
 ---
@@ -32,7 +32,20 @@
 |-----|-----------|------|------|
 | F1  | [x] | ミュージシャン間コネクション | 相互承認フォロー。`Connection` モデル（from/to/status: PENDING/ACCEPTED）+ フォローリクエスト UI + 承認 UI |
 | F2  | [x] | 管理者権限委譲 | セッション管理者が別ミュージシャンに admin 権限を移譲できる。`SessionAdminPanel` に委譲 UI 追加済み |
-| F3  | [x] | マッチング通知（Notification レコード作成） | ウィッシュリスト × セッション曲かぶり検知 → `Notification` レコード生成。セッション作成時に fire-and-forget で呼び出し。メール送信は Phase 2（バッチ基盤必要） |
+| F3  | [x] | マッチング通知（Notification レコード作成） | ウィッシュリスト × セッション曲かぶり検知 → `Notification` レコード生成。セッション作成時に fire-and-forget で呼び出し |
+| F4  | [x] | メール送信基盤（ACS Email + Managed Identity） | `src/lib/email.ts` + `src/lib/send-notifications.ts` + cron エンドポイント。接続文字列ゼロ |
+
+---
+
+## Sprint 6 — PRD v0.4 再照合ギャップ修正
+
+| ID  | ステータス | 機能 | 詳細 |
+|-----|-----------|------|------|
+| G1  | [ ] | セッション完了ボタン | Live ページの管理者向けに「セッション完了」ボタンを追加。`POST /api/v1/sessions/[id]/complete` はすでに実装済み。`LiveSessionDashboard` に追加するだけ |
+| G2  | [ ] | ブロック機能 API + UI | PRD §5.2。`Block` スキーマは存在。`POST/DELETE /api/v1/users/[id]/block` + コネクションページ or プロフィールページにブロックボタン |
+| G3  | [ ] | 楽器マッチング通知 | PRD Phase 1「セッション近くで自分の楽器が必要」。`MATCH_INSTRUMENT` 通知タイプ。セッション作成時に `JamSessionInstrumentNeed` × ミュージシャン楽器で検索 |
+| G4  | [ ] | ミュージシャン公開プロフィールページ | PRD §2.2 profileVisibility。`/musicians/[id]` ページ。`profileVisibility=PUBLIC or LOGGED_IN` のプロフィールを表示。コネクション申請ボタンも |
+| G5  | [ ] | Connection 30日クールダウン | PRD §5.2「拒否後30日待機」。現在は3回拒否ブロックのみ。`rejectedUntil DateTime?` フィールドを Connection スキーマに追加して実装 |
 
 ---
 
@@ -42,5 +55,8 @@
 |------|------|
 | 会場認証フロー | HP メールスクレイプ + SNS コード確認。外部 I/O が複雑 |
 | 定期セッション管理 | 繰り返し Event パターン（rrule 等） |
-| 通知エンジン（フル） | バッチ送信、朝まとめ、タイミング攻撃対策等 |
+| 楽曲レコメンデーション | 「近くで演奏されたがウィッシュリスト未登録」— スコアリングエンジン必要 |
 | Auto-collection bot UI | オペレーターレビューキュー（クローラ基盤は実装済み） |
+| Kudos システム | PRD では Phase 2 |
+| 匿名フィードバック | PRD では Phase 2 |
+| セッションレベルプライバシー設定 UI | AND-consent の複雑な UI |

@@ -45,11 +45,17 @@ export async function PATCH(req: NextRequest, { params }: Params) {
     return ok(updated);
   }
 
-  // reject: rejectCount をインクリメントして削除（申請者が再送できなくなる）
+  // reject: REJECTED ステータスに変更、rejectCount++、30日クールダウン設定
+  const cooldownUntil = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
   await prisma.connection.update({
     where: { id: connectionId },
-    data: { rejectCount: { increment: 1 }, rejectedAt: new Date() },
+    data: {
+      status: 'REJECTED',
+      rejectCount: { increment: 1 },
+      rejectedAt: new Date(),
+      cooldownUntil,
+    },
   });
-  // 拒否はステータスを保持しつつレコードを残す（再申請制御のため）
-  return ok({ ok: true, rejected: true });
+
+  return ok({ ok: true, rejected: true, cooldownUntil });
 }

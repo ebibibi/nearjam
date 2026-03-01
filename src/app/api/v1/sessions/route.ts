@@ -2,7 +2,7 @@ import { NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { requireAuth, ok, err, parsePagination } from '@/lib/api-utils';
 import { CreateSessionSchema } from '@/schemas/session';
-import { createMatchNotifications } from '@/lib/matching';
+import { createMatchNotifications, createInstrumentMatchNotifications } from '@/lib/matching';
 
 // Simple rate-limit store (in-memory, per process)
 const rateLimitStore = new Map<string, { count: number; resetAt: number }>();
@@ -75,6 +75,7 @@ export async function POST(req: NextRequest) {
 
   // Fire-and-forget: マッチング通知作成（失敗してもセッション作成には影響しない）
   void createMatchNotifications(session.id);
+  void createInstrumentMatchNotifications(session.id);
 
   return ok(session, 201);
 }

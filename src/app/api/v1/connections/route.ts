@@ -42,18 +42,44 @@ export async function POST(req: NextRequest) {
 
   if (toUserId === userId) return err('Cannot connect with yourself', 400);
 
-  // 既に申請中 or 承認済みなら拒否
+  const now = new Date();
+
+  // 自分→相手 の既存レコードをチェック
   const existing = await prisma.connection.findUnique({
     where: { fromUserId_toUserId: { fromUserId: userId, toUserId } },
   });
-  if (existing) return err('Connection already exists', 409);
 
-  // 相手から拒否された回数が3回以上なら申請不可（PRD §5.2）
-  const rejected = await prisma.connection.findUnique({
+  if (existing) {
+    if (existing.status === 'ACCEPTED') return err('Already connected', 409);
+    if (existing.status === 'PENDING') return err('Connection already pending', 409);
+
+    // REJECTED: クールダウン・永久ブロックチェック
+    if (existing.rejectCount >= 3) {
+      return err('Connection requests permanently blocked', 403);
+    }
+    if (existing.cooldownUntil && existing.cooldownUntil > now) {
+      return err('Connection request on cooldown', 403);
+    }
+
+    // クールダウン解除 → PENDING に戻して再申請
+    const updated = await prisma.connection.update({
+      where: { id: existing.id },
+      data: {
+        status: 'PENDING',
+        requestedAt: now,
+        rejectedAt: null,
+        cooldownUntil: null,
+      },
+    });
+    return ok(updated, 201);
+  }
+
+  // 相手→自分 の拒否履歴チェック（相手が自分からの申請を3回断った場合は永久ブロック）
+  const reverse = await prisma.connection.findUnique({
     where: { fromUserId_toUserId: { fromUserId: toUserId, toUserId: userId } },
     select: { rejectCount: true },
   });
-  if (rejected && rejected.rejectCount >= 3) {
+  if (reverse && reverse.rejectCount >= 3) {
     return err('Connection requests blocked', 403);
   }
 

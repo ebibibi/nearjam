@@ -372,7 +372,12 @@
     "raiseHand": "I'll play this",
     "balance": "Performance balance",
     "turns": "{n} turns",
-    "noQueue": "No songs in queue yet"
+    "noQueue": "No songs in queue yet",
+    "completeSession": "Complete Session",
+    "completing": "Completing...",
+    "confirmComplete": "Mark this session as complete? This will confirm all performance logs.",
+    "completeFailed": "Failed to complete session. Please try again.",
+    "completeHint": "This action confirms performance logs for all participants."
   },
   "history": {
     "title": "My Performance History",
@@ -401,12 +406,32 @@
     "anonymous": "Anonymous",
     "connect": "Connect",
     "connected": "Connected",
-    "pending": "Request sent"
+    "pending": "Request sent",
+    "blockedUsers": "Blocked users",
+    "statusRejected": "Declined"
+  },
+  "user": {
+    "block": "Block",
+    "unblock": "Unblock",
+    "confirmBlock": "Block this user? They won't be able to send you connection requests."
   },
   "errors": {
     "notFound": "Page not found",
     "unauthorized": "You need to sign in to view this page",
     "forbidden": "You don't have permission to view this",
     "serverError": "Something went wrong on our end"
+  },
+  "musician": {
+    "backToSessions": "Back to sessions",
+    "anonymous": "Anonymous",
+    "instruments": "Instruments",
+    "genres": "Genres",
+    "areas": "Areas",
+    "skillLevel": {
+      "BEGINNER": "Beginner",
+      "INTERMEDIATE": "Intermediate",
+      "ADVANCED": "Advanced",
+      "PROFESSIONAL": "Professional"
+    }
   }
 }

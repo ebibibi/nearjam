@@ -372,7 +372,12 @@
     "raiseHand": "演奏する",
     "balance": "演奏バランス",
     "turns": "{n}回",
-    "noQueue": "まだキューに曲がありません"
+    "noQueue": "まだキューに曲がありません",
+    "completeSession": "セッションを完了する",
+    "completing": "完了中...",
+    "confirmComplete": "このセッションを完了としてマークしますか？参加者全員の演奏ログが確定されます。",
+    "completeFailed": "セッションの完了に失敗しました。もう一度お試しください。",
+    "completeHint": "この操作により、参加者全員の演奏ログが確定されます。"
   },
   "history": {
     "title": "マイ演奏履歴",
@@ -401,12 +406,32 @@
     "anonymous": "匿名",
     "connect": "コネクション申請",
     "connected": "コネクション済み",
-    "pending": "申請中"
+    "pending": "申請中",
+    "blockedUsers": "ブロック中のユーザー",
+    "statusRejected": "拒否済み"
+  },
+  "user": {
+    "block": "ブロック",
+    "unblock": "ブロック解除",
+    "confirmBlock": "このユーザーをブロックしますか？コネクション申請ができなくなります。"
   },
   "errors": {
     "notFound": "ページが見つかりません",
     "unauthorized": "このページを見るにはログインが必要です",
     "forbidden": "このページを見る権限がありません",
     "serverError": "サーバーでエラーが発生しました"
+  },
+  "musician": {
+    "backToSessions": "セッション一覧に戻る",
+    "anonymous": "匿名",
+    "instruments": "楽器",
+    "genres": "ジャンル",
+    "areas": "エリア",
+    "skillLevel": {
+      "BEGINNER": "初心者",
+      "INTERMEDIATE": "中級者",
+      "ADVANCED": "上級者",
+      "PROFESSIONAL": "プロ"
+    }
   }
 }

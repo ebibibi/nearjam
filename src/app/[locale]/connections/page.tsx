@@ -6,6 +6,7 @@ import { redirect } from 'next/navigation';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { ConnectionActions } from '@/components/connection/ConnectionActions';
+import { BlockButton } from '@/components/user/BlockButton';
 
 export default async function ConnectionsPage({
   params,
@@ -22,7 +23,7 @@ export default async function ConnectionsPage({
   }
   const userId = session.user.id;
 
-  const [sent, received] = await Promise.all([
+  const [sent, received, blocks] = await Promise.all([
     prisma.connection.findMany({
       where: { fromUserId: userId },
       include: {
@@ -36,6 +37,10 @@ export default async function ConnectionsPage({
         fromUser: { select: { id: true, nickname: true, image: true } },
       },
       orderBy: { requestedAt: 'desc' },
+    }),
+    prisma.block.findMany({
+      where: { blockerUserId: userId },
+      select: { blockedUserId: true, blocked: { select: { id: true, nickname: true } } },
     }),
   ]);
 
@@ -64,7 +69,10 @@ export default async function ConnectionsPage({
                     {conn.fromUser.nickname ?? t('anonymous')}
                   </span>
                 </div>
-                <ConnectionActions connectionId={conn.id} mode="received" />
+                <div className="flex items-center gap-2">
+                  <ConnectionActions connectionId={conn.id} mode="received" />
+                  <BlockButton targetUserId={conn.fromUser.id} isBlocked={false} />
+                </div>
               </div>
             ))}
           </div>
@@ -90,18 +98,42 @@ export default async function ConnectionsPage({
                       {conn.toUser.nickname ?? t('anonymous')}
                     </p>
                     <p className="text-xs text-gray-400">
-                      {conn.status === 'ACCEPTED' ? t('statusAccepted') : t('statusPending')}
+                      {conn.status === 'ACCEPTED'
+                        ? t('statusAccepted')
+                        : conn.status === 'REJECTED'
+                          ? t('statusRejected')
+                          : t('statusPending')}
                     </p>
                   </div>
                 </div>
-                {conn.status === 'PENDING' && (
-                  <ConnectionActions connectionId={conn.id} mode="sent" />
-                )}
+                <div className="flex items-center gap-2">
+                  {conn.status === 'PENDING' && (
+                    <ConnectionActions connectionId={conn.id} mode="sent" />
+                  )}
+                  <BlockButton targetUserId={conn.toUser.id} isBlocked={false} />
+                </div>
               </div>
             ))}
           </div>
         )}
       </section>
+
+      {/* ブロックリスト */}
+      {blocks.length > 0 && (
+        <section>
+          <h2 className="text-lg font-semibold text-gray-900 mb-3">{t('blockedUsers')}</h2>
+          <div className="space-y-2">
+            {blocks.map((b) => (
+              <div key={b.blockedUserId} className="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 px-4 py-3">
+                <span className="text-sm text-gray-600">
+                  {b.blocked.nickname ?? t('anonymous')}
+                </span>
+                <BlockButton targetUserId={b.blockedUserId} isBlocked={true} />
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   );
 }
