@@ -3,6 +3,17 @@ import Link from 'next/link';
 import { Card, CardTitle, CardContent } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 
+const MOOD_EMOJI: Record<string, string> = {
+  MISTAKES_WELCOME: '🤝',
+  BEGINNER_FRIENDLY: '🌱',
+  ADVANCED: '⚡',
+  PRACTICE_FOCUSED: '🎯',
+  THEME_NIGHT: '🎭',
+  LISTENING_CULTURE: '🎧',
+  LIVELY: '🔥',
+  CONNECTION_FIRST: '💫',
+};
+
 interface SessionCardProps {
   session: {
     id: string;
@@ -78,6 +89,16 @@ export function SessionCard({ session, locale }: SessionCardProps) {
               </span>
             )}
           </div>
+
+          {session.moodFlags.length > 0 && (
+            <div className="flex flex-wrap gap-1 mt-1">
+              {session.moodFlags.slice(0, 3).map((flag) => (
+                <span key={flag} className="text-xs" title={flag}>
+                  {MOOD_EMOJI[flag] ?? '🎵'}
+                </span>
+              ))}
+            </div>
+          )}
         </CardContent>
       </Card>
     </Link>
