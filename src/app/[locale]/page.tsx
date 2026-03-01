@@ -31,7 +31,10 @@ export default async function HomePage({
     withTimeout(
       prisma.venue.findMany({
         take: 6,
-        orderBy: { createdAt: 'desc' },
+        where: {
+          tendencies: { some: { isActive: true } },
+        },
+        orderBy: [{ verifiedAt: 'desc' }, { name: 'asc' }],
         include: {
           tendencies: {
             where: { isActive: true },

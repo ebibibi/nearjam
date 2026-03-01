@@ -1,4 +1,5 @@
 export const dynamic = 'force-dynamic';
+import type { Metadata } from 'next';
 import { setRequestLocale } from 'next-intl/server';
 import { getTranslations } from 'next-intl/server';
 import Link from 'next/link';
@@ -6,6 +7,24 @@ import { prisma } from '@/lib/prisma';
 import { auth } from '@/lib/auth';
 import { Button } from '@/components/ui/Button';
 import { SessionCard } from '@/components/session/SessionCard';
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const count = await prisma.jamSession.count({ where: { startsAt: { gte: new Date() } } });
+  const title = locale === 'ja' ? 'セッション一覧' : 'Sessions';
+  const desc = locale === 'ja'
+    ? `全国のジャムセッション ${count} 件を掲載中。ジャズ・ブルース・ファンク・ラテンなど幅広いジャンルのセッションを検索・参加申込できます。`
+    : `Browse ${count} jam sessions. Search and register for jazz, blues, funk, and latin sessions near you.`;
+  return {
+    title,
+    description: desc,
+    openGraph: { title: `${title} | NearJam`, description: desc },
+  };
+}
 
 function getWeekLabel(date: Date, locale: string): string {
   const now = new Date();
