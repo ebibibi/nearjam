@@ -35,8 +35,12 @@ export async function generateMetadata({
     month: 'long', day: 'numeric', weekday: 'short',
   });
   const venuePart = session.venue ? `${session.venue.name}` : '';
-  const stationPart = session.venue?.nearestStation ? `（${session.venue.nearestStation}駅）` : '';
-  const desc = `${dateStr}開催 — ${venuePart}${stationPart}のジャムセッション。NearJam で参加申込・スケジュール確認。`;
+  const stationPart = session.venue?.nearestStation
+    ? (locale === 'ja' ? `（${session.venue.nearestStation}駅）` : ` (${session.venue.nearestStation} Station)`)
+    : '';
+  const desc = locale === 'ja'
+    ? `${dateStr}開催 — ${venuePart}${stationPart}のジャムセッション。NearJam で参加申込・スケジュール確認。`
+    : `${venuePart}${stationPart} — Jam session on ${dateStr}. Register and check schedule on NearJam.`;
 
   return {
     title: session.title,
