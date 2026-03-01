@@ -18,6 +18,7 @@ interface VenueCardProps {
     xUrl: string | null;
     verifiedAt: Date | null;
     disputedAt: Date | null;
+    updatedAt: Date;
     tendencies: {
       name: string;
       typicalDayOfWeek: number | null;
@@ -41,6 +42,12 @@ export function VenueCard({ venue, locale, upcomingSessionCount = 0 }: VenueCard
         <div className="flex items-start justify-between gap-2 mb-1">
           <CardTitle className="flex-1">{venue.name}</CardTitle>
           <div className="flex items-center gap-1 shrink-0">
+            {(() => {
+              const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+              return venue.updatedAt > sevenDaysAgo ? (
+                <span className="rounded-full bg-emerald-100 text-emerald-700 text-xs px-2 py-0.5 font-medium">NEW</span>
+              ) : null;
+            })()}
             {upcomingSessionCount > 0 && (
               <span className="rounded-full bg-amber-100 text-amber-700 text-xs px-2 py-0.5 font-medium">
                 📅 {upcomingSessionCount}
