@@ -14,6 +14,7 @@ import { SessionAdminPanel } from '@/components/session/SessionAdminPanel';
 import { TicketSection } from '@/components/session/TicketSection';
 import { ShareButton } from '@/components/session/ShareButton';
 import { CancellationPolicy } from '@/lib/stripe';
+import ReactMarkdown from 'react-markdown';
 
 export async function generateMetadata({
   params,
@@ -300,7 +301,9 @@ export default async function SessionDetailPage({
       {session.description && !session.description.includes('[tendency:') && (
         <div>
           <p className="text-sm font-medium text-gray-700 mb-1">{t('session.description')}</p>
-          <p className="text-sm text-gray-600 whitespace-pre-wrap">{session.description}</p>
+          <div className="text-sm text-gray-600 prose prose-sm max-w-none">
+            <ReactMarkdown>{session.description}</ReactMarkdown>
+          </div>
         </div>
       )}
 
