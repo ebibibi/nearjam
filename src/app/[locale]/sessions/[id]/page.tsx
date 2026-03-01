@@ -14,6 +14,7 @@ import { SessionAdminPanel } from '@/components/session/SessionAdminPanel';
 import { TicketSection } from '@/components/session/TicketSection';
 import { ShareButton } from '@/components/session/ShareButton';
 import { KudosForm } from '@/components/kudos/KudosForm';
+import { FeedbackForm } from '@/components/session/FeedbackForm';
 import { CancellationPolicy } from '@/lib/stripe';
 import ReactMarkdown from 'react-markdown';
 
@@ -429,6 +430,15 @@ export default async function SessionDetailPage({
           <p className="text-sm text-gray-400 italic">{t('session.participantsPrivate')}</p>
         )}
       </section>
+
+      {/* 匿名フィードバック（セッション終了後・参加者のみ） */}
+      {isPast && isRegistered && (
+        <section className="rounded-lg border border-dashed p-4">
+          <h2 className="text-sm font-medium text-gray-700 mb-2">{t('feedback.title')}</h2>
+          <p className="text-xs text-gray-500 mb-3">{t('feedback.toSession')}</p>
+          <FeedbackForm sessionId={id} toUserId={session.sessionAdminId} />
+        </section>
+      )}
 
       {/* この会場の他のセッション */}
       {otherVenueSessions.length > 0 && session.venue && (
