@@ -14,12 +14,15 @@
     "db:studio": "prisma studio",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
-    "crawl": "ts-node --compiler-options '{\"module\":\"CommonJS\"}' scripts/crawl.ts"
+    "crawl": "ts-node --compiler-options '{\"module\":\"CommonJS\"}' scripts/crawl.ts",
+    "notifications:send": "ts-node --compiler-options '{\"module\":\"CommonJS\"}' scripts/send-notifications.ts"
   },
   "prisma": {
     "seed": "ts-node --compiler-options '{\"module\":\"CommonJS\"}' prisma/seed.ts"
   },
   "dependencies": {
+    "@azure/communication-email": "^1.1.0",
+    "@azure/identity": "^4.13.0",
     "@mozilla/readability": "^0.6.0",
     "@prisma/adapter-pg": "^7.4.1",
     "@prisma/client": "^7.4.1",
