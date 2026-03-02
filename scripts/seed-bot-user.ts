@@ -13,7 +13,7 @@ dotenv.config({ path: '.env.local' });
 dotenv.config({ path: '.env' });
 
 import { prisma } from '../src/lib/prisma';
-export { BOT_USER_ID, BOT_USER_EMAIL } from './constants';
+import { BOT_USER_ID, BOT_USER_EMAIL } from './constants';
 
 async function main() {
   const existing = await prisma.user.findUnique({ where: { id: BOT_USER_ID } });

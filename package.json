@@ -10,7 +10,7 @@
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:seed": "prisma db seed",
-    "db:reset": "prisma migrate reset --force && prisma db seed",
+    "db:reset": "node -e \"if(process.env.DATABASE_URL?.includes('azure.com')){console.error('❌ ABORT: DATABASE_URL points to Azure production! Refusing to reset.');process.exit(1);}\" && prisma migrate reset --force && prisma db seed",
     "db:studio": "prisma studio",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
