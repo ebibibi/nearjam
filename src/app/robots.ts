@@ -11,10 +11,12 @@ export default function robots(): MetadataRoute.Robots {
         disallow: [
           '/api/',
           '/*/auth/',
+          '/*/admin/',
           '/*/profile/setup',
           '/*/sessions/*/live',
           '/*/sessions/*/edit',
           '/*/sessions/*/qr',
+          '/*/sessions/*/checkin',
         ],
       },
     ],

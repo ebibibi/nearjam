@@ -75,7 +75,7 @@ export default async function SessionDetailPage({
           orderBy: { orderIndex: 'asc' },
           include: { song: { select: { id: true, title: true, artist: true, genre: true } } },
         },
-        adminConsent: { select: { visSessionFact: true, visDatetime: true, visSessionName: true, visSongListVenue: true } },
+        privacySettings: { select: { visSessionFact: true, visDatetime: true, visSessionName: true, visSongListVenue: true } },
         _count: { select: { registrations: true } },
       },
     }),
@@ -384,7 +384,7 @@ export default async function SessionDetailPage({
           <SessionAdminPanel sessionId={id} registrations={registrations} />
           <PrivacySettingsPanel
             sessionId={id}
-            initial={session.adminConsent ?? {}}
+            initial={session.privacySettings ?? {}}
           />
         </div>
       )}
