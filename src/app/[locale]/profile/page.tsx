@@ -225,7 +225,7 @@ export default async function ProfilePage({
           <div className="flex items-center gap-3">
             <span className="rounded-full bg-green-100 px-3 py-1 text-sm text-green-700">{t('stripe.connected')}</span>
             {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
-            <a href="/api/stripe/connect" className="text-sm text-blue-600 hover:underline">
+            <a href="/api/stripe/connect" className="text-sm text-violet-600 hover:underline">
               {t('stripe.openDashboard')}
             </a>
           </div>
@@ -235,7 +235,7 @@ export default async function ProfilePage({
             {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
             <a
               href="/api/stripe/connect"
-              className="inline-block rounded-lg bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700"
+              className="inline-block rounded-lg bg-violet-600 px-4 py-2 text-sm text-white hover:bg-violet-700"
             >
               {t('stripe.connect')}
             </a>

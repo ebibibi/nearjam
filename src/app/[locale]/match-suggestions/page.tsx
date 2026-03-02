@@ -60,7 +60,7 @@ async function MatchSuggestionsList({ locale }: { locale: string }) {
     return (
       <div className="rounded-lg border border-dashed p-8 text-center text-gray-500">
         <p>{t('musician.match.noWishlist')}</p>
-        <Link href={`/${locale}/songs`} className="mt-3 inline-block text-blue-600 hover:underline">
+        <Link href={`/${locale}/songs`} className="mt-3 inline-block text-violet-600 hover:underline">
           {t('musician.match.browseSongs')}
         </Link>
       </div>
@@ -149,14 +149,14 @@ async function MatchSuggestionsList({ locale }: { locale: string }) {
               <p className="text-sm text-gray-500">
                 {profile.instruments.map((i) => i.instrument).join(' · ')}
               </p>
-              <p className="mt-1 text-sm text-blue-700 font-medium">
+              <p className="mt-1 text-sm text-violet-700 font-medium">
                 {t('musician.match.sharedSongs', { n: sharedSongs.length })}
               </p>
               <div className="mt-1 flex flex-wrap gap-1">
                 {sharedSongs.slice(0, 5).map((id) => {
                   const song = songMap.get(id)
                   return song ? (
-                    <span key={id} className="rounded bg-blue-50 px-2 py-0.5 text-xs text-blue-700">
+                    <span key={id} className="rounded bg-violet-50 px-2 py-0.5 text-xs text-violet-700">
                       {song.title}
                     </span>
                   ) : null

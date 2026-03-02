@@ -67,7 +67,7 @@ export default async function HostAvailabilityPage({
                     <p className="mt-1 text-sm text-gray-500">
                       {t('instrumentsList', { list: slot.instruments.join(', ') })}
                     </p>
-                    <p className="text-sm text-blue-600">
+                    <p className="text-sm text-violet-600">
                       {t('songCount', { n: slot.songIds.length })}
                     </p>
                     {slot.notes && (

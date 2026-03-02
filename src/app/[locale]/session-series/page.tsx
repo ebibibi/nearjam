@@ -40,7 +40,7 @@ export default async function SessionSeriesPage({
         <h1 className="text-2xl font-bold">{t('series.title')}</h1>
         <Link
           href={`/${locale}/session-series/new`}
-          className="rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+          className="rounded-lg bg-violet-600 px-4 py-2 text-white hover:bg-violet-700"
         >
           {t('series.create')}
         </Link>
@@ -52,7 +52,7 @@ export default async function SessionSeriesPage({
           <p className="mt-2 text-sm">{t('series.emptyHint')}</p>
           <Link
             href={`/${locale}/session-series/new`}
-            className="mt-4 inline-block rounded-lg bg-blue-600 px-6 py-3 text-white hover:bg-blue-700"
+            className="mt-4 inline-block rounded-lg bg-violet-600 px-6 py-3 text-white hover:bg-violet-700"
           >
             {t('series.createCta')}
           </Link>
