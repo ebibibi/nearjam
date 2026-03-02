@@ -8,6 +8,7 @@ import { prisma } from '@/lib/prisma';
 import { Badge } from '@/components/ui/Badge';
 import { RoomList } from '@/components/studio/RoomList';
 import { Button } from '@/components/ui/Button';
+import { ShareButton } from '@/components/session/ShareButton';
 
 export async function generateMetadata({
   params,
@@ -80,11 +81,17 @@ export default async function StudioDetailPage({
         </Link>
         <div className="flex items-start justify-between gap-4">
           <h1 className="text-3xl font-bold text-gray-900">{studio.name}</h1>
-          {studio.verifiedAt ? (
-            <Badge variant="verified">✅ {t('venue.verified')}</Badge>
-          ) : (
-            <Badge variant="unverified">⚠️ {t('venue.unverified')}</Badge>
-          )}
+          <div className="flex items-center gap-2">
+            {studio.verifiedAt ? (
+              <Badge variant="verified">✅ {t('venue.verified')}</Badge>
+            ) : (
+              <Badge variant="unverified">⚠️ {t('venue.unverified')}</Badge>
+            )}
+            <ShareButton
+              title={studio.name}
+              url={`${process.env.NEXT_PUBLIC_APP_URL ?? 'https://nearjam.app'}/${locale}/studios/${id}`}
+            />
+          </div>
         </div>
       </div>
 
