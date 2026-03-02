@@ -1,6 +1,12 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
+import type { Metadata } from 'next';
 import { auth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
+
+export const metadata: Metadata = {
+  title: 'Collection Queue — NearJam Admin',
+  robots: { index: false, follow: false },
+};
 import { prisma } from '@/lib/prisma';
 import { CollectionQueueActions } from '@/components/admin/CollectionQueueActions';
 
