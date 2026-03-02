@@ -317,10 +317,18 @@ export default async function VenueDetailPage({
               );
             })}
           </div>
-          <div className="mt-3 text-center">
+          <div className="mt-3 flex items-center justify-between">
             <Link href={`/${locale}/sessions?venue=${encodeURIComponent(venue.name)}`} className="text-sm text-violet-600 hover:underline">
               {t('venue.viewAllSessions')}
             </Link>
+            {currentUserId && (
+              <Link
+                href={`/${locale}/sessions/new?venueId=${id}`}
+                className="text-xs px-3 py-1.5 rounded-lg bg-violet-600 text-white hover:bg-violet-700"
+              >
+                + {t('venue.createSession')}
+              </Link>
+            )}
           </div>
         </section>
       )}

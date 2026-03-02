@@ -16,10 +16,13 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 
 export default async function NewSessionPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ locale: string }>;
+  searchParams: Promise<{ venueId?: string }>;
 }) {
   const { locale } = await params;
+  const { venueId: defaultVenueId } = await searchParams;
   setRequestLocale(locale);
   const t = await getTranslations();
 
@@ -41,7 +44,7 @@ export default async function NewSessionPage({
         </Link>
         <h1 className="text-2xl font-bold text-gray-900">{t('session.create')}</h1>
       </div>
-      <SessionForm locale={locale} venues={venues} studios={studios} />
+      <SessionForm locale={locale} venues={venues} studios={studios} initialValues={defaultVenueId ? { venueId: defaultVenueId } : undefined} />
     </div>
   );
 }
