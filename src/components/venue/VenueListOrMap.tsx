@@ -19,6 +19,7 @@ interface VenueForList {
   verifiedAt: Date | null;
   disputedAt: Date | null;
   updatedAt: Date;
+  photoUrls: string[];
   tendencies: {
     name: string;
     typicalDayOfWeek: number | null;

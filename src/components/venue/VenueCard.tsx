@@ -1,5 +1,6 @@
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Card, CardTitle, CardContent } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { VerificationBadge } from './VerificationBadge';
@@ -16,6 +17,7 @@ interface VenueCardProps {
     verifiedAt: Date | null;
     disputedAt: Date | null;
     updatedAt: Date;
+    photoUrls: string[];
     tendencies: {
       name: string;
       typicalDayOfWeek: number | null;
@@ -35,10 +37,24 @@ export function VenueCard({ venue, locale, upcomingSessionCount = 0 }: VenueCard
   const sevenDaysAgo = new Date();
   sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
   const isNew = venue.updatedAt > sevenDaysAgo;
+  const heroPhoto = venue.photoUrls[0] ?? null;
 
   return (
     <Link href={`/${locale}/venues/${venue.id}`}>
-      <Card hover className="h-full flex flex-col">
+      <Card hover className="h-full flex flex-col overflow-hidden">
+        {/* ヒーロー画像 */}
+        {heroPhoto && (
+          <div className="relative -mx-4 -mt-4 mb-3 h-36 overflow-hidden rounded-t-xl">
+            <Image
+              src={heroPhoto}
+              alt={venue.name}
+              fill
+              className="object-cover"
+              sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+            />
+          </div>
+        )}
+
         {/* ヘッダー */}
         <div className="flex items-start justify-between gap-2 mb-1">
           <CardTitle className="flex-1">{venue.name}</CardTitle>

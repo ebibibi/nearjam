@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import { setRequestLocale } from 'next-intl/server';
 import { getTranslations } from 'next-intl/server';
 import Link from 'next/link';
+import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import { auth } from '@/lib/auth';
@@ -199,6 +200,24 @@ export default async function VenueDetailPage({
           </div>
         )}
       </div>
+
+
+      {/* 写真ギャラリー */}
+      {venue.photoUrls.length > 0 && (
+        <div className="flex gap-2 overflow-x-auto rounded-xl -mx-0">
+          {venue.photoUrls.map((url, i) => (
+            <div key={i} className="relative flex-shrink-0 w-64 h-44 rounded-lg overflow-hidden">
+              <Image
+                src={url}
+                alt={`${venue.name} - 写真${i + 1}`}
+                fill
+                className="object-cover"
+                sizes="256px"
+              />
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* Info grid */}
       <div className="grid gap-3 sm:grid-cols-2 text-sm text-gray-700">

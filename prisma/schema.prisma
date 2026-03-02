@@ -256,6 +256,10 @@ model Venue {
   bookingUrl      String?
   bookingPhone    String?
   rulesMarkdown   String?             @db.Text // オーナー確認済みのみ公開
+  // Google Places API
+  googlePlaceId   String?             // Google Places ID（検索・写真取得に使用）
+  photoUrls       String[]            // Google Places 写真CDN URL（最大3件キャッシュ）
+  photosUpdatedAt DateTime?           // 写真URL最終更新日時（期限切れ管理用）
   // オーナー認証（ownerId=null = まだ誰もオーナーを主張していない）
   ownerId         String?
   verifiedAt      DateTime?
