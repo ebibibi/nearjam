@@ -1,6 +1,6 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server'
 import { auth } from '@/lib/auth'
-import { redirect } from 'next/navigation'
+import { redirect, notFound } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 import { MannerPageEditor } from '@/components/venue/MannerPageEditor'
 import type { Metadata } from 'next'
@@ -28,7 +28,7 @@ export default async function VenueRulesEditPage({ params }: Props) {
     select: { id: true, name: true, ownerId: true, verifiedAt: true, rulesMarkdown: true },
   })
 
-  if (!venue) redirect(`/${locale}/venues`)
+  if (!venue) notFound()
 
   if (venue.ownerId !== session.user.id) {
     return (

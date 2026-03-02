@@ -1,6 +1,6 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server'
 import { auth } from '@/lib/auth'
-import { redirect } from 'next/navigation'
+import { redirect, notFound } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 import type { Metadata } from 'next'
 
@@ -32,7 +32,7 @@ export default async function SessionQRPage({ params }: Props) {
     },
   })
 
-  if (!jamSession) redirect(`/${locale}/sessions`)
+  if (!jamSession) notFound()
   if (jamSession.sessionAdminId !== session.user.id) {
     return (
       <div className="container mx-auto max-w-md p-4 text-center text-gray-500">
@@ -41,8 +41,8 @@ export default async function SessionQRPage({ params }: Props) {
     )
   }
 
-  const baseUrl = process.env.NEXTAUTH_URL ?? 'https://ca-nearjam.redflower-e9742c17.eastasia.azurecontainerapps.io'
-  const checkinUrl = `${baseUrl}/sessions/${sessionId}/checkin`
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://nearjam.app'
+  const checkinUrl = `${baseUrl}/${locale}/sessions/${sessionId}/checkin`
 
   return (
     <div className="container mx-auto max-w-md p-4 text-center">
