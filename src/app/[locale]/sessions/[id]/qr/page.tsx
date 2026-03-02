@@ -2,9 +2,16 @@ import { getTranslations, setRequestLocale } from 'next-intl/server'
 import { auth } from '@/lib/auth'
 import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
+import type { Metadata } from 'next'
 
 interface Props {
   params: Promise<{ id: string; locale: string }>
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params
+  const t = await getTranslations({ locale, namespace: 'session' })
+  return { title: `${t('qr.title')} — NearJam` }
 }
 
 export default async function SessionQRPage({ params }: Props) {

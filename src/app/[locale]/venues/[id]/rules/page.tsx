@@ -3,9 +3,16 @@ import { auth } from '@/lib/auth'
 import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 import { MannerPageEditor } from '@/components/venue/MannerPageEditor'
+import type { Metadata } from 'next'
 
 interface Props {
   params: Promise<{ id: string; locale: string }>
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params
+  const t = await getTranslations({ locale, namespace: 'venue' })
+  return { title: `${t('rules.title')} — NearJam` }
 }
 
 export default async function VenueRulesEditPage({ params }: Props) {

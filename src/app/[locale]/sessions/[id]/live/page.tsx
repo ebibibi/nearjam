@@ -1,11 +1,21 @@
 export const dynamic = 'force-dynamic';
-import { setRequestLocale } from 'next-intl/server';
+import { setRequestLocale, getTranslations } from 'next-intl/server';
+import type { Metadata } from 'next';
 import Link from 'next/link';
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string; id: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'session' });
+  return { title: `${t('live')} — NearJam` };
+}
 import { notFound, redirect } from 'next/navigation';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { LiveSessionDashboard } from '@/components/live/LiveSessionDashboard';
-import { getTranslations } from 'next-intl/server';
 
 export default async function LiveSessionPage({
   params,

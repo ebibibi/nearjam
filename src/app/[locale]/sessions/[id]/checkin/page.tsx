@@ -3,9 +3,16 @@ import { auth } from '@/lib/auth'
 import { redirect } from 'next/navigation'
 import { CheckinButton } from '@/components/session/CheckinButton'
 import { prisma } from '@/lib/prisma'
+import type { Metadata } from 'next'
 
 interface Props {
   params: Promise<{ id: string; locale: string }>
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params
+  const t = await getTranslations({ locale, namespace: 'session' })
+  return { title: `${t('checkin.action')} — NearJam` }
 }
 
 export default async function CheckinPage({ params }: Props) {
