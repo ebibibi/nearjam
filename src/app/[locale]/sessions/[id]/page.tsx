@@ -412,7 +412,9 @@ export default async function SessionDetailPage({
                     </div>
                   )}
                   <div className="flex-1">
-                    <div className="text-sm font-medium">{reg.musicianProfile.user.nickname ?? 'Anonymous'}</div>
+                    <Link href={`/${locale}/musicians/${reg.musicianProfile.user.id}`} className="text-sm font-medium hover:text-violet-700 hover:underline">
+                      {reg.musicianProfile.user.nickname ?? 'Anonymous'}
+                    </Link>
                     {reg.musicianProfile.instruments.length > 0 && (
                       <div className="text-xs text-gray-500">
                         {reg.musicianProfile.instruments.slice(0, 2).map(i => i.instrument).join(' / ')}
