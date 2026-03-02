@@ -440,8 +440,8 @@ export default async function SessionDetailPage({
       {/* 匿名フィードバック（セッション終了後・参加者のみ） */}
       {isPast && isRegistered && (
         <section className="rounded-lg border border-dashed p-4">
-          <h2 className="text-sm font-medium text-gray-700 mb-2">{t('feedback.title')}</h2>
-          <p className="text-xs text-gray-500 mb-3">{t('feedback.toSession')}</p>
+          <h2 className="text-sm font-medium text-gray-700 mb-2">{t('session.feedback.title')}</h2>
+          <p className="text-xs text-gray-500 mb-3">{t('session.feedback.toSession')}</p>
           <FeedbackForm sessionId={id} toUserId={session.sessionAdminId} />
         </section>
       )}
