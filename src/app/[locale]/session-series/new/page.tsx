@@ -3,6 +3,13 @@ import { auth } from '@/lib/auth'
 import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 import { CreateSeriesForm } from '@/components/session/CreateSeriesForm'
+import type { Metadata } from 'next'
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params
+  const t = await getTranslations({ locale, namespace: 'session' })
+  return { title: t('series.createTitle') }
+}
 
 export default async function NewSessionSeriesPage({
   params,
