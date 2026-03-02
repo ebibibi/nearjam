@@ -318,7 +318,8 @@
       "submitting": "Submitting...",
       "submitted": "Your report has been received. We will review it.",
       "submitFailed": "Failed to submit."
-    }
+    },
+    "priceUnknown": "Check venue"
   },
   "studio": {
     "title": "Studios",
@@ -556,7 +557,10 @@
       "sent": "Feedback sent anonymously ✓",
       "error": "Failed to send. Please try again.",
       "expand": "Send anonymous feedback"
-    }
+    },
+    "verifySource": "🔗 Verify at original source",
+    "autoCollectedNotice": "This information was auto-collected from websites and SNS. Content may have changed. Always verify at the original source.",
+    "entryFee": "Entry"
   },
   "song": {
     "title": "Songs",

@@ -75,8 +75,18 @@ export function SessionTendencyCard({ tendency }: TendencyCardProps) {
         <p className="text-xs text-gray-500">🎸 {tendency.houseEquipment}</p>
       )}
 
-      {/* Attribution */}
-      <div className="flex items-center justify-between gap-2">
+      {/* Attribution + Source URL */}
+      <div className="space-y-1.5">
+        {tendency.sourceUrl && (
+          <a
+            href={tendency.sourceUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 rounded-md border border-violet-200 bg-violet-50 px-3 py-1.5 text-xs text-violet-700 hover:bg-violet-100 transition-colors"
+          >
+            🔗 {t('tendency.sourcePage')}
+          </a>
+        )}
         <p className="text-xs text-gray-400">
           {tendency.sourceType === 'CROWDSOURCED' && tendency.sourceUser
             ? t('tendency.attribution', {
@@ -87,16 +97,6 @@ export function SessionTendencyCard({ tendency }: TendencyCardProps) {
             ? t('tendency.attributionAuto', { source: 'SNS/HP' })
             : t('tendency.attributionOwner')}
         </p>
-        {tendency.sourceUrl && tendency.sourceType === 'AUTO_COLLECTED' && (
-          <a
-            href={tendency.sourceUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-xs text-violet-500 hover:underline shrink-0"
-          >
-            {t('tendency.sourcePage')}
-          </a>
-        )}
       </div>
     </div>
   );
