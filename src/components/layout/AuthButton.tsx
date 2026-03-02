@@ -3,6 +3,7 @@
 import { useSession, signOut } from 'next-auth/react';
 import { useTranslations, useLocale } from 'next-intl';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Button } from '@/components/ui/Button';
 
 export function AuthButton() {
@@ -19,11 +20,12 @@ export function AuthButton() {
       <div className="flex items-center gap-2">
         <Link href={`/${locale}/profile`} className="flex items-center gap-1.5 rounded-lg px-2 py-1.5 hover:bg-gray-100 transition-colors">
           {session.user?.image ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
+            <Image
               src={session.user.image}
               alt={session.user.name ?? ''}
-              className="h-7 w-7 rounded-full"
+              width={28}
+              height={28}
+              className="rounded-full"
             />
           ) : (
             <div className="h-7 w-7 rounded-full bg-violet-200 flex items-center justify-center text-violet-700 text-xs font-bold">

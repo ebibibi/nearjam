@@ -103,7 +103,7 @@ export async function fetchPageAsMarkdown(url: string): Promise<FetchResult> {
   const browser = await chromium.launch({ headless: true });
   try {
     const context = await browser.newContext({
-      userAgent: 'Mozilla/5.0 (compatible; NearJamBot/1.0; +https://nearjam.example.com/bot)',
+      userAgent: 'Mozilla/5.0 (compatible; NearJamBot/1.0; +https://nearjam.app/bot)',
       locale: 'ja-JP',
     });
     const page = await context.newPage();
@@ -128,7 +128,7 @@ export async function fetchPageWithSessionLinks(url: string): Promise<FetchResul
   const browser = await chromium.launch({ headless: true });
   try {
     const context = await browser.newContext({
-      userAgent: 'Mozilla/5.0 (compatible; NearJamBot/1.0; +https://nearjam.example.com/bot)',
+      userAgent: 'Mozilla/5.0 (compatible; NearJamBot/1.0; +https://nearjam.app/bot)',
       locale: 'ja-JP',
     });
     const page = await context.newPage();
@@ -162,7 +162,7 @@ export async function fetchMultiplePages(
 
   try {
     const context = await browser.newContext({
-      userAgent: 'Mozilla/5.0 (compatible; NearJamBot/1.0; +https://nearjam.example.com/bot)',
+      userAgent: 'Mozilla/5.0 (compatible; NearJamBot/1.0; +https://nearjam.app/bot)',
       locale: 'ja-JP',
     });
     const page = await context.newPage();

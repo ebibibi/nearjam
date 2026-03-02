@@ -8,6 +8,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   return { title: t('profileTitle'), description: t('profileDesc') };
 }
 import Link from 'next/link';
+import Image from 'next/image';
 import { redirect } from 'next/navigation';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
@@ -60,11 +61,12 @@ export default async function ProfilePage({
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-4">
           {user?.image && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
+            <Image
               src={user.image}
               alt={user.nickname ?? ''}
-              className="h-16 w-16 rounded-full object-cover"
+              width={64}
+              height={64}
+              className="rounded-full object-cover"
             />
           )}
           <div>

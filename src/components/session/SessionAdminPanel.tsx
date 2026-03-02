@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/Button';
@@ -68,8 +69,7 @@ export function SessionAdminPanel({ sessionId, registrations: initialRegs }: Ses
               <div key={reg.id} className="flex items-center justify-between bg-white rounded px-3 py-2 border border-amber-100">
                 <div className="flex items-center gap-2">
                   {reg.musicianProfile.user.image && (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={reg.musicianProfile.user.image} alt="" className="h-6 w-6 rounded-full" />
+<Image src={reg.musicianProfile.user.image} alt="" width={24} height={24} className="rounded-full" />
                   )}
                   <span className="text-sm">{reg.musicianProfile.user.nickname ?? 'Anonymous'}</span>
                   {reg.musicianProfile.instruments.length > 0 && (

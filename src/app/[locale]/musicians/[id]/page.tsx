@@ -6,6 +6,7 @@ import Link from 'next/link';
 import type { Metadata } from 'next';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import Image from 'next/image';
 import { Badge } from '@/components/ui/Badge';
 import { ConnectionRequestButton } from '@/components/connection/ConnectionRequestButton';
 
@@ -114,8 +115,23 @@ export default async function MusicianProfilePage({
     else if (conn?.status === 'PENDING') connectionStatus = 'pending';
   }
 
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://nearjam.app';
+  // JSON.stringify escapes all HTML special chars, making this XSS-safe
+  const jsonLdString = JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'Person',
+    name: user.nickname ?? undefined,
+    image: user.image ?? undefined,
+    url: `${appUrl}/${locale}/musicians/${id}`,
+    description: profile.bio ?? undefined,
+    knowsAbout: profile.instruments.map((i) => i.instrument),
+  });
+
   return (
     <div className="max-w-2xl space-y-6">
+      {/* JSON-LD: JSON.stringify ensures XSS-safe output */}
+      {/* eslint-disable-next-line react/no-danger */}
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString }} />
       <Link href={`/${locale}/sessions`} className="text-sm text-violet-600 hover:underline">
         ← {t('backToSessions')}
       </Link>
@@ -124,8 +140,7 @@ export default async function MusicianProfilePage({
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-4">
           {user.image && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={user.image} alt="" className="h-16 w-16 rounded-full object-cover" />
+            <Image src={user.image} alt="" width={64} height={64} className="rounded-full object-cover" />
           )}
           <div>
             <h1 className="text-2xl font-bold text-gray-900">

@@ -8,6 +8,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   return { title: t('connectionsTitle'), description: t('connectionsDesc') };
 }
 import Link from 'next/link';
+import Image from 'next/image';
 import { redirect } from 'next/navigation';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
@@ -68,8 +69,7 @@ export default async function ConnectionsPage({
               <div key={conn.id} className="flex items-center justify-between rounded-lg border border-amber-200 bg-amber-50 px-4 py-3">
                 <div className="flex items-center gap-3">
                   {conn.fromUser.image && (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={conn.fromUser.image} alt="" className="h-8 w-8 rounded-full object-cover" />
+                    <Image src={conn.fromUser.image} alt="" width={32} height={32} className="rounded-full object-cover" />
                   )}
                   <Link href={`/${locale}/musicians/${conn.fromUser.id}`} className="text-sm font-medium text-gray-900 hover:text-violet-700 hover:underline">
                     {conn.fromUser.nickname ?? t('anonymous')}
@@ -96,8 +96,7 @@ export default async function ConnectionsPage({
               <div key={conn.id} className="flex items-center justify-between rounded-lg border border-gray-200 bg-white px-4 py-3">
                 <div className="flex items-center gap-3">
                   {conn.toUser.image && (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={conn.toUser.image} alt="" className="h-8 w-8 rounded-full object-cover" />
+                    <Image src={conn.toUser.image} alt="" width={32} height={32} className="rounded-full object-cover" />
                   )}
                   <div>
                     <Link href={`/${locale}/musicians/${conn.toUser.id}`} className="text-sm font-medium text-gray-900 hover:text-violet-700 hover:underline">

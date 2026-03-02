@@ -2,6 +2,7 @@ import { auth } from '@/lib/auth'
 import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
+import Image from 'next/image'
 import { getTranslations, setRequestLocale } from 'next-intl/server'
 import type { Metadata } from 'next'
 
@@ -131,8 +132,7 @@ async function MatchSuggestionsList({ locale }: { locale: string }) {
         <div key={profile.id} className="rounded-lg border p-4">
           <div className="flex items-start gap-3">
             {profile.user.image && (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={profile.user.image} alt="" className="h-12 w-12 rounded-full object-cover" />
+              <Image src={profile.user.image} alt="" width={48} height={48} className="rounded-full object-cover" />
             )}
             <div className="flex-1">
               <div className="flex items-center gap-2">

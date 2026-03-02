@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import { getTranslations } from 'next-intl/server'
 import { prisma } from '@/lib/prisma'
 
@@ -51,12 +52,7 @@ export async function TurnTracker({ sessionId }: Props) {
         return (
           <div key={log.musicianProfileId} className="flex items-center gap-2">
             {profile?.user.image ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={profile.user.image}
-                alt=""
-                className="h-7 w-7 rounded-full object-cover flex-shrink-0"
-              />
+              <Image src={profile.user.image} alt="" width={28} height={28} className="rounded-full object-cover flex-shrink-0" />
             ) : (
               <div className="h-7 w-7 rounded-full bg-gray-200 flex-shrink-0" />
             )}

@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import { setRequestLocale } from 'next-intl/server';
 import { getTranslations } from 'next-intl/server';
 import Link from 'next/link';
+import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
@@ -400,11 +401,12 @@ export default async function SessionDetailPage({
               {registrations.map((reg) => (
                 <div key={reg.id} className="flex items-center gap-2 rounded-lg bg-gray-100 px-3 py-2">
                   {reg.musicianProfile.user.image ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
+                    <Image
                       src={reg.musicianProfile.user.image}
                       alt=""
-                      className="h-7 w-7 rounded-full object-cover"
+                      width={28}
+                      height={28}
+                      className="rounded-full object-cover"
                     />
                   ) : (
                     <div className="h-7 w-7 rounded-full bg-violet-200 flex items-center justify-center text-violet-700 text-xs font-bold">
