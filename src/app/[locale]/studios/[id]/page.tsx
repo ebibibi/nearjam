@@ -70,8 +70,22 @@ export default async function StudioDetailPage({
     ? `https://www.google.com/maps/dir/?api=1&destination=${mapsDestination}`
     : null;
 
+  const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://nearjam.app';
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'MusicVenue',
+    name: studio.name,
+    ...(studio.address ? { address: { '@type': 'PostalAddress', streetAddress: studio.address } } : {}),
+    ...(studio.lat != null && studio.lng != null ? { geo: { '@type': 'GeoCoordinates', latitude: studio.lat, longitude: studio.lng } } : {}),
+    url: `${BASE_URL}/${locale}/studios/${id}`,
+  };
+  // JSON.stringify escapes HTML chars (<, >, &) so dangerouslySetInnerHTML is safe for structured data
+  const jsonLdString = JSON.stringify(jsonLd);
+
   return (
     <div className="max-w-3xl space-y-8">
+      {/* eslint-disable-next-line react/no-danger */}
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString }} />
       <div>
         <Link
           href={`/${locale}/studios`}
