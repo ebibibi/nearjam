@@ -89,7 +89,7 @@ export async function GET() {
     skillLevel: m.profile.skillLevel,
     sharedSongCount: m.sharedSongs.length,
     sharedSongs: m.sharedSongs.slice(0, 5).map((id) => songTitleMap.get(id)),
-    reason: `${m.sharedSongs.length}曲のウィッシュリストが重なっています`,
+    reason: `${m.sharedSongs.length} shared wishlist songs`,
   }))
 
   return ok(result)

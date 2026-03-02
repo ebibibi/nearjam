@@ -94,7 +94,7 @@ export async function GET(req: NextRequest) {
     return ok(sorted.slice(0, 20).map((song) => ({
       ...song,
       playedNearby: countMap.get(song.id) ?? 0,
-      reason: `あなたのレベルで挑戦できる曲！近くで${countMap.get(song.id) ?? 0}回演奏されています`,
+      reason: `Fits your skill level — played ${countMap.get(song.id) ?? 0} times nearby`,
     })))
   }
 
@@ -133,6 +133,6 @@ export async function GET(req: NextRequest) {
   return ok(sorted.slice(0, 20).map((song) => ({
     ...song,
     playedNearby: countMap.get(song.id) ?? 0,
-    reason: `近くで${countMap.get(song.id) ?? 0}回演奏されています`,
+    reason: `Played ${countMap.get(song.id) ?? 0} times nearby`,
   })))
 }
