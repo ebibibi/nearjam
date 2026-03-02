@@ -1,6 +1,17 @@
-import { setRequestLocale } from 'next-intl/server';
-import { getTranslations } from 'next-intl/server';
+export const dynamic = 'force-dynamic';
+import { setRequestLocale, getTranslations } from 'next-intl/server';
+import type { Metadata } from 'next';
 import { signIn } from '@/lib/auth';
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'auth' });
+  return { title: `${t('signIn')} — NearJam` };
+}
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 
