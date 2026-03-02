@@ -1,7 +1,17 @@
 export const dynamic = 'force-dynamic';
-import { setRequestLocale } from 'next-intl/server';
-import { getTranslations } from 'next-intl/server';
+import { setRequestLocale, getTranslations } from 'next-intl/server';
+import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'profile.setup' });
+  return { title: `${t('title')} — NearJam` };
+}
 import { auth } from '@/lib/auth';
 import { ProfileSetupWizard } from '@/components/profile/ProfileSetupWizard';
 
