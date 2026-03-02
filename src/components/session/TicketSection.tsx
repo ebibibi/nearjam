@@ -98,15 +98,15 @@ export function TicketSection({
       {/* 参加費 */}
       <div className="flex items-center justify-between">
         <span className="font-semibold text-gray-700">{t('price')}</span>
-        <span className="text-2xl font-bold text-blue-700">
+        <span className="text-2xl font-bold text-violet-700">
           ¥{ticketPriceYen.toLocaleString()}
         </span>
       </div>
 
       {/* Stripe 決済の価値説明 */}
-      <div className="rounded-lg bg-blue-50 p-3 text-sm text-blue-700">
+      <div className="rounded-lg bg-violet-50 p-3 text-sm text-violet-700">
         <p className="font-medium">{t('prepayBenefitTitle')}</p>
-        <p className="mt-1 text-blue-600">{t('prepayBenefit')}</p>
+        <p className="mt-1 text-violet-600">{t('prepayBenefit')}</p>
       </div>
 
       {/* キャンセルポリシー */}
@@ -172,7 +172,7 @@ export function TicketSection({
         <button
           onClick={handlePurchase}
           disabled={loading}
-          className="w-full rounded-xl bg-blue-600 py-3 text-white font-semibold hover:bg-blue-700 disabled:opacity-50"
+          className="w-full rounded-xl bg-violet-600 py-3 text-white font-semibold hover:bg-violet-700 disabled:opacity-50"
         >
           {loading ? t('paying') : t('payButton', { price: ticketPriceYen.toLocaleString() })}
         </button>

@@ -2,6 +2,7 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { auth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
+import Link from 'next/link';
 import type { Metadata } from 'next';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
@@ -47,14 +48,17 @@ export default async function KudosInboxPage({
             <div key={k.id} className="flex items-start gap-4 p-4 rounded-xl border border-gray-200 bg-white">
               <div className="text-3xl">{k.stamp}</div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-900">
+                <Link href={`/${locale}/musicians/${k.fromUser.id}`} className="text-sm font-medium text-gray-900 hover:text-violet-700 hover:underline">
                   {k.fromUser.nickname ?? tMusician('anonymous')}
-                </p>
+                </Link>
                 {k.message && (
                   <p className="text-sm text-gray-700 mt-1 italic">&ldquo;{k.message}&rdquo;</p>
                 )}
                 <p className="text-xs text-gray-400 mt-1">
-                  {k.jamSession.title} · {new Date(k.jamSession.startsAt).toLocaleDateString(locale)}
+                  <Link href={`/${locale}/sessions/${k.jamSession.id}`} className="hover:underline">
+                    {k.jamSession.title}
+                  </Link>
+                  {' · '}{new Date(k.jamSession.startsAt).toLocaleDateString(locale)}
                 </p>
               </div>
             </div>

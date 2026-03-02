@@ -236,7 +236,7 @@ export function SessionForm({
       )}
 
       {/* Ticket price (paid session settings) */}
-      <div className="rounded-xl border border-blue-100 bg-blue-50 p-4 space-y-3">
+      <div className="rounded-xl border border-violet-100 bg-violet-50 p-4 space-y-3">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             {tFee('priceLabel')}
@@ -252,7 +252,7 @@ export function SessionForm({
         </div>
 
         {/* Host fee breakdown */}
-        <div className="rounded-lg bg-white border border-blue-100 p-3 text-xs text-gray-600 space-y-2">
+        <div className="rounded-lg bg-white border border-violet-100 p-3 text-xs text-gray-600 space-y-2">
           <p className="font-semibold text-gray-700">{tFee('feeTitle')}</p>
           {values.ticketPriceYen && parseInt(values.ticketPriceYen, 10) > 0 ? (
             (() => {
@@ -266,7 +266,7 @@ export function SessionForm({
                     <tr><td className="py-0.5 text-gray-500">{tFee('participantPays')}</td><td className="text-right font-medium">¥{price.toLocaleString()}</td></tr>
                     <tr><td className="py-0.5 text-gray-400">{tFee('stripeFee')}</td><td className="text-right text-red-400">−¥{stripeFee.toLocaleString()}</td></tr>
                     <tr><td className="py-0.5 text-gray-400">{tFee('platformFee')}</td><td className="text-right text-red-400">−¥{platformFee.toLocaleString()}</td></tr>
-                    <tr className="border-t border-blue-100"><td className="pt-1 font-semibold text-blue-700">{tFee('hostReceives')}</td><td className="pt-1 text-right font-bold text-blue-700">¥{hostNet.toLocaleString()}</td></tr>
+                    <tr className="border-t border-violet-100"><td className="pt-1 font-semibold text-violet-700">{tFee('hostReceives')}</td><td className="pt-1 text-right font-bold text-violet-700">¥{hostNet.toLocaleString()}</td></tr>
                   </tbody>
                 </table>
               );
@@ -274,7 +274,7 @@ export function SessionForm({
           ) : (
             <p className="text-gray-400">{tFee('enterPriceToSee')}</p>
           )}
-          <p className="text-gray-500 border-t border-blue-100 pt-2">
+          <p className="text-gray-500 border-t border-violet-100 pt-2">
             <span className="font-medium text-orange-600">{tFee('cancelPolicyLabel')}</span><br />
             {tFee('cancelPolicy72h')}<br />
             {tFee('cancelPolicy24to72h')}<br />

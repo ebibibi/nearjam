@@ -302,7 +302,7 @@ export default async function VenueDetailPage({
                     </div>
                     <div className="text-right shrink-0">
                       {s.ticketPriceYen != null && s.ticketPriceYen > 0 ? (
-                        <span className="text-xs rounded-full bg-blue-100 text-blue-700 px-2 py-1">¥{s.ticketPriceYen.toLocaleString()}</span>
+                        <span className="text-xs rounded-full bg-violet-100 text-violet-700 px-2 py-1">¥{s.ticketPriceYen.toLocaleString()}</span>
                       ) : (
                         <span className="text-xs rounded-full bg-green-100 text-green-700 px-2 py-1">{t('venue.freeEntry')}</span>
                       )}

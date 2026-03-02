@@ -475,7 +475,7 @@ export default async function SessionDetailPage({
                   </p>
                 </div>
                 {s.ticketPriceYen != null && s.ticketPriceYen > 0 ? (
-                  <span className="text-xs rounded-full bg-blue-100 text-blue-700 px-2 py-0.5 shrink-0">
+                  <span className="text-xs rounded-full bg-violet-100 text-violet-700 px-2 py-0.5 shrink-0">
                     ¥{s.ticketPriceYen.toLocaleString()}
                   </span>
                 ) : (

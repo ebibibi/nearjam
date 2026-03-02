@@ -69,7 +69,7 @@ export async function TurnTracker({ sessionId }: Props) {
               </div>
               <div className="mt-0.5 h-1.5 w-full rounded-full bg-gray-100">
                 <div
-                  className="h-1.5 rounded-full bg-blue-500 transition-all"
+                  className="h-1.5 rounded-full bg-violet-500 transition-all"
                   style={{ width: `${pct}%` }}
                 />
               </div>

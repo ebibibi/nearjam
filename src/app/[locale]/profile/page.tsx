@@ -256,8 +256,8 @@ export default async function ProfilePage({
                 <td className="py-1 text-right text-red-500">{t('stripe.platformFeeAmount')}</td>
               </tr>
               <tr className="font-semibold">
-                <td className="py-1 text-blue-700">{t('stripe.yourPayout')}</td>
-                <td className="py-1 text-right text-blue-700">{t('stripe.yourPayoutAmount')}</td>
+                <td className="py-1 text-violet-700">{t('stripe.yourPayout')}</td>
+                <td className="py-1 text-right text-violet-700">{t('stripe.yourPayoutAmount')}</td>
               </tr>
             </tbody>
           </table>

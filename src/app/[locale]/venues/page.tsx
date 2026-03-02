@@ -6,8 +6,8 @@ import Link from 'next/link';
 import { Suspense } from 'react';
 import { prisma } from '@/lib/prisma';
 import { Button } from '@/components/ui/Button';
-import { VenueCard } from '@/components/venue/VenueCard';
 import { VenueSearch } from '@/components/venue/VenueSearch';
+import { VenueListOrMap } from '@/components/venue/VenueListOrMap';
 
 export async function generateMetadata({
   params,
@@ -226,13 +226,7 @@ export default async function VenuesPage({
           )}
         </div>
       ) : (
-        <>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {venues.map((venue) => (
-              <VenueCard key={venue.id} venue={venue} locale={locale} upcomingSessionCount={upcomingCounts[venue.id] ?? 0} />
-            ))}
-          </div>
-        </>
+        <VenueListOrMap venues={venues} locale={locale} upcomingCounts={upcomingCounts} />
       )}
     </div>
   );

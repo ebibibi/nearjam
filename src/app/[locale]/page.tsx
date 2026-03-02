@@ -274,7 +274,7 @@ export default async function HomePage({
                       )}
                       <div className="flex flex-wrap items-center gap-2 mt-1">
                         {session.ticketPriceYen != null && session.ticketPriceYen > 0 ? (
-                          <span className="text-xs rounded-full bg-blue-100 text-blue-700 px-2 py-0.5">
+                          <span className="text-xs rounded-full bg-violet-100 text-violet-700 px-2 py-0.5">
                             ¥{session.ticketPriceYen.toLocaleString()}
                           </span>
                         ) : (

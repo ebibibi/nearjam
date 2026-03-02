@@ -270,8 +270,8 @@ export default async function SessionsPage({
             : `/${locale}/sessions?syncroom=1${stationFilter ? `&station=${encodeURIComponent(stationFilter)}` : ''}`}
           className={`rounded-full px-3 py-1 text-xs transition-colors ${
             syncroomOnly
-              ? 'bg-blue-600 text-white'
-              : 'border border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100'
+              ? 'bg-violet-600 text-white'
+              : 'border border-violet-200 bg-violet-50 text-violet-700 hover:bg-violet-100'
           }`}
         >
           🎧 SYNCROOM

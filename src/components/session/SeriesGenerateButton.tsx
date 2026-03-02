@@ -42,7 +42,7 @@ export function SeriesGenerateButton({ seriesId }: Props) {
       <button
         onClick={handleGenerate}
         disabled={loading}
-        className="rounded-lg border border-blue-600 px-3 py-1.5 text-sm text-blue-600 hover:bg-blue-50 disabled:opacity-50"
+        className="rounded-lg border border-violet-600 px-3 py-1.5 text-sm text-violet-600 hover:bg-violet-50 disabled:opacity-50"
       >
         {loading ? t('generating') : t('generate')}
       </button>

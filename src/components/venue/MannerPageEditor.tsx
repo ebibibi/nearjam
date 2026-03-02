@@ -45,13 +45,13 @@ export function MannerPageEditor({ venueId, initialContent }: Props) {
       <div className="flex items-center gap-2">
         <button
           onClick={() => setPreview(false)}
-          className={`rounded px-3 py-1.5 text-sm ${!preview ? 'bg-blue-600 text-white' : 'border text-gray-600 hover:bg-gray-50'}`}
+          className={`rounded px-3 py-1.5 text-sm ${!preview ? 'bg-violet-600 text-white' : 'border text-gray-600 hover:bg-gray-50'}`}
         >
           {t('edit')}
         </button>
         <button
           onClick={() => setPreview(true)}
-          className={`rounded px-3 py-1.5 text-sm ${preview ? 'bg-blue-600 text-white' : 'border text-gray-600 hover:bg-gray-50'}`}
+          className={`rounded px-3 py-1.5 text-sm ${preview ? 'bg-violet-600 text-white' : 'border text-gray-600 hover:bg-gray-50'}`}
         >
           {t('preview')}
         </button>
@@ -67,7 +67,7 @@ export function MannerPageEditor({ venueId, initialContent }: Props) {
           value={content}
           onChange={(e) => setContent(e.target.value)}
           rows={20}
-          className="w-full rounded-lg border px-3 py-2 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full rounded-lg border px-3 py-2 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
           placeholder={t('placeholder')}
         />
       )}
@@ -83,7 +83,7 @@ export function MannerPageEditor({ venueId, initialContent }: Props) {
         <button
           onClick={handleSave}
           disabled={saving}
-          className="rounded-lg bg-blue-600 px-6 py-2 text-white hover:bg-blue-700 disabled:opacity-50"
+          className="rounded-lg bg-violet-600 px-6 py-2 text-white hover:bg-violet-700 disabled:opacity-50"
         >
           {saving ? t('saving') : t('save')}
         </button>

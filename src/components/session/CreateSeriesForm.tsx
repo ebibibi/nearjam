@@ -182,7 +182,7 @@ export function CreateSeriesForm({ venues }: Props) {
       <button
         type="submit"
         disabled={loading}
-        className="w-full rounded-lg bg-blue-600 py-3 text-white hover:bg-blue-700 disabled:opacity-50"
+        className="w-full rounded-lg bg-violet-600 py-3 text-white hover:bg-violet-700 disabled:opacity-50"
       >
         {loading ? t('submitting') : t('submit')}
       </button>

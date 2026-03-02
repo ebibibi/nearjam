@@ -45,7 +45,7 @@ export function CheckinButton({ sessionId }: Props) {
       <button
         onClick={handleCheckin}
         disabled={status === 'loading'}
-        className="w-full rounded-xl bg-blue-600 py-4 text-lg font-bold text-white hover:bg-blue-700 disabled:opacity-50"
+        className="w-full rounded-xl bg-violet-600 py-4 text-lg font-bold text-white hover:bg-violet-700 disabled:opacity-50"
       >
         {status === 'loading' ? t('loading') : t('action')}
       </button>

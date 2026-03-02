@@ -71,9 +71,9 @@ export default async function ConnectionsPage({
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={conn.fromUser.image} alt="" className="h-8 w-8 rounded-full object-cover" />
                   )}
-                  <span className="text-sm font-medium text-gray-900">
+                  <Link href={`/${locale}/musicians/${conn.fromUser.id}`} className="text-sm font-medium text-gray-900 hover:text-violet-700 hover:underline">
                     {conn.fromUser.nickname ?? t('anonymous')}
-                  </span>
+                  </Link>
                 </div>
                 <div className="flex items-center gap-2">
                   <ConnectionActions connectionId={conn.id} mode="received" />
@@ -100,9 +100,9 @@ export default async function ConnectionsPage({
                     <img src={conn.toUser.image} alt="" className="h-8 w-8 rounded-full object-cover" />
                   )}
                   <div>
-                    <p className="text-sm font-medium text-gray-900">
+                    <Link href={`/${locale}/musicians/${conn.toUser.id}`} className="text-sm font-medium text-gray-900 hover:text-violet-700 hover:underline">
                       {conn.toUser.nickname ?? t('anonymous')}
-                    </p>
+                    </Link>
                     <p className="text-xs text-gray-400">
                       {conn.status === 'ACCEPTED'
                         ? t('statusAccepted')
