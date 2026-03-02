@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import useSWR from 'swr';
 import { SongQueue } from './SongQueue';
 import { AddSongToQueue } from './AddSongToQueue';
@@ -30,6 +30,7 @@ interface LiveSessionDashboardProps {
 export function LiveSessionDashboard({ sessionId, sessionTitle }: LiveSessionDashboardProps) {
   const t = useTranslations('live');
   const router = useRouter();
+  const locale = useLocale();
   const [localQueue, setLocalQueue] = useState<QueueItem[] | null>(null);
   const [completing, setCompleting] = useState(false);
 
@@ -60,7 +61,7 @@ export function LiveSessionDashboard({ sessionId, sessionTitle }: LiveSessionDas
     try {
       const res = await fetch(`/api/v1/sessions/${sessionId}/complete`, { method: 'POST' });
       if (res.ok) {
-        router.push(`/sessions/${sessionId}`);
+        router.push(`/${locale}/sessions/${sessionId}`);
       } else {
         alert(t('completeFailed'));
       }
