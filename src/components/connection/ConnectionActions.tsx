@@ -16,13 +16,18 @@ export function ConnectionActions({ connectionId, mode }: ConnectionActionsProps
 
   async function act(action: 'accept' | 'reject' | 'cancel') {
     setLoading(action);
-    await fetch(`/api/v1/connections/${connectionId}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action }),
-    });
-    setLoading(null);
-    router.refresh();
+    try {
+      await fetch(`/api/v1/connections/${connectionId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action }),
+      });
+      router.refresh();
+    } catch {
+      // network error — silently ignore, user can retry
+    } finally {
+      setLoading(null);
+    }
   }
 
   if (mode === 'received') {
