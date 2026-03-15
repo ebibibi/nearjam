@@ -1,7 +1,7 @@
 /**
- * NearJam 会場URL発見スクリプト（Gemini 検索版）
+ * NearJam 会場URL発見スクリプト（LLM CLI 版）
  *
- * Gemini CLI のウェブ検索機能で会場URLを収集し、
+ * LLM CLI（gemini/claude/codex）のウェブ検索機能で会場URLを収集し、
  * AutoCollectionJob テーブルに登録してから順次クロールする。
  *
  * 使い方:
@@ -103,9 +103,67 @@ const VenueItemSchema = z.object({
 });
 type VenueItem = z.infer<typeof VenueItemSchema>;
 
-// ── Gemini 検索で会場URLを取得 ────────────────────────────────────
+// ── LLM CLI で会場URLを検索 ─────────────────────────────────────
 
-function searchVenuesWithGemini(query: string): VenueItem[] {
+// LLM CLI の選択（gemini > claude > codex）
+// discover はウェブ検索機能が重要なので gemini を優先
+// ただしクォータ切れ等でフォールバックする
+function detectAvailableLlms(): string[] {
+  const available: string[] = [];
+  for (const cmd of ['gemini', 'claude', 'codex']) {
+    const check = spawnSync('bash', ['-ic', `which ${cmd}`], { encoding: 'utf8' });
+    if (check.status === 0) available.push(cmd);
+  }
+  return available;
+}
+
+const AVAILABLE_LLMS = detectAvailableLlms();
+let currentLlmIdx = 0;
+
+function getCurrentLlm(): string {
+  if (AVAILABLE_LLMS.length === 0) {
+    throw new Error('LLM CLI が見つかりません（gemini/claude/codex のいずれかをインストールしてください）');
+  }
+  return AVAILABLE_LLMS[currentLlmIdx % AVAILABLE_LLMS.length];
+}
+
+console.log(`  🤖 利用可能LLM: ${AVAILABLE_LLMS.join(', ')}`);
+
+function callLlm(prompt: string): string {
+  const promptFile = join(tmpdir(), `nearjam-search-${Date.now()}.txt`);
+  try {
+    writeFileSync(promptFile, prompt, 'utf8');
+
+    for (let attempt = 0; attempt < AVAILABLE_LLMS.length; attempt++) {
+      const llm = getCurrentLlm();
+      const result = spawnSync(
+        'bash',
+        ['-ic', `${llm} -p "$(cat "${promptFile}")" 2>&1`],
+        { encoding: 'utf8', timeout: 90_000 },
+      );
+
+      const output = result.stdout ?? '';
+
+      // クォータ切れ・エラー検出 → 次のLLMにフォールバック
+      if (output.includes('QuotaError') || output.includes('exhausted') ||
+          output.includes('rate limit') || output.includes('429') ||
+          (output.trim() === '' && result.status !== 0)) {
+        console.warn(`  ⚠️  ${llm} がエラー（クォータ切れ等）。次のLLMに切り替え...`);
+        currentLlmIdx++;
+        continue;
+      }
+
+      return output;
+    }
+
+    console.warn('  ⚠️  全LLMが応答不能');
+    return '';
+  } finally {
+    try { unlinkSync(promptFile); } catch { /* ignore */ }
+  }
+}
+
+function searchVenuesWithLlm(query: string): VenueItem[] {
   const prompt = `${query}
 
 実在する店舗のみを対象に、ウェブサイトURLをJSON配列で返してください。
@@ -113,16 +171,8 @@ URLは実際に存在するものだけ。SNS・食べログ・ぐるなびは�
 形式（JSON配列のみ。説明文不要）:
 [{"name": "店名", "url": "https://...", "area": "エリア名"}]`;
 
-  const promptFile = join(tmpdir(), `nearjam-search-${Date.now()}.txt`);
   try {
-    writeFileSync(promptFile, prompt, 'utf8');
-    const result = spawnSync(
-      'bash',
-      ['-ic', `gemini -m gemini-2.5-flash -p "$(cat "${promptFile}")" 2>/dev/null`],
-      { encoding: 'utf8', timeout: 90_000 },
-    );
-
-    const raw = result.stdout ?? '';
+    const raw = callLlm(prompt);
 
     // JSON配列を抽出（前後の文章を除去）
     const match = raw.match(/\[[\s\S]*\]/);
@@ -141,10 +191,8 @@ URLは実際に存在するものだけ。SNS・食べログ・ぐるなびは�
     }
     return items;
   } catch (err) {
-    console.warn(`  ⚠️  Gemini検索エラー: ${err}`);
+    console.warn(`  ⚠️  LLM検索エラー: ${err}`);
     return [];
-  } finally {
-    try { unlinkSync(promptFile); } catch { /* ignore */ }
   }
 }
 
@@ -221,7 +269,7 @@ function sleep(ms: number): Promise<void> {
 // ── メイン ──────────────────────────────────────────────────────
 
 async function main(): Promise<void> {
-  console.log('🎷 NearJam 会場発見スクリプト（Gemini 検索版）');
+  console.log(`🎷 NearJam 会場発見スクリプト（LLM: ${LLM_CMD}）`);
   if (DRY_RUN) console.log('  [DRY RUN: DBへの書き込みなし]');
   if (NO_CRAWL) console.log('  [--no-crawl: URL登録のみ]');
 
@@ -248,7 +296,7 @@ async function main(): Promise<void> {
   const allVenues: VenueItem[] = [];
   for (const query of allQueries) {
     console.log(`\n🔍 検索: "${query.slice(0, 40)}..."`);
-    const found = searchVenuesWithGemini(query);
+    const found = searchVenuesWithLlm(query);
     console.log(`  ${found.length} 件取得`);
     allVenues.push(...found);
     await sleep(2000); // API レート制限対策
