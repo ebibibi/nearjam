@@ -4,6 +4,30 @@ import { type ExtractionResult, type ExtractedSessionTendency } from './types';
 const DAY_NAMES = ['日', '月', '火', '水', '木', '金', '土'];
 
 /**
+ * sourceUrl からウェブサイトのトップページURL（オリジン）を導出する。
+ * 例: "https://example.com/sessions/jazz" → "https://example.com"
+ * SNS URL（twitter, instagram 等）は会場の公式サイトではないので除外する。
+ */
+function deriveWebsiteUrl(sourceUrl: string): string | null {
+  try {
+    const url = new URL(sourceUrl);
+    const host = url.hostname.toLowerCase();
+    // SNS・プラットフォームURLは会場の公式サイトではないので除外
+    const excludedHosts = [
+      'twitter.com', 'x.com', 'instagram.com', 'facebook.com',
+      'connpass.com', 'note.com', 'tabelog.com', 'google.com',
+      'youtube.com', 'tiktok.com', 'ameblo.jp', 'livedoor.jp',
+    ];
+    if (excludedHosts.some(h => host === h || host.endsWith(`.${h}`))) {
+      return null;
+    }
+    return url.origin;
+  } catch {
+    return null;
+  }
+}
+
+/**
  * セッション名がない場合に曜日・ジャンル・会場名からフォールバック名を生成する。
  * 例: "木曜ジャズセッション" / "Birdland セッション"
  */
@@ -56,19 +80,29 @@ export async function saveExtractionResult(
       ? await prisma.venue.findFirst({ where: { name: v.name } })
       : null;
 
+    // websiteUrl が LLM 抽出で空なら、sourceUrl のオリジンを補完
+    const effectiveWebsiteUrl = v.websiteUrl ?? deriveWebsiteUrl(sourceUrl);
+
     if (existing) {
-      // すでに存在する会場: venueId だけ使い、データは上書きしない
       venueId = existing.id;
-      console.log(`  会場 "${v.name}" は既存 (id=${venueId})`);
+      // 既存会場で websiteUrl が空なら補完する（オーナー設定済みなら上書きしない）
+      if (!existing.websiteUrl && effectiveWebsiteUrl) {
+        await prisma.venue.update({
+          where: { id: existing.id },
+          data: { websiteUrl: effectiveWebsiteUrl },
+        });
+        console.log(`  会場 "${v.name}" は既存 (id=${venueId}) — websiteUrl を補完`);
+      } else {
+        console.log(`  会場 "${v.name}" は既存 (id=${venueId})`);
+      }
     } else {
-      // 新規会場を作成（isActive フラグがないのでそのまま作成、tendencies で管理）
       const created = await prisma.venue.create({
         data: {
           name: v.name,
           address: v.address,
           nearestStation: v.nearestStation,
           walkMinutes: v.walkMinutes,
-          websiteUrl: v.websiteUrl,
+          websiteUrl: effectiveWebsiteUrl,
           instagramUrl: v.instagramUrl,
           xUrl: v.xUrl,
           facebookUrl: v.facebookUrl,

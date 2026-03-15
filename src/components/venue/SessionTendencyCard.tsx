@@ -75,29 +75,32 @@ export function SessionTendencyCard({ tendency }: TendencyCardProps) {
         <p className="text-xs text-gray-500">🎸 {tendency.houseEquipment}</p>
       )}
 
-      {/* Attribution + Source URL */}
-      <div className="space-y-1.5">
-        {tendency.sourceUrl && (
-          <a
-            href={tendency.sourceUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 rounded-md border border-violet-200 bg-violet-50 px-3 py-1.5 text-xs text-violet-700 hover:bg-violet-100 transition-colors"
-          >
-            🔗 {t('tendency.sourcePage')}
-          </a>
-        )}
-        <p className="text-xs text-gray-400">
-          {tendency.sourceType === 'CROWDSOURCED' && tendency.sourceUser
-            ? t('tendency.attribution', {
-                name: tendency.sourceUser.nickname ?? 'Anonymous',
-                date: new Date(tendency.createdAt).toLocaleDateString(),
-              })
-            : tendency.sourceType === 'AUTO_COLLECTED'
-            ? t('tendency.attributionAuto', { source: 'SNS/HP' })
-            : t('tendency.attributionOwner')}
-        </p>
-      </div>
+      {/* Source URL — 目立つ直リンクCTA */}
+      {tendency.sourceUrl && (
+        <a
+          href={tendency.sourceUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-2 rounded-lg border border-violet-300 bg-violet-50 px-4 py-2.5 text-sm text-violet-700 hover:bg-violet-100 hover:border-violet-400 transition-colors group"
+        >
+          <span>🔗</span>
+          <span className="font-medium group-hover:underline">{t('tendency.sourcePage')}</span>
+          <span className="ml-auto text-xs text-violet-400 truncate max-w-[200px]">{(() => { try { return new URL(tendency.sourceUrl).hostname; } catch { return ''; } })()}</span>
+          <span className="text-violet-400">→</span>
+        </a>
+      )}
+
+      {/* Attribution */}
+      <p className="text-xs text-gray-400">
+        {tendency.sourceType === 'CROWDSOURCED' && tendency.sourceUser
+          ? t('tendency.attribution', {
+              name: tendency.sourceUser.nickname ?? 'Anonymous',
+              date: new Date(tendency.createdAt).toLocaleDateString(),
+            })
+          : tendency.sourceType === 'AUTO_COLLECTED'
+          ? t('tendency.attributionAuto', { source: 'SNS/HP' })
+          : t('tendency.attributionOwner')}
+      </p>
     </div>
   );
 }

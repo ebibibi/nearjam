@@ -78,12 +78,24 @@ export function VenueCard({ venue, locale, upcomingSessionCount = 0 }: VenueCard
           </p>
         )}
 
+        {/* 公式サイト直リンク — 最も目立つように */}
+        {venue.websiteUrl && (
+          <a
+            href={venue.websiteUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(e) => e.stopPropagation()}
+            className="flex items-center gap-2 rounded-lg border border-violet-200 bg-violet-50 px-3 py-2 mb-2 text-xs text-violet-700 hover:bg-violet-100 hover:border-violet-300 transition-colors group"
+          >
+            <span>🌐</span>
+            <span className="font-medium group-hover:underline">{tVenue('visitWebsite')}</span>
+            <span className="ml-auto text-violet-400">→</span>
+          </a>
+        )}
+
         {/* SNS リンク */}
-        {(venue.websiteUrl || venue.instagramUrl || venue.xUrl) && (
+        {(venue.instagramUrl || venue.xUrl) && (
           <div className="flex gap-2 mb-3 text-xs text-gray-500">
-            {venue.websiteUrl && (
-              <a href={venue.websiteUrl} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="hover:text-violet-600 transition-colors">🌐 HP</a>
-            )}
             {venue.instagramUrl && (
               <a href={venue.instagramUrl} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="hover:text-pink-500 transition-colors">📸 IG</a>
             )}

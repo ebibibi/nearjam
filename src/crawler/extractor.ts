@@ -4,6 +4,32 @@ import { tmpdir } from 'os';
 import { join } from 'path';
 import { ExtractionResultSchema, type ExtractionResult } from './types';
 
+/** 利用可能な LLM CLI を優先順位付きで検出する（spawnSync で安全に実行） */
+function detectAvailableLlm(): string | null {
+  const candidates = ['gemini', 'codex'];
+
+  // Claude Code 内ではネスト不可なので除外
+  if (!process.env.CLAUDECODE) {
+    candidates.splice(1, 0, 'claude');
+  }
+
+  for (const cmd of candidates) {
+    const result = spawnSync('bash', ['-ic', `which ${cmd}`], {
+      encoding: 'utf8',
+      timeout: 5_000,
+    });
+    if (result.status === 0 && result.stdout.trim()) {
+      return cmd;
+    }
+  }
+  return null;
+}
+
+function buildLlmCommand(llmCmd: string, promptFile: string): string {
+  // promptFile は内部生成のtempファイルパスなのでインジェクションリスクなし
+  return `${llmCmd} -p "$(cat "${promptFile}")"`;
+}
+
 const SYSTEM_PROMPT = `あなたは日本のジャムセッション情報収集の専門家です。
 Webページの本文から、以下の情報を抽出してください。
 
@@ -28,8 +54,9 @@ Webページの本文から、以下の情報を抽出してください。
 }`;
 
 /**
- * Webページの本文テキストをGeminiに渡し、構造化データとして抽出する。
- * プロンプトをファイル経由でstdinに渡すことでシェルインジェクションを防ぐ。
+ * Webページの本文テキストをLLM CLIに渡し、構造化データとして抽出する。
+ * gemini > claude > codex の優先順でフォールバックする。
+ * プロンプトをファイル経由で渡すことでシェルインジェクションを防ぐ。
  */
 export async function extractFromMarkdown(
   markdown: string,
@@ -47,30 +74,41 @@ ${markdown}
 
   const fullPrompt = `${SYSTEM_PROMPT}\n\n${userPrompt}`;
 
-  // プロンプトをファイルに書いてstdinで渡す（シェルインジェクション防止）
+  const llmCmd = detectAvailableLlm();
+  if (!llmCmd) {
+    throw new Error('利用可能な LLM CLI が見つかりません (gemini/claude/codex)');
+  }
+
   const promptFile = join(tmpdir(), `nearjam-crawl-${Date.now()}.txt`);
   try {
     writeFileSync(promptFile, fullPrompt, 'utf8');
 
-    // bash -ic 経由で gemini を呼び出し、stdin からプロンプトを渡す
+    const command = buildLlmCommand(llmCmd, promptFile);
+    console.log(`  LLM: ${llmCmd} を使用`);
+
     const result = spawnSync(
       'bash',
-      ['-ic', `gemini -m gemini-2.5-flash -p "$(cat "${promptFile}")" 2>/dev/null`],
-      { timeout: 60_000, encoding: 'utf8' },
+      ['-ic', command],
+      { timeout: 90_000, encoding: 'utf8' },
     );
 
     if (result.status !== 0 && !result.stdout) {
-      throw new Error(`Gemini 呼び出し失敗: ${result.stderr?.slice(0, 300) ?? 'unknown'}`);
+      const stderr = result.stderr?.slice(0, 300) ?? 'unknown';
+      throw new Error(`LLM (${llmCmd}) 呼び出し失敗: ${stderr}`);
     }
 
-    return parseGeminiOutput(result.stdout ?? '');
+    if (result.stderr) {
+      console.warn(`  LLM stderr: ${result.stderr.slice(0, 200)}`);
+    }
+
+    return parseLlmOutput(result.stdout ?? '');
   } finally {
     try { unlinkSync(promptFile); } catch { /* ignore */ }
   }
 }
 
-/** Gemini の出力から JSON を抽出してバリデーションする */
-function parseGeminiOutput(raw: string): ExtractionResult {
+/** LLM CLI の出力から JSON を抽出してバリデーションする */
+function parseLlmOutput(raw: string): ExtractionResult {
   // bash -ic の警告行（tput等）を除去してJSONの開始行を探す
   const lines = raw.split('\n');
   const jsonStartIdx = lines.findIndex(l => l.trimStart().startsWith('{'));

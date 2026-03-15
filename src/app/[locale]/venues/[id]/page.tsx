@@ -236,21 +236,6 @@ export default async function VenueDetailPage({
             </p>
           </div>
         )}
-        {venue.websiteUrl && (
-          <div>
-            <span className="font-medium">🌐 {t('venue.website')}</span>
-            <p className="mt-0.5">
-              <a
-                href={venue.websiteUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-violet-600 hover:underline break-all"
-              >
-                {venue.websiteUrl}
-              </a>
-            </p>
-          </div>
-        )}
         {venue.instagramUrl && (
           <div>
             <span className="font-medium">📸 {t('venue.instagram')}</span>
@@ -278,6 +263,23 @@ export default async function VenueDetailPage({
           </div>
         )}
       </div>
+
+      {/* Primary CTA: 公式サイトへの直リンク */}
+      {venue.websiteUrl && (
+        <a
+          href={venue.websiteUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-3 rounded-xl border-2 border-violet-300 bg-violet-50 px-5 py-4 hover:bg-violet-100 hover:border-violet-400 transition-colors group"
+        >
+          <span className="text-2xl">🌐</span>
+          <div className="flex-1 min-w-0">
+            <p className="font-semibold text-violet-900 group-hover:underline">{t('venue.visitWebsite')}</p>
+            <p className="text-sm text-violet-600 truncate">{venue.websiteUrl}</p>
+          </div>
+          <span className="text-violet-400 text-xl shrink-0">→</span>
+        </a>
+      )}
 
       {/* Action buttons */}
       <div className="flex flex-wrap gap-3">
