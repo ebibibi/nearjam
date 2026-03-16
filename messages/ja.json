@@ -98,7 +98,11 @@
     "addVenue": "会場を登録する",
     "browseVenues": "会場一覧を見る",
     "noSessionInfo": "セッション情報なし",
-    "searchPlaceholder": "駅名・会場名・エリアで検索…"
+    "searchPlaceholder": "駅名・会場名・エリアで検索…",
+    "todaysSessions": "今日のセッション",
+    "tomorrowsSessions": "明日のセッション",
+    "noSessionsOnDay": "この曜日のセッション情報はまだありません",
+    "irregularSessions": "不定期開催のセッション"
   },
   "profile": {
     "setup": {

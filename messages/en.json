@@ -98,7 +98,11 @@
     "addVenue": "Add a Venue",
     "browseVenues": "Browse Venues",
     "noSessionInfo": "No session info",
-    "searchPlaceholder": "Search by station, venue, or area…"
+    "searchPlaceholder": "Search by station, venue, or area…",
+    "todaysSessions": "Today's Sessions",
+    "tomorrowsSessions": "Tomorrow's Sessions",
+    "noSessionsOnDay": "No sessions listed for this day yet",
+    "irregularSessions": "Irregular / unscheduled sessions"
   },
   "profile": {
     "setup": {
