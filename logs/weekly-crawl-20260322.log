@@ -1,0 +1,895 @@
+  ⚠️  gemini: クォータ切れ。次のLLMを試行...
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎷 NearJam 週次クロール開始: 2026-03-22 03:34:20
+  LLM:   ⚠️  gemini: クォータ切れ。次のLLMを試行...
+claude -p
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📊 Phase 1: DB統計を収集中...
+[dotenv@17.3.1] injecting env (9) from .env.local -- tip: 🔐 prevent building .env in docker: https://dotenvx.com/prebuild
+(node:1975954) Warning: SECURITY WARNING: The SSL modes 'prefer', 'require', and 'verify-ca' are treated as aliases for 'verify-full'.
+In the next major version (pg-connection-string v3.0.0 and pg v9.0.0), these modes will adopt standard libpq semantics, which have weaker security guarantees.
+
+To prepare for this change:
+- If you want the current behavior, explicitly use 'sslmode=verify-full'
+- If you want libpq compatibility now, use 'uselibpqcompat=true&sslmode=require'
+
+See https://www.postgresql.org/docs/current/libpq-ssl.html for libpq SSL mode definitions.
+(Use `node --trace-warnings ...` to show where the warning was created)
+{"venues":209,"sessions":58,"success":45,"error":181,"low":28,"pending":163,"areaCounts":{"東京":47,"その他":135,"大阪":6,"神奈川":4,"京都":1,"千葉":2,"広島":4,"愛知":1,"沖縄":1,"福岡":1,"熊本":2,"埼玉":3,"宮城":1,"北海道":1},"errorPatterns":"https://linktr.ee/jazz_spot_birdland, https://dolcevita.g3.xrea.com, https://mjsmile.com, https://www.sam.hi-ho.ne.jp/ginz, https://bar-one.info/, http://songbird-bldg.com, http://www.ortolounge.net, http://homepage3.nifty.com/ten-on/, https://www.proust-jazz.jp/, http://www.ragnet.co.jp/live_spot_top.html, http://www.akarengajazz.com/, http://www.secondhouse.co.jp/zacbaran_top.html, http://www.geocities.jp/pianopub_flathome/top.html, http://bar0-axel.jimdofree.com, https://cask.jimdofree.com/, https://jamsecond2.jimdofree.com/, http://www.ebonyandivory.jp/, https://mrkennys.com/, https://iotositeru.jimdofree.com/, https://somethinjazz.com/"}
+DB統計: {"venues":209,"sessions":58,"success":45,"error":181,"low":28,"pending":163,"areaCounts":{"東京":47,"その他":135,"大阪":6,"神奈川":4,"京都":1,"千葉":2,"広島":4,"愛知":1,"沖縄":1,"福岡":1,"熊本":2,"埼玉":3,"宮城":1,"北海道":1},"errorPatterns":"https://linktr.ee/jazz_spot_birdland, https://dolcevita.g3.xrea.com, https://mjsmile.com, https://www.sam.hi-ho.ne.jp/ginz, https://bar-one.info/, http://songbird-bldg.com, http://www.ortolounge.net, http://homepage3.nifty.com/ten-on/, https://www.proust-jazz.jp/, http://www.ragnet.co.jp/live_spot_top.html, http://www.akarengajazz.com/, http://www.secondhouse.co.jp/zacbaran_top.html, http://www.geocities.jp/pianopub_flathome/top.html, http://bar0-axel.jimdofree.com, https://cask.jimdofree.com/, https://jamsecond2.jimdofree.com/, http://www.ebonyandivory.jp/, https://mrkennys.com/, https://iotositeru.jimdofree.com/, https://somethinjazz.com/"}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🤖 Phase 2: LLM に追加クエリを提案してもらう...
+LLM提案クエリ: 0件（  ⚠️  gemini: クォータ切れ。次のLLMを試行...
+claude -p）
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🔍 Phase 3: 会場URL収集中（既存クエリ + LLM追加0クエリ）...
+/home/ebi/nearjam/node_modules/ts-node/src/index.ts:859
+    return new TSError(diagnosticText, diagnosticCodes, diagnostics);
+           ^
+TSError: ⨯ Unable to compile TypeScript:
+scripts/discover.ts(272,44): error TS2304: Cannot find name 'LLM_CMD'.
+
+    at createTSError (/home/ebi/nearjam/node_modules/ts-node/src/index.ts:859:12)
+    at reportTSError (/home/ebi/nearjam/node_modules/ts-node/src/index.ts:863:19)
+    at getOutput (/home/ebi/nearjam/node_modules/ts-node/src/index.ts:1077:36)
+    at Object.compile (/home/ebi/nearjam/node_modules/ts-node/src/index.ts:1433:41)
+    at Module.m._compile (/home/ebi/nearjam/node_modules/ts-node/src/index.ts:1617:30)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1613:10)
+    at Object.require.extensions.<computed> [as .ts] (/home/ebi/nearjam/node_modules/ts-node/src/index.ts:1621:12)
+    at Module.load (node:internal/modules/cjs/loader:1275:32)
+    at Function.Module._load (node:internal/modules/cjs/loader:1096:12)
+    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:164:12) {
+  diagnosticCodes: [ 2304 ]
+}
+⚠️  discover.ts でエラーが発生（処理を継続）
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🌐 Phase 4: クロール実行...
+[ループ 1/15] pending=163件 — クロール実行中...
+[dotenv@17.3.1] injecting env (9) from .env.local -- tip: 🔐 prevent building .env in docker: https://dotenvx.com/prebuild
+[dotenv@17.3.1] injecting env (0) from .env -- tip: ⚙️  override existing env vars with { override: true }
+🎷 NearJam クローラー
+   信頼度しきい値: 0.4
+(node:1976131) Warning: SECURITY WARNING: The SSL modes 'prefer', 'require', and 'verify-ca' are treated as aliases for 'verify-full'.
+In the next major version (pg-connection-string v3.0.0 and pg v9.0.0), these modes will adopt standard libpq semantics, which have weaker security guarantees.
+
+To prepare for this change:
+- If you want the current behavior, explicitly use 'sslmode=verify-full'
+- If you want libpq compatibility now, use 'uselibpqcompat=true&sslmode=require'
+
+See https://www.postgresql.org/docs/current/libpq-ssl.html for libpq SSL mode definitions.
+(Use `node --trace-warnings ...` to show where the warning was created)
+50 件のジョブを処理します
+[1/50] 
+🌐 https://bar-chikashitsu.favy.jp/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-3kC7Mw'
+[2/50] 
+🌐 http://www.every-swing.com/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-yHipBH'
+[3/50] 
+🌐 https://www.sendai-jz.jp/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-poyfrN'
+[4/50] 
+🌐 https://dimples.live/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-UU8mTa'
+[5/50] 
+🌐 https://n.pianobar.jp/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-sCNESA'
+[6/50] 
+🌐 http://www.bekkoame.ne.jp/~moon-g69/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-ZQkkU0'
+[7/50] 
+🌐 http://kochi-session.com/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-YNZZ1s'
+[8/50] 
+🌐 https://iotositeru.jimdo.com/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-zlhpYa'
+[9/50] 
+🌐 https://jazzbrowny1983.jimdofree.com/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-OvrqUM'
+[10/50] 
+🌐 http://cinema-theque.com/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-yrxEVE'
+[11/50] 
+🌐 https://www.pinosplace.com/index_main.php
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-3fqXFr'
+[12/50] 
+🌐 https://okinawahibi.com/under-current/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-NRgPRo'
+[13/50] 
+🌐 https://jazzbartakehana.p-kit.com/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-cHe2K3'
+[14/50] 
+🌐 https://jazz-koko.com/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-DqcY9U'
+[15/50] 
+🌐 https://jazzunion.jp/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-SGAeXA'
+[16/50] 
+🌐 https://whatthedickens.jp/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-dKeNGO'
+[17/50] 
+🌐 http://dolcevita.g3.xrea.com
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-646yJ4'
+[18/50] 
+🌐 https://jazzspot.intro.co.jp/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-LADBQS'
+[19/50] 
+🌐 https://cafecottonclub.com
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-tg6aX2'
+[20/50] 
+🌐 https://mjsmile.com/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-3dy0Qo'
+[21/50] 
+🌐 https://www.sometime.co.jp/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-ZiPlRq'
+[22/50] 
+🌐 https://www.jazz-strings.com/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-spLH8v'
+[23/50] 
+🌐 https://www.rpmshimokita.com/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-FpQ1Hq'
+[24/50] 
+🌐 https://sound.jp/stagepf/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-XogDNu'
+[25/50] 
+🌐 https://ginzaswing.jp
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-fp7jSZ'
+[26/50] 
+🌐 https://miles5.co.jp
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-nBJhof'
+[27/50] 
+🌐 https://jazzbarems.com
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-Sc0JLt'
+[28/50] 
+🌐 https://ginzamusicbar.com
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-d1Y2Yx'
+[29/50] 
+🌐 https://en-counter.jp
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-qjK3kA'
+[30/50] 
+🌐 https://b2-ginza.com
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-pYEutJ'
+[31/50] 
+🌐 https://jazz-thedeep.com
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-M7Cyud'
+[32/50] 
+🌐 http://www.soultrane.jp/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-m2fzN4'
+[33/50] 
+🌐 http://www.jazoo-asakusa.jp/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-aotCgF'
+[34/50] 
+🌐 http://tokyo-club.com/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-hcUaxD'
+[35/50] 
+🌐 http://jackandsuzie.com/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-daRI3H'
+[36/50] 
+🌐 http://e-birdmusic.com/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-Tg4t3j'
+[37/50] 
+🌐 http://j-flow.net
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-sguayR'
+[38/50] 
+🌐 https://azumisakaba.com/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-kJEMto'
+[39/50] 
+🌐 https://livebar-cub.jimdofree.com/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-6UMsVQ'
+[40/50] 
+🌐 https://rancherry.com/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-OlGZ9z'
+[41/50] 
+🌐 https://jackandsuzie.tokyo/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-SVB6Fn'
+[42/50] 
+🌐 https://jazz-inn-blue.jimdofree.com/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-wUNcfd'
+[43/50] 
+🌐 https://you-like.jimdofree.com/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-MLqQs1'
+[44/50] 
+🌐 https://www.somethinjazz.com/jp/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-6LswER'
+[45/50] 
+🌐 https://tokyo-club.com/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-zUSTuo'
+[46/50] 
+🌐 http://www.lovepeaceandsoul.net
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-QxF1NB'
+[47/50] 
+🌐 https://pappys.jimdofree.com/schedule/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-oHWloQ'
+[48/50] 
+🌐 https://www.tokyoclub.or.jp/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-0N0jf5'
+[49/50] 
+🌐 https://www.rockbarbauhaus.com/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-9lqN97'
+[50/50] 
+🌐 https://bar-rockaholic.jp/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-Zfj9Sl'
+
+📊 完了: 成功=0, 失敗=50 / 合計=50
+   DB合計: 会場=209件, セッション=58件
+[ループ 2/15] pending=151件 — クロール実行中...
+[dotenv@17.3.1] injecting env (9) from .env.local -- tip: ⚙️  load multiple .env files with { path: ['.env.local', '.env'] }
+[dotenv@17.3.1] injecting env (0) from .env -- tip: ⚙️  load multiple .env files with { path: ['.env.local', '.env'] }
+🎷 NearJam クローラー
+   信頼度しきい値: 0.4
+(node:1976942) Warning: SECURITY WARNING: The SSL modes 'prefer', 'require', and 'verify-ca' are treated as aliases for 'verify-full'.
+In the next major version (pg-connection-string v3.0.0 and pg v9.0.0), these modes will adopt standard libpq semantics, which have weaker security guarantees.
+
+To prepare for this change:
+- If you want the current behavior, explicitly use 'sslmode=verify-full'
+- If you want libpq compatibility now, use 'uselibpqcompat=true&sslmode=require'
+
+See https://www.postgresql.org/docs/current/libpq-ssl.html for libpq SSL mode definitions.
+(Use `node --trace-warnings ...` to show where the warning was created)
+50 件のジョブを処理します
+[1/50] 
+🌐 https://www.lovepeaceandsoul.com/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-Y9h9vU'
+[2/50] 
+🌐 http://www.g-egg.info/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-2lgN1x'
+[3/50] 
+🌐 https://www.spacewith.co.jp/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-xGKH2B'
+[4/50] 
+🌐 https://www.oyaji-rock.jp/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-XX912j'
+[5/50] 
+🌐 https://rgbtokyo.com
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-buDtfG'
+[6/50] 
+🌐 https://beck-akiba.com
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-FldEW9'
+[7/50] 
+🌐 https://dot-blue.net
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-CAKATO'
+[8/50] 
+🌐 https://barali-ollie.com
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-48LETc'
+[9/50] 
+🌐 https://somethinjazz.com
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-WUSD4K'
+[10/50] 
+🌐 http://www.jazz-adlib.info/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-Vb58ry'
+[11/50] 
+🌐 https://jazz-first.com/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-aq3dQA'
+[12/50] 
+🌐 https://www.noge-chigusa.com/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-r7KCiv'
+[13/50] 
+🌐 https://blues-ette.com/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-mXCadQ'
+[14/50] 
+🌐 https://kikunalivejam.wixsite.com/home
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-LaOMAN'
+[15/50] 
+🌐 https://dolphy-jazzspot.com/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-qL1acj'
+[16/50] 
+🌐 https://j-and-b.jimdofree.com/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-0lBi6U'
+[17/50] 
+🌐 https://kawasakijazz.jp/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-ZeXVqD'
+[18/50] 
+🌐 https://livehouse-ys.com/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-sQkxzA'
+[19/50] 
+🌐 https://www.huskys-g.com/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-OqB8yd'
+[20/50] 
+🌐 https://jj-savoy.jimdo.com/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-7Iroxq'
+[21/50] 
+🌐 https://heavensbar.jimdofree.com/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-B9jhab'
+[22/50] 
+🌐 http://babakawa.net/dow.htm
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-x3KciG'
+[23/50] 
+🌐 https://www.dizzy.jp/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-oqzr6l'
+[24/50] 
+🌐 https://crosby.jp/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-iLtln5'
+[25/50] 
+🌐 https://jazzkabo.web.fc2.com/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-e5TwQh'
+[26/50] 
+🌐 http://www.relaxin-sendai.com/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-Biqow9'
+[27/50] 
+🌐 https://slowboat-jazz.jp/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-sP6hpe'
+[28/50] 
+🌐 http://www.d-bop.com
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-fln9Gr'
+[29/50] 
+🌐 https://jass915.com
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-gjbDKi'
+[30/50] 
+🌐 http://halfnote.zero-city.com/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-V1SROO'
+[31/50] 
+🌐 http://www7b.biglobe.ne.jp/~jericho/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-prNOjF'
+[32/50] 
+🌐 https://www.sapporo-coo.com/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-MzaXSj'
+[33/50] 
+🌐 https://d-bop.com
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-6myZJ0'
+[34/50] 
+🌐 https://e-jazz.jp/livehouses/sapporobluesalley/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-TI5z6w'
+[35/50] 
+🌐 https://stormymondaysapporo.jp/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-MIMdWd'
+[36/50] 
+🌐 http://www.tournezlapage.jp
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-tOvs3o'
+[37/50] 
+🌐 https://jazzriverside.client.jp/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-2D4EWM'
+[38/50] 
+🌐 https://www.j-road.net/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-SLOg30'
+[39/50] 
+🌐 https://jazz-koko.com
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-tT8IOr'
+[40/50] 
+🌐 https://7th-floor.net
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-0nobsK'
+[41/50] 
+🌐 https://udagawacafe.com/kohaku/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-m6zZQj'
+[42/50] 
+🌐 https://bodyandsoul.co.jp
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-LPIeed'
+[43/50] 
+🌐 https://shibuya-swing.com
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-MmthpF'
+[44/50] 
+🌐 https://jazzunion.jp
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-jOpGlX'
+[45/50] 
+🌐 https://lezard-daikanyama.com
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-gPp647'
+[46/50] 
+🌐 https://g-egg.info/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-wAYxzr'
+[47/50] 
+🌐 https://intro.co.jp/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-Is1WYr'
+[48/50] 
+🌐 https://jazzgateone.com/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-jGmIAg'
+[49/50] 
+🌐 http://www.sometime.co.jp/sometime/access.html
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-iXVgDR'
+[50/50] 
+🌐 http://www.studiopenta.net/daydream/index.html
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-XJMuif'
+
+📊 完了: 成功=0, 失敗=50 / 合計=50
+   DB合計: 会場=209件, セッション=58件
+[ループ 3/15] pending=136件 — クロール実行中...
+[dotenv@17.3.1] injecting env (9) from .env.local -- tip: ⚙️  specify custom .env file path with { path: '/custom/path/.env' }
+[dotenv@17.3.1] injecting env (0) from .env -- tip: ⚡️ secrets for agents: https://dotenvx.com/as2
+🎷 NearJam クローラー
+   信頼度しきい値: 0.4
+(node:1977732) Warning: SECURITY WARNING: The SSL modes 'prefer', 'require', and 'verify-ca' are treated as aliases for 'verify-full'.
+In the next major version (pg-connection-string v3.0.0 and pg v9.0.0), these modes will adopt standard libpq semantics, which have weaker security guarantees.
+
+To prepare for this change:
+- If you want the current behavior, explicitly use 'sslmode=verify-full'
+- If you want libpq compatibility now, use 'uselibpqcompat=true&sslmode=require'
+
+See https://www.postgresql.org/docs/current/libpq-ssl.html for libpq SSL mode definitions.
+(Use `node --trace-warnings ...` to show where the warning was created)
+50 件のジョブを処理します
+[1/50] 
+🌐 http://www.sometime.co.jp/funky/index.html
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-Fjzf8u'
+[2/50] 
+🌐 http://o.organiq.biz/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-8In0kd'
+[3/50] 
+🌐 http://www.bagu-jazz.jp/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-0gVoDr'
+[4/50] 
+🌐 http://rpmshimokita.wix.com/rpm2014
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-dNHvHW'
+[5/50] 
+🌐 https://jazzinnuncletom.wixsite.com/mysite
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-zcrwS0'
+[6/50] 
+🌐 https://bargolem.com/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-cPVwHk'
+[7/50] 
+🌐 https://www.jazztime.info/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-hI6mTj'
+[8/50] 
+🌐 https://musiclabok.com/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-nZEsH2'
+[9/50] 
+🌐 http://www.log-session.com/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-FWMQfW'
+[10/50] 
+🌐 https://shiraihouse.com/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-nMNyt1'
+[11/50] 
+🌐 https://la-penya.com
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-LO2Iwp'
+[12/50] 
+🌐 http://cafe-plat.com
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-jgjcTm'
+[13/50] 
+🌐 http://www.mis.janis.or.jp/~canvas/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-ukzHvW'
+[14/50] 
+🌐 https://nawateguesthouse.com
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-ergsvR'
+[15/50] 
+🌐 https://boozeshelter.com
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-zXLZO1'
+[16/50] 
+🌐 http://mikiokun.com
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-lvASHS'
+[17/50] 
+🌐 http://www4.ocn.ne.jp/~swan/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-7WzYFc'
+[18/50] 
+🌐 http://www17.ocn.ne.jp/~jekyll/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-iSMPfs'
+[19/50] 
+🌐 https://jazzflash.goope.jp/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-NeLqRb'
+[20/50] 
+🌐 http://debbyart.com/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-nYmWq5'
+[21/50] 
+🌐 http://swing.topaz.ne.jp/trytone/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-0klPYA'
+[22/50] 
+🌐 http://www.bird-diz.com/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-JtcEoT'
+[23/50] 
+🌐 http://jazzdojo.web.fc2.com/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-2ZOFLm'
+[24/50] 
+🌐 http://sixty-six-live.com/index.html
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-RXdZXs'
+[25/50] 
+🌐 http://www.0598-21-3130.com/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-9HeCWU'
+[26/50] 
+🌐 http://www.salaam.jp/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-Illf5u'
+[27/50] 
+🌐 https://www.sadakuro.com
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-OKYgLA'
+[28/50] 
+🌐 http://www.royal-horse.jp/index.html
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-6ranX9'
+[29/50] 
+🌐 https://jazz845.jp/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-OushOO'
+[30/50] 
+🌐 https://garth-music.com/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-BMeUZK'
+[31/50] 
+🌐 https://jazz-musicraft.com/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-rRw8fZ'
+[32/50] 
+🌐 https://www.jazzbar96.com/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-Od9gtZ'
+[33/50] 
+🌐 https://bar-raincoat.com/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-dDkQKJ'
+[34/50] 
+🌐 http://www.howlinbar.com/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-D2NFGX'
+[35/50] 
+🌐 https://third-stone.jp/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-xeZr4R'
+[36/50] 
+🌐 https://live-bar-beat-in.jimdofree.com/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-4z4rrn'
+[37/50] 
+🌐 http://www.ortolounge.net/top/index.html
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-EO6E1e'
+[38/50] 
+🌐 http://temma-bamboo.club
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-m2BDrg'
+[39/50] 
+🌐 https://gdp22.com/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-qCoetP'
+[40/50] 
+🌐 https://shallwedancecafe.com/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-cjECj2'
+[41/50] 
+🌐 https://vidalatinajapan.com/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-saDa61'
+[42/50] 
+🌐 https://www.ragnet.co.jp/live_spot_top.html
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-ny11co'
+[43/50] 
+🌐 https://zacbaran.com/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-OAnlsb'
+[44/50] 
+🌐 https://gion-jtn.com/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-wYKZDW'
+[45/50] 
+🌐 https://sahouril.com/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-n2OoH4'
+[46/50] 
+🌐 https://bar0-axel.jimdofree.com
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-xg1H3W'
+[47/50] 
+🌐 https://gion-pickup.com/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-ZKxVeN'
+[48/50] 
+🌐 http://candy-jazz.com/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-KOFT1y'
+[49/50] 
+🌐 https://jazzmurra.exblog.jp
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-GKajzJ'
+[50/50] 
+🌐 http://www.basin-st.com/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-I93t2G'
+
+📊 完了: 成功=0, 失敗=50 / 合計=50
+   DB合計: 会場=209件, セッション=58件
+[ループ 4/15] pending=86件 — クロール実行中...
+[dotenv@17.3.1] injecting env (9) from .env.local -- tip: 🛠️  run anywhere with `dotenvx run -- yourcommand`
+[dotenv@17.3.1] injecting env (0) from .env -- tip: ⚙️  suppress all logs with { quiet: true }
+🎷 NearJam クローラー
+   信頼度しきい値: 0.4
+(node:1978592) Warning: SECURITY WARNING: The SSL modes 'prefer', 'require', and 'verify-ca' are treated as aliases for 'verify-full'.
+In the next major version (pg-connection-string v3.0.0 and pg v9.0.0), these modes will adopt standard libpq semantics, which have weaker security guarantees.
+
+To prepare for this change:
+- If you want the current behavior, explicitly use 'sslmode=verify-full'
+- If you want libpq compatibility now, use 'uselibpqcompat=true&sslmode=require'
+
+See https://www.postgresql.org/docs/current/libpq-ssl.html for libpq SSL mode definitions.
+(Use `node --trace-warnings ...` to show where the warning was created)
+43 件のジョブを処理します
+[1/43] 
+🌐 https://www.ellies-kobe.com/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-vGaDCA'
+[2/43] 
+🌐 http://jazzbarysroad.ko-co.jp/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-jy5QFv'
+[3/43] 
+🌐 https://kobe-sone.com/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-rfiFpm'
+[4/43] 
+🌐 http://negikura.han-be.com/index.html
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-G3K6ME'
+[5/43] 
+🌐 http://www.livehousegreatblue.com/intro.htm
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-kb6JWt'
+[6/43] 
+🌐 https://www.zing-music.com/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-myTzZd'
+[7/43] 
+🌐 http://www.cafepresident.com
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-qEdLsg'
+[8/43] 
+🌐 http://www.satindollkobe.jp/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-UK8hb5'
+[9/43] 
+🌐 http://www.left-alone.jp
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-3XyT90'
+[10/43] 
+🌐 http://www.mcuatro.qcweb.jp/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-ZQl0pA'
+[11/43] 
+🌐 https://livehouse-pochi.com/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-VfmUQ1'
+[12/43] 
+🌐 http://layla.jyoukamachi.com/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-nqgaNw'
+[13/43] 
+🌐 http://www.pianoclub.jp/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-c984UF'
+[14/43] 
+🌐 https://bar2nd-nara.jimdofree.com/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-TgN5gn'
+[15/43] 
+🌐 https://spoonfulmusic.com/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-1KuFgw'
+[16/43] 
+🌐 https://hotstaff-nara.com/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-DlRwn1'
+[17/43] 
+🌐 https://take-5.jimdofree.com/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-ijghb0'
+[18/43] 
+🌐 https://www.first-take.co.jp/oldtime/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-TS3Khi'
+[19/43] 
+🌐 https://www.desafinado.jp/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-0I9SQx'
+[20/43] 
+🌐 https://smallcastle.jp/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-z57o7q'
+[21/43] 
+🌐 https://www.yugeya-jazz.com/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-eQKJtH'
+[22/43] 
+🌐 https://jscafe.shiga-saku.net/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-lBwhGy'
+[23/43] 
+🌐 https://jazzplaceneco.com/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-9hpMu8'
+[24/43] 
+🌐 https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFSBaHpepep5rsecovP2eb3n-v0VfVl_UacKOO4NdDVo5Is7rsNkdgIUFej-w6lOnHZJkWdODBiKYy_jQZWfXpO63ECwJqqHhPD1khEA_0qMh1_m3xPHbW3nV7HjFDkvxtUU48=
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-6Fdv0d'
+[25/43] 
+🌐 https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQF1Vz__sEBsZoyIkEaZXHOf2kIeSoP6ny2CNcau47RUYfr0DyEYpCb9KJJwutZqNIokKqkAatMnjbL-9iO002phX-d7arg9VJoWzYGgEOIR7G08dfWLMZXBITvvRp1Vc2tfaBiQwa7UHHtCtihofKH3
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-QFh43M'
+[26/43] 
+🌐 https://pianobarshitamoto.shopinfo.jp/?fbclid=IwAR1CcJGWxxhR6WwxfLsA2O32Q0otI5yPKh2ZYhTx
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-hKz0bl'
+[27/43] 
+🌐 https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEosM4j35OZcatUzmEvQEcJNValIcj0YhqWP2hIIVw2umrjXyEO8eg43uV7iWJkiglGPbBMWWE4HVu4s5ZCOH0D15QJGc1hJs901271Pqsa0J7xfFaH_fdyAuha0ZGN4WuxRA==
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-YykEvr'
+[28/43] 
+🌐 https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEKWIWYxeDNAE1pQUTqfjGSRtsat8NgWU5QKU80mnMk0i-aEwBdQD3z8XVfGFcdKHmCONVVaC4j0-nkKsQD9Y3VOhN0RQWwzyMhOsak_f0MYp1lwzIyeSggEw==
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-pUX73e'
+[29/43] 
+🌐 https://www.interlude.okayama.jp
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-9o8ZZz'
+[30/43] 
+🌐 https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGbm6nUFoNKdF5ezMJVKM4EgFGxLnCgoW4RcCrasLkqu1-nGk-qcOmjxFrzEaJ9GLgwQXuJNTPBmqA8nSXphyAlzU7ZGFAlW1-kPPMM67j1qpNy
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-gKvhqU'
+[31/43] 
+🌐 https://www.strikingly.com/s/fukuoka-jazz-bar-jumphouse
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-Z9o1Wj'
+[32/43] 
+🌐 https://backstage-fukuoka.com/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-XXyVsc'
+[33/43] 
+🌐 http://iotositeru.jimdo.com/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-zKIjXE'
+[34/43] 
+🌐 https://browny-jazz.com/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-lPr4xS'
+[35/43] 
+🌐 https://www.anacrowneplaza-fukuoka.jp/restaurant/mezzanine_bar/jazz.html
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-yGAwKs'
+[36/43] 
+🌐 http://homepage3.nifty.com/bass-line/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-37Qd5D'
+[37/43] 
+🌐 http://www.asahi-net.or.jp/~wx4s-kwbt/st_pn.html
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-05e9rb'
+[38/43] 
+🌐 http://lifetime-jazz.com/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-kTSThL'
+[39/43] 
+🌐 http://oldearth.jp/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-QsD6Wa'
+[40/43] 
+🌐 http://parkersmood.com/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-zW4y3B'
+[41/43] 
+🌐 https://hb9.seikyou.ne.jp/home/uc/uc_web_top.htm
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-gEHJBr'
+[42/43] 
+🌐 http://www.pinosplace.com/index_main.php
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-RBmBox'
+[43/43] 
+🌐 http://sound-ms.com/
+  📄 メインページ取得中...   ❌ browserType.launch: EROFS: read-only file system, mkdtemp '/tmp/playwright-artifacts-M8TesM'
+
+📊 完了: 成功=0, 失敗=43 / 合計=43
+   DB合計: 会場=209件, セッション=58件
+[ループ 5/15] pending=43件 — クロール実行中...
+[dotenv@17.3.1] injecting env (9) from .env.local -- tip: 🔐 encrypt with Dotenvx: https://dotenvx.com
+[dotenv@17.3.1] injecting env (0) from .env -- tip: ⚙️  suppress all logs with { quiet: true }
+🎷 NearJam クローラー
+   信頼度しきい値: 0.4
+(node:1979295) Warning: SECURITY WARNING: The SSL modes 'prefer', 'require', and 'verify-ca' are treated as aliases for 'verify-full'.
+In the next major version (pg-connection-string v3.0.0 and pg v9.0.0), these modes will adopt standard libpq semantics, which have weaker security guarantees.
+
+To prepare for this change:
+- If you want the current behavior, explicitly use 'sslmode=verify-full'
+- If you want libpq compatibility now, use 'uselibpqcompat=true&sslmode=require'
+
+See https://www.postgresql.org/docs/current/libpq-ssl.html for libpq SSL mode definitions.
+(Use `node --trace-warnings ...` to show where the warning was created)
+処理するジョブがありません。
+[ループ 6/15] pending=43件 — クロール実行中...
+[dotenv@17.3.1] injecting env (9) from .env.local -- tip: ⚙️  override existing env vars with { override: true }
+[dotenv@17.3.1] injecting env (0) from .env -- tip: 🛠️  run anywhere with `dotenvx run -- yourcommand`
+🎷 NearJam クローラー
+   信頼度しきい値: 0.4
+(node:1979396) Warning: SECURITY WARNING: The SSL modes 'prefer', 'require', and 'verify-ca' are treated as aliases for 'verify-full'.
+In the next major version (pg-connection-string v3.0.0 and pg v9.0.0), these modes will adopt standard libpq semantics, which have weaker security guarantees.
+
+To prepare for this change:
+- If you want the current behavior, explicitly use 'sslmode=verify-full'
+- If you want libpq compatibility now, use 'uselibpqcompat=true&sslmode=require'
+
+See https://www.postgresql.org/docs/current/libpq-ssl.html for libpq SSL mode definitions.
+(Use `node --trace-warnings ...` to show where the warning was created)
+処理するジョブがありません。
+[ループ 7/15] pending=43件 — クロール実行中...
+[dotenv@17.3.1] injecting env (9) from .env.local -- tip: ⚙️  write to custom object with { processEnv: myObject }
+[dotenv@17.3.1] injecting env (0) from .env -- tip: ⚙️  override existing env vars with { override: true }
+🎷 NearJam クローラー
+   信頼度しきい値: 0.4
+(node:1979535) Warning: SECURITY WARNING: The SSL modes 'prefer', 'require', and 'verify-ca' are treated as aliases for 'verify-full'.
+In the next major version (pg-connection-string v3.0.0 and pg v9.0.0), these modes will adopt standard libpq semantics, which have weaker security guarantees.
+
+To prepare for this change:
+- If you want the current behavior, explicitly use 'sslmode=verify-full'
+- If you want libpq compatibility now, use 'uselibpqcompat=true&sslmode=require'
+
+See https://www.postgresql.org/docs/current/libpq-ssl.html for libpq SSL mode definitions.
+(Use `node --trace-warnings ...` to show where the warning was created)
+処理するジョブがありません。
+[ループ 8/15] pending=43件 — クロール実行中...
+[dotenv@17.3.1] injecting env (9) from .env.local -- tip: ⚙️  override existing env vars with { override: true }
+[dotenv@17.3.1] injecting env (0) from .env -- tip: ⚙️  write to custom object with { processEnv: myObject }
+🎷 NearJam クローラー
+   信頼度しきい値: 0.4
+(node:1979656) Warning: SECURITY WARNING: The SSL modes 'prefer', 'require', and 'verify-ca' are treated as aliases for 'verify-full'.
+In the next major version (pg-connection-string v3.0.0 and pg v9.0.0), these modes will adopt standard libpq semantics, which have weaker security guarantees.
+
+To prepare for this change:
+- If you want the current behavior, explicitly use 'sslmode=verify-full'
+- If you want libpq compatibility now, use 'uselibpqcompat=true&sslmode=require'
+
+See https://www.postgresql.org/docs/current/libpq-ssl.html for libpq SSL mode definitions.
+(Use `node --trace-warnings ...` to show where the warning was created)
+処理するジョブがありません。
+[ループ 9/15] pending=43件 — クロール実行中...
+[dotenv@17.3.1] injecting env (9) from .env.local -- tip: ⚙️  load multiple .env files with { path: ['.env.local', '.env'] }
+[dotenv@17.3.1] injecting env (0) from .env -- tip: 🛠️  run anywhere with `dotenvx run -- yourcommand`
+🎷 NearJam クローラー
+   信頼度しきい値: 0.4
+(node:1979797) Warning: SECURITY WARNING: The SSL modes 'prefer', 'require', and 'verify-ca' are treated as aliases for 'verify-full'.
+In the next major version (pg-connection-string v3.0.0 and pg v9.0.0), these modes will adopt standard libpq semantics, which have weaker security guarantees.
+
+To prepare for this change:
+- If you want the current behavior, explicitly use 'sslmode=verify-full'
+- If you want libpq compatibility now, use 'uselibpqcompat=true&sslmode=require'
+
+See https://www.postgresql.org/docs/current/libpq-ssl.html for libpq SSL mode definitions.
+(Use `node --trace-warnings ...` to show where the warning was created)
+処理するジョブがありません。
+[ループ 10/15] pending=43件 — クロール実行中...
+[dotenv@17.3.1] injecting env (9) from .env.local -- tip: ⚙️  override existing env vars with { override: true }
+[dotenv@17.3.1] injecting env (0) from .env -- tip: 🔐 prevent building .env in docker: https://dotenvx.com/prebuild
+🎷 NearJam クローラー
+   信頼度しきい値: 0.4
+(node:1979912) Warning: SECURITY WARNING: The SSL modes 'prefer', 'require', and 'verify-ca' are treated as aliases for 'verify-full'.
+In the next major version (pg-connection-string v3.0.0 and pg v9.0.0), these modes will adopt standard libpq semantics, which have weaker security guarantees.
+
+To prepare for this change:
+- If you want the current behavior, explicitly use 'sslmode=verify-full'
+- If you want libpq compatibility now, use 'uselibpqcompat=true&sslmode=require'
+
+See https://www.postgresql.org/docs/current/libpq-ssl.html for libpq SSL mode definitions.
+(Use `node --trace-warnings ...` to show where the warning was created)
+処理するジョブがありません。
+[ループ 11/15] pending=43件 — クロール実行中...
+[dotenv@17.3.1] injecting env (9) from .env.local -- tip: ⚡️ secrets for agents: https://dotenvx.com/as2
+[dotenv@17.3.1] injecting env (0) from .env -- tip: ⚙️  suppress all logs with { quiet: true }
+🎷 NearJam クローラー
+   信頼度しきい値: 0.4
+(node:1980042) Warning: SECURITY WARNING: The SSL modes 'prefer', 'require', and 'verify-ca' are treated as aliases for 'verify-full'.
+In the next major version (pg-connection-string v3.0.0 and pg v9.0.0), these modes will adopt standard libpq semantics, which have weaker security guarantees.
+
+To prepare for this change:
+- If you want the current behavior, explicitly use 'sslmode=verify-full'
+- If you want libpq compatibility now, use 'uselibpqcompat=true&sslmode=require'
+
+See https://www.postgresql.org/docs/current/libpq-ssl.html for libpq SSL mode definitions.
+(Use `node --trace-warnings ...` to show where the warning was created)
+処理するジョブがありません。
+[ループ 12/15] pending=43件 — クロール実行中...
+[dotenv@17.3.1] injecting env (9) from .env.local -- tip: 🛡️ auth for agents: https://vestauth.com
+[dotenv@17.3.1] injecting env (0) from .env -- tip: 🔐 prevent committing .env to code: https://dotenvx.com/precommit
+🎷 NearJam クローラー
+   信頼度しきい値: 0.4
+(node:1980162) Warning: SECURITY WARNING: The SSL modes 'prefer', 'require', and 'verify-ca' are treated as aliases for 'verify-full'.
+In the next major version (pg-connection-string v3.0.0 and pg v9.0.0), these modes will adopt standard libpq semantics, which have weaker security guarantees.
+
+To prepare for this change:
+- If you want the current behavior, explicitly use 'sslmode=verify-full'
+- If you want libpq compatibility now, use 'uselibpqcompat=true&sslmode=require'
+
+See https://www.postgresql.org/docs/current/libpq-ssl.html for libpq SSL mode definitions.
+(Use `node --trace-warnings ...` to show where the warning was created)
+処理するジョブがありません。
+[ループ 13/15] pending=43件 — クロール実行中...
+[dotenv@17.3.1] injecting env (9) from .env.local -- tip: ⚙️  enable debug logging with { debug: true }
+[dotenv@17.3.1] injecting env (0) from .env -- tip: ⚙️  enable debug logging with { debug: true }
+🎷 NearJam クローラー
+   信頼度しきい値: 0.4
+(node:1980283) Warning: SECURITY WARNING: The SSL modes 'prefer', 'require', and 'verify-ca' are treated as aliases for 'verify-full'.
+In the next major version (pg-connection-string v3.0.0 and pg v9.0.0), these modes will adopt standard libpq semantics, which have weaker security guarantees.
+
+To prepare for this change:
+- If you want the current behavior, explicitly use 'sslmode=verify-full'
+- If you want libpq compatibility now, use 'uselibpqcompat=true&sslmode=require'
+
+See https://www.postgresql.org/docs/current/libpq-ssl.html for libpq SSL mode definitions.
+(Use `node --trace-warnings ...` to show where the warning was created)
+処理するジョブがありません。
+[ループ 14/15] pending=43件 — クロール実行中...
+[dotenv@17.3.1] injecting env (9) from .env.local -- tip: ⚙️  override existing env vars with { override: true }
+[dotenv@17.3.1] injecting env (0) from .env -- tip: 🔐 encrypt with Dotenvx: https://dotenvx.com
+🎷 NearJam クローラー
+   信頼度しきい値: 0.4
+(node:1980411) Warning: SECURITY WARNING: The SSL modes 'prefer', 'require', and 'verify-ca' are treated as aliases for 'verify-full'.
+In the next major version (pg-connection-string v3.0.0 and pg v9.0.0), these modes will adopt standard libpq semantics, which have weaker security guarantees.
+
+To prepare for this change:
+- If you want the current behavior, explicitly use 'sslmode=verify-full'
+- If you want libpq compatibility now, use 'uselibpqcompat=true&sslmode=require'
+
+See https://www.postgresql.org/docs/current/libpq-ssl.html for libpq SSL mode definitions.
+(Use `node --trace-warnings ...` to show where the warning was created)
+処理するジョブがありません。
+[ループ 15/15] pending=43件 — クロール実行中...
+[dotenv@17.3.1] injecting env (9) from .env.local -- tip: ⚙️  load multiple .env files with { path: ['.env.local', '.env'] }
+[dotenv@17.3.1] injecting env (0) from .env -- tip: ⚙️  enable debug logging with { debug: true }
+🎷 NearJam クローラー
+   信頼度しきい値: 0.4
+(node:1980531) Warning: SECURITY WARNING: The SSL modes 'prefer', 'require', and 'verify-ca' are treated as aliases for 'verify-full'.
+In the next major version (pg-connection-string v3.0.0 and pg v9.0.0), these modes will adopt standard libpq semantics, which have weaker security guarantees.
+
+To prepare for this change:
+- If you want the current behavior, explicitly use 'sslmode=verify-full'
+- If you want libpq compatibility now, use 'uselibpqcompat=true&sslmode=require'
+
+See https://www.postgresql.org/docs/current/libpq-ssl.html for libpq SSL mode definitions.
+(Use `node --trace-warnings ...` to show where the warning was created)
+処理するジョブがありません。
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🔄 Phase 5: 低信頼度URL再試行（サイト更新で改善する可能性あり）...
+[dotenv@17.3.1] injecting env (9) from .env.local -- tip: ⚙️  suppress all logs with { quiet: true }
+[dotenv@17.3.1] injecting env (0) from .env -- tip: 🛡️ auth for agents: https://vestauth.com
+🎷 NearJam クローラー
+   信頼度しきい値: 0.4  [low_confidence再試行あり]
+(node:1980610) Warning: SECURITY WARNING: The SSL modes 'prefer', 'require', and 'verify-ca' are treated as aliases for 'verify-full'.
+In the next major version (pg-connection-string v3.0.0 and pg v9.0.0), these modes will adopt standard libpq semantics, which have weaker security guarantees.
+
+To prepare for this change:
+- If you want the current behavior, explicitly use 'sslmode=verify-full'
+- If you want libpq compatibility now, use 'uselibpqcompat=true&sslmode=require'
+
+See https://www.postgresql.org/docs/current/libpq-ssl.html for libpq SSL mode definitions.
+(Use `node --trace-warnings ...` to show where the warning was created)
+処理するジョブがありません。
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+💾 Phase 6: 実行結果を履歴ファイルに保存...
+最終統計: {"venues":209,"sessions":58,"success":0,"error":374,"low":0,"pending":43}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📣 Phase 7: Discord に週次レポートを投稿...
+{"status": "sent"}Discord通知完了
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ 週次クロール完了: 2026-03-22 03:46:20

@@ -1,0 +1,14 @@
+[
+  {
+    "venues": 209,
+    "sessions": 58,
+    "success": 0,
+    "error": 374,
+    "low": 0,
+    "pending": 43,
+    "date": "2026-03-21T18:46:20.232843+00:00",
+    "extra_queries": [],
+    "extra_count": 0,
+    "llm_used": "  ⚠️  gemini: クォータ切れ。次のLLMを試行...\nclaude -p"
+  }
+]

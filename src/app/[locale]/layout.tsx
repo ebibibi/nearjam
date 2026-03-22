@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Script from 'next/script';
 import Link from 'next/link';
 import { Geist, Geist_Mono } from 'next/font/google';
 import { NextIntlClientProvider } from 'next-intl';
@@ -97,6 +98,9 @@ export default async function LocaleLayout({
   return (
     <html lang={locale}>
       <head>
+        <Script async src="https://www.googletagmanager.com/gtag/js?id=G-S7Q6G0HRCV" strategy="afterInteractive" />
+        <Script id="ga4-init" strategy="afterInteractive">{`window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-S7Q6G0HRCV');`}</Script>
+        <Script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9817070969559871" crossOrigin="anonymous" strategy="lazyOnload" />
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#7c3aed" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
