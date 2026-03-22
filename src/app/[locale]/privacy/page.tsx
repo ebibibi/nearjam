@@ -27,7 +27,7 @@ function PrivacyEn() {
   return (
     <div className="mx-auto max-w-3xl px-4 py-12">
       <h1 className="mb-2 text-3xl font-bold text-gray-900">Privacy Policy</h1>
-      <p className="mb-8 text-sm text-gray-500">Last updated: February 28, 2026</p>
+      <p className="mb-8 text-sm text-gray-500">Last updated: March 22, 2026</p>
 
       <div className="space-y-8 text-gray-700">
         <section>
@@ -100,15 +100,40 @@ function PrivacyEn() {
         </section>
 
         <section>
-          <h2 className="mb-3 text-xl font-semibold text-gray-900">7. Cookies</h2>
+          <h2 className="mb-3 text-xl font-semibold text-gray-900">7. Analytics</h2>
           <p>
-            We use session cookies to maintain your login state. These are essential for the
-            Service to function and cannot be disabled.
+            We use Google Analytics (ID: G-S7Q6G0HRCV) to analyze site usage. Google Analytics
+            uses cookies to collect anonymous data. You can opt out by disabling cookies in your
+            browser. See the{' '}
+            <a href="https://marketingplatform.google.com/about/analytics/terms/us/" className="text-violet-600 hover:underline">
+              Google Analytics Terms of Service
+            </a>.
           </p>
         </section>
 
         <section>
-          <h2 className="mb-3 text-xl font-semibold text-gray-900">8. Changes to This Policy</h2>
+          <h2 className="mb-3 text-xl font-semibold text-gray-900">8. Advertising</h2>
+          <p>
+            We use Google AdSense (Publisher ID: ca-pub-9817070969559871) to display advertisements.
+            Google AdSense may use cookies to show ads based on your interests. You can manage your
+            ad preferences at{' '}
+            <a href="https://adssettings.google.com/" className="text-violet-600 hover:underline">
+              Google Ads Settings
+            </a>.
+          </p>
+        </section>
+
+        <section>
+          <h2 className="mb-3 text-xl font-semibold text-gray-900">9. Cookies</h2>
+          <p>
+            We use cookies for session management (login state), analytics (Google Analytics),
+            and advertising (Google AdSense). You can disable cookies in your browser settings,
+            but some features may not work properly.
+          </p>
+        </section>
+
+        <section>
+          <h2 className="mb-3 text-xl font-semibold text-gray-900">10. Changes to This Policy</h2>
           <p>
             We may update this Privacy Policy from time to time. We will notify you of any
             significant changes by posting the new policy on this page with an updated date.
@@ -116,7 +141,7 @@ function PrivacyEn() {
         </section>
 
         <section>
-          <h2 className="mb-3 text-xl font-semibold text-gray-900">9. Contact</h2>
+          <h2 className="mb-3 text-xl font-semibold text-gray-900">11. Contact</h2>
           <p>
             If you have any questions about this Privacy Policy, please contact us at{' '}
             <a href="mailto:ebibibi@gmail.com" className="text-violet-600 hover:underline">
@@ -134,7 +159,7 @@ function PrivacyJa() {
   return (
     <div className="mx-auto max-w-3xl px-4 py-12">
       <h1 className="mb-2 text-3xl font-bold text-gray-900">プライバシーポリシー</h1>
-      <p className="mb-8 text-sm text-gray-500">最終更新日: 2026年2月28日</p>
+      <p className="mb-8 text-sm text-gray-500">最終更新日: 2026年3月22日</p>
 
       <div className="space-y-8 text-gray-700">
         <section>
@@ -201,15 +226,38 @@ function PrivacyJa() {
         </section>
 
         <section>
-          <h2 className="mb-3 text-xl font-semibold text-gray-900">7. Cookie</h2>
+          <h2 className="mb-3 text-xl font-semibold text-gray-900">7. アクセス解析</h2>
           <p>
-            ログイン状態の維持のためセッションCookieを使用します。
-            これはサービスの機能に必須のものです。
+            当サービスでは、Google Analytics（測定ID: G-S7Q6G0HRCV）を使用してサイトの利用状況を分析しています。
+            Google Analyticsは匿名データの収集にCookieを使用します。ブラウザの設定でCookieを無効にすることでオプトアウトできます。
+            <a href="https://marketingplatform.google.com/about/analytics/terms/jp/" className="text-violet-600 hover:underline">
+              Google Analyticsの利用規約
+            </a>もご確認ください。
           </p>
         </section>
 
         <section>
-          <h2 className="mb-3 text-xl font-semibold text-gray-900">8. ポリシーの変更</h2>
+          <h2 className="mb-3 text-xl font-semibold text-gray-900">8. 広告配信</h2>
+          <p>
+            当サービスでは、Google AdSense（パブリッシャーID: ca-pub-9817070969559871）による広告配信を行っています。
+            Google AdSenseはユーザーの興味に基づいた広告を表示するためにCookieを使用する場合があります。
+            <a href="https://adssettings.google.com/" className="text-violet-600 hover:underline">
+              Google広告設定
+            </a>から設定を変更できます。
+          </p>
+        </section>
+
+        <section>
+          <h2 className="mb-3 text-xl font-semibold text-gray-900">9. Cookie</h2>
+          <p>
+            セッション管理（ログイン状態）、アクセス解析（Google Analytics）、
+            広告配信（Google AdSense）のためにCookieを使用します。
+            ブラウザの設定でCookieを無効にできますが、一部機能が正常に動作しない場合があります。
+          </p>
+        </section>
+
+        <section>
+          <h2 className="mb-3 text-xl font-semibold text-gray-900">10. ポリシーの変更</h2>
           <p>
             本ポリシーは随時更新される場合があります。
             重要な変更がある場合は、このページに更新日とともに掲載してお知らせします。
@@ -217,7 +265,7 @@ function PrivacyJa() {
         </section>
 
         <section>
-          <h2 className="mb-3 text-xl font-semibold text-gray-900">9. お問い合わせ</h2>
+          <h2 className="mb-3 text-xl font-semibold text-gray-900">11. お問い合わせ</h2>
           <p>
             本ポリシーに関するご質問は{' '}
             <a href="mailto:ebibibi@gmail.com" className="text-violet-600 hover:underline">
