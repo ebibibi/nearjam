@@ -41,7 +41,7 @@ export default async function SessionQRPage({ params }: Props) {
     )
   }
 
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://nearjam.app'
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://nearjam.ebisuda.net'
   const checkinUrl = `${baseUrl}/${locale}/sessions/${sessionId}/checkin`
 
   return (

@@ -123,7 +123,7 @@ export default async function SessionDetailPage({
   const gcalFormat = (d: Date) => d.toISOString().replace(/[-:]/g, '').slice(0, 15) + 'Z';
   const gcalEnd = new Date(startDate.getTime() + (session.durationMinutes ?? 120) * 60 * 1000);
   const gcalLocation = session.venue?.address ?? session.venue?.name ?? '';
-  const gcalDetails = t('session.gcalDetails', { url: `${process.env.NEXT_PUBLIC_APP_URL ?? 'https://nearjam.app'}/${locale}/sessions/${id}` });
+  const gcalDetails = t('session.gcalDetails', { url: `${process.env.NEXT_PUBLIC_APP_URL ?? 'https://nearjam.ebisuda.net'}/${locale}/sessions/${id}` });
   const gcalUrl = `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(session.title)}&dates=${gcalFormat(startDate)}/${gcalFormat(gcalEnd)}&details=${encodeURIComponent(gcalDetails)}&location=${encodeURIComponent(gcalLocation)}`;
 
   // Check if current user is registered
@@ -235,7 +235,7 @@ export default async function SessionDetailPage({
         <div className="mt-2 flex items-center gap-2">
           <ShareButton
             title={session.title}
-            url={`${process.env.NEXT_PUBLIC_APP_URL ?? 'https://nearjam.app'}/${locale}/sessions/${id}`}
+            url={`${process.env.NEXT_PUBLIC_APP_URL ?? 'https://nearjam.ebisuda.net'}/${locale}/sessions/${id}`}
           />
           <a
             href={gcalUrl}

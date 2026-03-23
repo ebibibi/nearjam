@@ -115,7 +115,7 @@ export default async function MusicianProfilePage({
     else if (conn?.status === 'PENDING') connectionStatus = 'pending';
   }
 
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://nearjam.app';
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://nearjam.ebisuda.net';
   // JSON.stringify escapes all HTML special chars, making this XSS-safe
   const jsonLdString = JSON.stringify({
     '@context': 'https://schema.org',
