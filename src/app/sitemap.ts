@@ -3,7 +3,7 @@ import { prisma } from '@/lib/prisma';
 
 export const dynamic = 'force-dynamic';
 
-const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://nearjam.app';
+const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://nearjam.ebisuda.net';
 const LOCALES = ['ja', 'en'] as const;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
