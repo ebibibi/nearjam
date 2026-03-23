@@ -70,7 +70,7 @@ export default async function StudioDetailPage({
     ? `https://www.google.com/maps/dir/?api=1&destination=${mapsDestination}`
     : null;
 
-  const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://nearjam.app';
+  const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://nearjam.ebisuda.net';
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'MusicVenue',
@@ -103,7 +103,7 @@ export default async function StudioDetailPage({
             )}
             <ShareButton
               title={studio.name}
-              url={`${process.env.NEXT_PUBLIC_APP_URL ?? 'https://nearjam.app'}/${locale}/studios/${id}`}
+              url={`${process.env.NEXT_PUBLIC_APP_URL ?? 'https://nearjam.ebisuda.net'}/${locale}/studios/${id}`}
             />
           </div>
         </div>

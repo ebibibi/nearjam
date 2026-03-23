@@ -35,7 +35,7 @@ export async function sendMatchSessionEmail(payload: MatchSessionEmailPayload): 
   if (!client) return false;
 
   const { locale = 'ja' } = payload;
-  const appUrl = process.env.NEXTAUTH_URL ?? 'https://nearjam.app';
+  const appUrl = process.env.NEXTAUTH_URL ?? 'https://nearjam.ebisuda.net';
   const sessionUrl = `${appUrl}/${locale}/sessions/${payload.sessionId}`;
 
   const subject = locale === 'ja'

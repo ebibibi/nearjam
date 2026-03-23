@@ -184,7 +184,7 @@ export default async function VenueDetailPage({
         <div className="mt-2">
           <ShareButton
             title={`${venue.name} | NearJam`}
-            url={`${process.env.NEXT_PUBLIC_APP_URL ?? 'https://nearjam.app'}/${locale}/venues/${id}`}
+            url={`${process.env.NEXT_PUBLIC_APP_URL ?? 'https://nearjam.ebisuda.net'}/${locale}/venues/${id}`}
           />
         </div>
 
