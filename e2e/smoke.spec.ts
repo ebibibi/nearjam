@@ -24,15 +24,15 @@ test.describe('トップページ', () => {
     await expect(headerLogo(page)).toBeVisible();
   });
 
-  test('ヒーローセクションのテキストとボタンが表示される', async ({ page }) => {
+  test('ヒーローセクションのタイトルと検索フォームが表示される', async ({ page }) => {
     await page.goto('/en');
 
     // ヒーロータイトル
     await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
 
-    // CTA ボタン（2 つ）
-    await expect(page.getByRole('link', { name: /Browse Sessions/i })).toBeVisible();
-    await expect(page.getByRole('link', { name: /Find Venues/i })).toBeVisible();
+    // 検索フォーム（検索ボックス + Search ボタン）
+    await expect(page.getByRole('searchbox')).toBeVisible();
+    await expect(page.getByRole('button', { name: /Search/i })).toBeVisible();
   });
 
   test('ナビゲーションメニューが表示される', async ({ page }) => {
@@ -93,17 +93,18 @@ test.describe('日本語ロケール', () => {
 });
 
 test.describe('ナビゲーション', () => {
-  test('ヒーローの Browse Sessions ボタンでセッションページに遷移する', async ({ page }) => {
+  test('検索フォーム送信で会場ページに遷移する', async ({ page }) => {
     await page.goto('/en');
-    await page.getByRole('link', { name: /Browse Sessions/i }).click();
-    await expect(page).toHaveURL(/\/en\/sessions/);
+    await page.getByRole('button', { name: /Search/i }).click();
+    await expect(page).toHaveURL(/\/en\/venues/);
     await expect(page).toHaveTitle(/NearJam/);
   });
 
-  test('ヒーローの Find Venues ボタンで会場ページに遷移する', async ({ page }) => {
+  test('ナビメニューからセッションページに遷移する', async ({ page }) => {
     await page.goto('/en');
-    await page.getByRole('link', { name: /Find Venues/i }).click();
-    await expect(page).toHaveURL(/\/en\/venues/);
+    const nav = page.getByRole('navigation');
+    await nav.getByRole('link', { name: /Sessions/i }).click();
+    await expect(page).toHaveURL(/\/en\/sessions/);
     await expect(page).toHaveTitle(/NearJam/);
   });
 
