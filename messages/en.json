@@ -73,9 +73,7 @@
   "home": {
     "hero": {
       "title": "Find your next jam session",
-      "subtitle": "Discover venues, match with musicians, and play the songs you love — near you or online via SYNCROOM.",
-      "ctaSessions": "Browse Sessions",
-      "ctaVenues": "Find Venues"
+      "subtitle": "Discover venues, match with musicians, and play the songs you love — near you or online via SYNCROOM."
     },
     "featuredVenues": "Featured Venues",
     "upcomingSessions": "Upcoming Sessions",
