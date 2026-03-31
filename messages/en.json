@@ -106,12 +106,21 @@
       "musician": {
         "label": "For Musicians",
         "icon": "🎸",
-        "items": [
-          "Search jam session venues by genre, area, and day of the week",
-          "Check regular session schedules, fees, and skill levels at a glance",
-          "Get directions and visit venue websites with one tap",
-          "Create your profile and connect with fellow musicians"
-        ],
+        "usecase1": {
+          "icon": "🎷",
+          "title": "Find Sessions",
+          "desc": "Search nearby jam sessions by day, genre, and area. Check schedules, fees, and skill levels at a glance."
+        },
+        "usecase2": {
+          "icon": "🎵",
+          "title": "Find by Songs You Want to Play",
+          "desc": "Add songs to your wishlist. Get matched with sessions playing those songs and musicians who want to play them too."
+        },
+        "usecase3": {
+          "icon": "🤝",
+          "title": "Find Musicians to Play With",
+          "desc": "Try playing together at a session before committing to a band. Find compatible musicians through real jam experiences."
+        },
         "cta": "Find Sessions →"
       },
       "venue": {
