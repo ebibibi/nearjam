@@ -100,7 +100,43 @@
     "todaysSessions": "Today's Sessions",
     "tomorrowsSessions": "Tomorrow's Sessions",
     "noSessionsOnDay": "No sessions listed for this day yet",
-    "irregularSessions": "Irregular / unscheduled sessions"
+    "irregularSessions": "Irregular / unscheduled sessions",
+    "guide": {
+      "title": "What you can do with NearJam",
+      "musician": {
+        "label": "For Musicians",
+        "icon": "🎸",
+        "items": [
+          "Search jam session venues by genre, area, and day of the week",
+          "Check regular session schedules, fees, and skill levels at a glance",
+          "Get directions and visit venue websites with one tap",
+          "Create your profile and connect with fellow musicians"
+        ],
+        "cta": "Find Sessions →"
+      },
+      "venue": {
+        "label": "For Venue Owners",
+        "icon": "🏠",
+        "items": [
+          "List your venue on NearJam for free",
+          "Manage your regular session schedules",
+          "Get a Verified badge through venue verification",
+          "Increase visibility among local musicians"
+        ],
+        "cta": "Register Your Venue →"
+      },
+      "newcomer": {
+        "label": "New to Jam Sessions?",
+        "icon": "👋",
+        "items": [
+          "A jam session is an event where musicians gather and play together on the spot",
+          "Look for venues marked \"Beginner-friendly\" to start",
+          "Any instrument is welcome — guitar, bass, drums, vocals, horns...",
+          "Start by finding a venue nearby and checking out the vibe"
+        ],
+        "cta": "Find Beginner-Friendly Venues →"
+      }
+    }
   },
   "profile": {
     "setup": {

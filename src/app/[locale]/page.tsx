@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/Button';
 import { Suspense } from 'react';
 import { HomeSearch } from '@/components/home/HomeSearch';
 import { TodaysSessions } from '@/components/home/TodaysSessions';
+import { UserGuide } from '@/components/home/UserGuide';
 import type { Metadata } from 'next';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
@@ -109,6 +110,11 @@ export default async function HomePage({
           </div>
         </div>
       )}
+
+      {/* ── ユーザータイプ別ガイド ── */}
+      <Suspense fallback={null}>
+        <UserGuide />
+      </Suspense>
 
       {/* ── ジャンルクイックフィルタ ── */}
       {topGenres && topGenres.length > 0 && (
