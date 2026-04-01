@@ -633,7 +633,14 @@
     "noSongs": "No songs found",
     "signInToWishlist": "Sign in to add songs to your wishlist",
     "preferredKey": "My preferred key",
-    "keyAny": "Any key"
+    "keyAny": "Any key",
+    "artistSearchPlaceholder": "Search by artist name or genre…",
+    "popularArtists": "Popular artists at sessions",
+    "noMatchingSessions": "No matching sessions found",
+    "matchingSessionsCount": " sessions found",
+    "verifySource": "Verify source",
+    "findByArtist": "Find sessions by artist or genre",
+    "findBySong": "Find sessions by song (sign in required)"
   },
   "maps": {
     "viewMap": "View map",

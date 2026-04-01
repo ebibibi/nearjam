@@ -633,7 +633,14 @@
     "noSongs": "曲が見つかりませんでした",
     "signInToWishlist": "ウィッシュリストへの追加にはログインが必要です",
     "preferredKey": "希望キー",
-    "keyAny": "キー不問"
+    "keyAny": "キー不問",
+    "artistSearchPlaceholder": "アーティスト名・ジャンルで検索…",
+    "popularArtists": "よく演奏されるアーティスト",
+    "noMatchingSessions": "マッチするセッションが見つかりませんでした",
+    "matchingSessionsCount": "件のセッションが見つかりました",
+    "verifySource": "元情報を確認",
+    "findByArtist": "アーティスト・ジャンルからセッションを探す",
+    "findBySong": "曲名からセッションを探す（ログイン後）"
   },
   "maps": {
     "viewMap": "地図で見る",
