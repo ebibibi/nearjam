@@ -57,13 +57,14 @@ function callLLM(prompt: string): string {
   fs.writeFileSync(tmpFile, prompt);
 
   const envPath = `${process.env.HOME}/.npm-global/bin:${process.env.HOME}/.local/bin:${process.env.PATH}`;
-  const env = { ...process.env, PATH: envPath };
-  const cmds = ['gemini', 'claude', 'codex'];
+  // Remove CLAUDECODE to allow claude -p nesting from scheduler
+  const { CLAUDECODE: _, ...cleanEnv } = process.env;
+  const env = { ...cleanEnv, PATH: envPath };
+  const cmds = ['claude', 'gemini', 'codex'];
   try {
     for (const cmd of cmds) {
       try {
         execFileSync('which', [cmd], { stdio: 'ignore', env });
-        if (cmd === 'claude' && process.env.CLAUDECODE) continue;
         // Read file content and pass as -p argument (gemini/claude/codex all accept -p "text")
         const result = execFileSync(cmd, ['-p', prompt.substring(0, 4000)], {
           encoding: 'utf-8',

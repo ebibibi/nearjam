@@ -23,10 +23,12 @@ const LIMIT = limitArg ? parseInt(limitArg.split('=')[1] || '20', 10) : 20;
 
 function callLLM(prompt: string): string {
   const envPath = `${process.env.HOME}/.npm-global/bin:${process.env.HOME}/.local/bin:${process.env.PATH}`;
-  const env = { ...process.env, PATH: envPath };
+  // Remove CLAUDECODE to allow claude -p nesting from scheduler
+  const { CLAUDECODE: _, ...cleanEnv } = process.env;
+  const env = { ...cleanEnv, PATH: envPath };
 
-  // Gemini preferred: has built-in web search
-  const cmds = ['gemini', 'codex'];
+  // Claude preferred: better at structured search results
+  const cmds = ['claude', 'gemini', 'codex'];
   for (const cmd of cmds) {
     try {
       execFileSync('which', [cmd], { stdio: 'ignore', env });
