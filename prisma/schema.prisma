@@ -296,6 +296,8 @@ model SessionTendency {
   capacity         Int?
   houseEquipment   String?
   equipmentDetails String?    @db.Text
+  typicalArtists   String[]   // よく演奏されるアーティスト（例: ["Beatles", "東京事変"]）
+  typicalSongs     String[]   // よく演奏される曲名（例: ["Autumn Leaves", "群青日和"]）
   sourceType       SourceType @default(CROWDSOURCED)
   sourceUserId     String?    // 口コミ投稿者（auto-collected の場合は null）
   sourceUrl        String?    // Bot収集元URL
