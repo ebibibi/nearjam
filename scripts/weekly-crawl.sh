@@ -43,8 +43,8 @@ select_llm_cmd() {
   if command -v gemini &>/dev/null; then
     # Geminiのクォータチェック（簡易: 実行してみてエラーなら次へ）
     local test_out
-    test_out=$(gemini -p "test" 2>&1 || true)
-    if echo "$test_out" | grep -qiE "QuotaError|exhausted|rate.limit"; then
+    test_out=$(timeout 30 gemini -p "test" 2>&1 || true)
+    if echo "$test_out" | grep -qiE "QuotaError|exhausted|capacity|rate.limit|TerminalQuota"; then
       log "  ⚠️  gemini: クォータ切れ。次のLLMを試行..."
     else
       echo "gemini -p"
@@ -249,12 +249,8 @@ fi
 # ──────────────────────────────────────────────────────────────
 log_section "🏷️ Phase 5.5: セッション傾向にアーティスト/曲をタグ付け..."
 
-if [ -n "$LLM_CMD" ]; then
-  $TS_NODE_CMD scripts/tag-tendencies.ts \
-    2>&1 | tee -a "$LOG_FILE" || log "⚠️  tag-tendencies でエラーが発生（処理を継続）"
-else
-  log "LLM CLI が利用不可のため、タグ付けをスキップ"
-fi
+$TS_NODE_CMD scripts/tag-tendencies.ts --limit=30 \
+  2>&1 | tee -a "$LOG_FILE" || log "⚠️  tag-tendencies でエラーが発生（処理を継続）"
 
 # ──────────────────────────────────────────────────────────────
 # Phase 5.6: HP未発見会場の公式HP検索（LLM Web検索）

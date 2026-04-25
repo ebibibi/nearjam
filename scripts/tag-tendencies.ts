@@ -22,6 +22,8 @@ import { prisma } from '../src/lib/prisma';
 import { execFileSync } from 'child_process';
 
 const DRY_RUN = process.argv.includes('--dry-run');
+const LIMIT_ARG = process.argv.find(a => a.startsWith('--limit='));
+const LIMIT = LIMIT_ARG ? parseInt(LIMIT_ARG.split('=')[1], 10) : 30;
 
 /** Fetch a URL and return text content (stripped of HTML tags), truncated */
 async function fetchPageText(url: string, maxChars = 3000): Promise<string | null> {
@@ -67,11 +69,14 @@ function callLLM(prompt: string): string {
         // Read file content and pass as -p argument (gemini/claude/codex all accept -p "text")
         const result = execFileSync(cmd, ['-p', prompt.substring(0, 4000)], {
           encoding: 'utf-8',
-          timeout: 60000,
+          timeout: 45000,
           env,
           stdio: ['pipe', 'pipe', 'pipe'],
         });
-        return result.trim();
+        const text = result.trim();
+        // Gemini quota exhaustion — try next LLM
+        if (/exhausted|QuotaError|quota.*reset/i.test(text)) continue;
+        return text;
       } catch {
         continue;
       }
@@ -116,17 +121,15 @@ async function main() {
     },
   });
 
-  console.log(`\n🎵 ${tendencies.length} 件の SessionTendency をタグ付けします${DRY_RUN ? '（ドライラン）' : ''}\n`);
+  const untagged = tendencies.filter(t => t.typicalArtists.length === 0 && t.typicalSongs.length === 0);
+  const skippedAlready = tendencies.length - untagged.length;
+  const targets = untagged.slice(0, LIMIT);
+  console.log(`\n🎵 ${tendencies.length} 件中 ${untagged.length} 件未タグ付け → 今回 ${targets.length} 件処理${DRY_RUN ? '（ドライラン）' : ''}（上限: ${LIMIT}）\n`);
 
   let updated = 0;
-  let skipped = 0;
+  let skipped = skippedAlready;
 
-  for (const t of tendencies) {
-    if (t.typicalArtists.length > 0 || t.typicalSongs.length > 0) {
-      skipped++;
-      continue;
-    }
-
+  for (const t of targets) {
     const url = t.sourceUrl || t.venue.websiteUrl;
     let pageText = '';
     if (url) {
