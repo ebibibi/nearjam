@@ -1,34 +1,40 @@
-import { spawnSync } from 'child_process';
-import { writeFileSync, unlinkSync } from 'fs';
+import { execFileSync } from 'child_process';
+import { writeFileSync, unlinkSync, readFileSync } from 'fs';
 import { tmpdir } from 'os';
 import { join } from 'path';
 import { ExtractionResultSchema, type ExtractionResult } from './types';
 
-/** 利用可能な LLM CLI を優先順位付きで検出する（spawnSync で安全に実行） */
-function detectAvailableLlm(): string | null {
-  const candidates = ['gemini', 'codex'];
+const LLM_PATH = `${process.env.HOME}/.npm-global/bin:${process.env.HOME}/.local/bin:${process.env.PATH ?? ''}`;
 
-  // Claude Code 内ではネスト不可なので除外
-  if (!process.env.CLAUDECODE) {
-    candidates.splice(1, 0, 'claude');
-  }
-
-  for (const cmd of candidates) {
-    const result = spawnSync('bash', ['-ic', `which ${cmd}`], {
-      encoding: 'utf8',
-      timeout: 5_000,
-    });
-    if (result.status === 0 && result.stdout.trim()) {
-      return cmd;
-    }
+function findExecutable(cmd: string): string | null {
+  for (const dir of LLM_PATH.split(':')) {
+    if (!dir) continue;
+    try {
+      const result = execFileSync('test', ['-x', `${dir}/${cmd}`], { stdio: 'ignore' });
+      return `${dir}/${cmd}`;
+    } catch { /* not found in this dir */ }
   }
   return null;
 }
 
-function buildLlmCommand(llmCmd: string, promptFile: string): string {
-  // promptFile は内部生成のtempファイルパスなのでインジェクションリスクなし
-  return `${llmCmd} -p "$(cat "${promptFile}")"`;
+/** 利用可能な LLM CLI を優先順位付きで検出する */
+function detectAvailableLlms(): string[] {
+  const candidates = ['gemini', 'codex'];
+
+  if (!process.env.CLAUDECODE) {
+    candidates.splice(1, 0, 'claude');
+  }
+
+  const available: string[] = [];
+  for (const cmd of candidates) {
+    const path = findExecutable(cmd);
+    if (path) available.push(path);
+  }
+  return available;
 }
+
+const AVAILABLE_LLMS = detectAvailableLlms();
+let currentLlmIdx = 0;
 
 const SYSTEM_PROMPT = `あなたは日本のジャムセッション情報収集の専門家です。
 Webページの本文から、以下の情報を抽出してください。
@@ -117,34 +123,53 @@ JSONのみ返してください。`;
 
   const fullPrompt = `${SYSTEM_PROMPT}\n\n${userPrompt}`;
 
-  const llmCmd = detectAvailableLlm();
-  if (!llmCmd) {
+  if (AVAILABLE_LLMS.length === 0) {
     throw new Error('利用可能な LLM CLI が見つかりません (gemini/claude/codex)');
   }
 
   const promptFile = join(tmpdir(), `nearjam-crawl-${Date.now()}.txt`);
   try {
     writeFileSync(promptFile, fullPrompt, 'utf8');
+    const promptContent = readFileSync(promptFile, 'utf8');
 
-    const command = buildLlmCommand(llmCmd, promptFile);
-    console.log(`  LLM: ${llmCmd} を使用`);
+    for (let attempt = 0; attempt < AVAILABLE_LLMS.length; attempt++) {
+      const llmCmd = AVAILABLE_LLMS[currentLlmIdx % AVAILABLE_LLMS.length];
+      const llmName = llmCmd.split('/').pop() ?? llmCmd;
+      console.log(`  LLM: ${llmName} を使用`);
 
-    const result = spawnSync(
-      'bash',
-      ['-ic', command],
-      { timeout: 90_000, encoding: 'utf8' },
-    );
+      try {
+        const result = execFileSync(llmCmd, ['-p', promptContent], {
+          timeout: 90_000,
+          encoding: 'utf8',
+          env: { ...process.env, PATH: LLM_PATH },
+          stdio: ['pipe', 'pipe', 'pipe'],
+          maxBuffer: 2 * 1024 * 1024,
+        });
 
-    if (result.status !== 0 && !result.stdout) {
-      const stderr = result.stderr?.slice(0, 300) ?? 'unknown';
-      throw new Error(`LLM (${llmCmd}) 呼び出し失敗: ${stderr}`);
+        if (result.includes('QuotaError') || result.includes('exhausted') || result.includes('rate limit')) {
+          console.warn(`  ⚠️ ${llmName} クォータ切れ → 次のLLMにフォールバック`);
+          currentLlmIdx++;
+          continue;
+        }
+
+        return parseLlmOutput(result);
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err);
+        if (msg.includes('QuotaError') || msg.includes('exhausted') || msg.includes('rate limit')) {
+          console.warn(`  ⚠️ ${llmName} クォータ切れ → 次のLLMにフォールバック`);
+          currentLlmIdx++;
+          continue;
+        }
+        if (attempt < AVAILABLE_LLMS.length - 1) {
+          console.warn(`  ⚠️ ${llmName} 失敗 → 次のLLMにフォールバック`);
+          currentLlmIdx++;
+          continue;
+        }
+        throw new Error(`LLM (${llmName}) 呼び出し失敗: ${msg.slice(0, 300)}`);
+      }
     }
 
-    if (result.stderr) {
-      console.warn(`  LLM stderr: ${result.stderr.slice(0, 200)}`);
-    }
-
-    return parseLlmOutput(result.stdout ?? '');
+    throw new Error('全LLMが応答不能');
   } finally {
     try { unlinkSync(promptFile); } catch { /* ignore */ }
   }
@@ -152,7 +177,7 @@ JSONのみ返してください。`;
 
 /** LLM CLI の出力から JSON を抽出してバリデーションする */
 function parseLlmOutput(raw: string): ExtractionResult {
-  // bash -ic の警告行（tput等）を除去してJSONの開始行を探す
+  // LLM出力から非JSON行を除去してJSONの開始行を探す
   const lines = raw.split('\n');
   const jsonStartIdx = lines.findIndex(l => l.trimStart().startsWith('{'));
 
