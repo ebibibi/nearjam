@@ -1,32 +1,10 @@
-import NextAuth, { type NextAuthConfig } from "next-auth";
+import NextAuth from "next-auth";
 import Google from "next-auth/providers/google";
 import Resend from "next-auth/providers/resend";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/lib/prisma";
 
-export let lastAuthError: { time: string; error: string; stack?: string } | null = null;
-
-const authLogger: NextAuthConfig["logger"] = {
-  error(error) {
-    const entry = {
-      time: new Date().toISOString(),
-      error: error instanceof Error ? `${error.name}: ${error.message}` : String(error),
-      stack: error instanceof Error ? error.stack?.split("\n").slice(0, 8).join("\n") : undefined,
-    };
-    lastAuthError = entry;
-    console.error("[AUTH_ERROR]", JSON.stringify(entry));
-  },
-  warn(code) {
-    console.warn("[AUTH_WARN]", code);
-  },
-  debug(message, metadata) {
-    console.log("[AUTH_DEBUG]", message, metadata ? JSON.stringify(metadata).substring(0, 500) : "");
-  },
-};
-
 export const { handlers, signIn, signOut, auth } = NextAuth({
-  debug: true,
-  logger: authLogger,
   adapter: PrismaAdapter(prisma),
   providers: [
     Google({
