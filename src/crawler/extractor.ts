@@ -48,21 +48,50 @@ typicalDayOfWeek は定期セッションの開催曜日で、最も重要なフ
 数値で返してください: 0=日曜 1=月 2=火 3=水 4=木 5=金 6=土
 
 以下のような日本語表現から曜日を推論してください:
-- 「毎週水曜」「水曜日」→ 3
+- 「毎週木曜」「毎週木曜日開催」→ 4
+- 「毎週水曜」「水曜ジャムセッション」→ 3
+- 「金曜日のジャムナイト」「毎週金曜」→ 5
 - 「毎週金・土」→ セッションを2つに分けて金=5, 土=6
-- 「第2・第4金曜」→ 5（不定期でも曜日が固定なら抽出）
+- 「第2・第4土曜日」→ 6（不定期でも曜日が固定なら抽出）
+- 「月2回日曜日」→ 0
 - 「月曜定休」→ 定休日であってセッション曜日ではない。抽出しない
-- セッション名に曜日が含まれる場合（例: 「Tuesday Jazz Night」→ 2）
+- セッション名に曜日が含まれる場合（例: "Wednesday Jazz Session" → 3, "Tuesday Jazz Night" → 2）
 - カレンダーやスケジュール表から曜日パターンを読み取れる場合も抽出する
 - 曜日が本当に判別できない場合のみ省略する
 
 ## 出力形式
 必ずこのJSONのみを返してください（マークダウンコードブロック不要）:
+
+### 例（参考）
 {
-  "venue": { ... },
-  "sessions": [ ... ],
-  "confidence": 0.0〜1.0,
-  "notes": "備考"
+  "venue": {
+    "name": "Jazz Bar サンプル",
+    "address": "東京都新宿区西新宿1-2-3",
+    "nearestStation": "新宿",
+    "walkMinutes": 5,
+    "websiteUrl": "https://example-jazzbar.jp"
+  },
+  "sessions": [
+    {
+      "name": "木曜ジャズセッション",
+      "typicalDayOfWeek": 4,
+      "typicalStartTime": "19:30",
+      "typicalEndTime": "22:00",
+      "genres": ["Jazz"],
+      "levelRange": "初心者歓迎",
+      "entrySystem": "チャージ1500円+1ドリンク"
+    },
+    {
+      "name": "日曜ブルースジャム",
+      "typicalDayOfWeek": 0,
+      "typicalStartTime": "15:00",
+      "typicalEndTime": "18:00",
+      "genres": ["Blues"],
+      "entrySystem": "無料（ドリンクオーダー制）"
+    }
+  ],
+  "confidence": 0.85,
+  "notes": "木曜は毎週、日曜は月2回開催"
 }`;
 
 /**

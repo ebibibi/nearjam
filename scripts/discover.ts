@@ -269,7 +269,7 @@ function sleep(ms: number): Promise<void> {
 // ── メイン ──────────────────────────────────────────────────────
 
 async function main(): Promise<void> {
-  console.log(`🎷 NearJam 会場発見スクリプト（LLM: ${LLM_CMD}）`);
+  console.log(`🎷 NearJam 会場発見スクリプト（LLM: ${AVAILABLE_LLMS.join(', ') || 'なし'}）`);
   if (DRY_RUN) console.log('  [DRY RUN: DBへの書き込みなし]');
   if (NO_CRAWL) console.log('  [--no-crawl: URL登録のみ]');
 
