@@ -71,7 +71,12 @@ export async function POST(req: NextRequest) {
   }
 
   const tendencies = await prisma.sessionTendency.findMany({
-    where: { isActive: true, typicalDayOfWeek: { not: null } },
+    where: {
+      isActive: true,
+      typicalDayOfWeek: { not: null },
+      sourceType: 'AUTO_COLLECTED',
+      sourceUrl: { not: null },
+    },
     include: { venue: { select: { id: true } } },
   })
 

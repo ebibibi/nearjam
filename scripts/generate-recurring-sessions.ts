@@ -111,6 +111,8 @@ async function main() {
     where: {
       isActive: true,
       typicalDayOfWeek: { not: null },
+      sourceType: 'AUTO_COLLECTED',
+      sourceUrl: { not: null },
     },
     include: {
       venue: { select: { id: true, name: true } },
