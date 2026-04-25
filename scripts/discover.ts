@@ -15,7 +15,7 @@ import * as dotenv from 'dotenv';
 dotenv.config({ path: '.env.local' });
 dotenv.config({ path: '.env' });
 
-import { spawnSync } from 'child_process';
+import { execFileSync } from 'child_process';
 import { writeFileSync, readFileSync, unlinkSync } from 'fs';
 import { tmpdir } from 'os';
 import { join } from 'path';
@@ -108,11 +108,23 @@ type VenueItem = z.infer<typeof VenueItemSchema>;
 // LLM CLI の選択（gemini > claude > codex）
 // discover はウェブ検索機能が重要なので gemini を優先
 // ただしクォータ切れ等でフォールバックする
+const LLM_PATH = `${process.env.HOME}/.npm-global/bin:${process.env.HOME}/.local/bin:${process.env.PATH ?? ''}`;
+
+function findExecutable(cmd: string): string | null {
+  for (const dir of LLM_PATH.split(':')) {
+    if (!dir) continue;
+    try {
+      execFileSync('test', ['-x', `${dir}/${cmd}`], { stdio: 'ignore' });
+      return `${dir}/${cmd}`;
+    } catch { /* not found */ }
+  }
+  return null;
+}
+
 function detectAvailableLlms(): string[] {
   const available: string[] = [];
   for (const cmd of ['gemini', 'claude', 'codex']) {
-    const check = spawnSync('bash', ['-ic', `which ${cmd}`], { encoding: 'utf8' });
-    if (check.status === 0) available.push(cmd);
+    if (findExecutable(cmd)) available.push(cmd);
   }
   return available;
 }
@@ -130,37 +142,37 @@ function getCurrentLlm(): string {
 console.log(`  🤖 利用可能LLM: ${AVAILABLE_LLMS.join(', ')}`);
 
 function callLlm(prompt: string): string {
-  const promptFile = join(tmpdir(), `nearjam-search-${Date.now()}.txt`);
-  try {
-    writeFileSync(promptFile, prompt, 'utf8');
+  for (let attempt = 0; attempt < AVAILABLE_LLMS.length; attempt++) {
+    const llm = getCurrentLlm();
+    const llmPath = findExecutable(llm);
+    if (!llmPath) { currentLlmIdx++; continue; }
 
-    for (let attempt = 0; attempt < AVAILABLE_LLMS.length; attempt++) {
-      const llm = getCurrentLlm();
-      const result = spawnSync(
-        'bash',
-        ['-ic', `${llm} -p "$(cat "${promptFile}")" 2>&1`],
-        { encoding: 'utf8', timeout: 90_000 },
-      );
+    try {
+      const output = execFileSync(llmPath, ['-p', prompt.substring(0, 8000)], {
+        encoding: 'utf8',
+        timeout: 90_000,
+        env: { ...process.env, PATH: LLM_PATH },
+        stdio: ['pipe', 'pipe', 'pipe'],
+        maxBuffer: 2 * 1024 * 1024,
+      });
 
-      const output = result.stdout ?? '';
-
-      // クォータ切れ・エラー検出 → 次のLLMにフォールバック
       if (output.includes('QuotaError') || output.includes('exhausted') ||
-          output.includes('rate limit') || output.includes('429') ||
-          (output.trim() === '' && result.status !== 0)) {
+          output.includes('rate limit') || output.includes('429')) {
         console.warn(`  ⚠️  ${llm} がエラー（クォータ切れ等）。次のLLMに切り替え...`);
         currentLlmIdx++;
         continue;
       }
 
       return output;
+    } catch {
+      console.warn(`  ⚠️  ${llm} が実行失敗。次のLLMに切り替え...`);
+      currentLlmIdx++;
+      continue;
     }
-
-    console.warn('  ⚠️  全LLMが応答不能');
-    return '';
-  } finally {
-    try { unlinkSync(promptFile); } catch { /* ignore */ }
   }
+
+  console.warn('  ⚠️  全LLMが応答不能');
+  return '';
 }
 
 function searchVenuesWithLlm(query: string): VenueItem[] {

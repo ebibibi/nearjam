@@ -23,10 +23,11 @@ HISTORY_FILE="$SCRIPTS_DIR/crawl-history.json"
 TMPDIR_LOCAL="$NEARJAM_DIR/.tmp"
 mkdir -p "$TMPDIR_LOCAL"
 export TMPDIR="$TMPDIR_LOCAL"
+export DOTENV_CONFIG_PATH="$NEARJAM_DIR/.env.local"
 EXTRA_QUERIES_FILE="$(mktemp "$TMPDIR_LOCAL/nearjam-extra-queries-XXXXXXXX.json")"
 PROMPT_FILE="$(mktemp "$TMPDIR_LOCAL/nearjam-prompt-XXXXXXXX.txt")"
 LOG_FILE="$(mktemp "$TMPDIR_LOCAL/nearjam-weekly-XXXXXXXX.log")"
-TS_NODE_CMD="npx ts-node --compiler-options {\"module\":\"CommonJS\"}"
+TS_NODE_CMD="npx ts-node -r dotenv/config --compiler-options {\"module\":\"CommonJS\"}"
 
 cd "$NEARJAM_DIR"
 
