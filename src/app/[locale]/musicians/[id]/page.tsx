@@ -129,8 +129,6 @@ export default async function MusicianProfilePage({
 
   return (
     <div className="max-w-2xl space-y-6">
-      {/* JSON-LD: JSON.stringify ensures XSS-safe output */}
-      {/* eslint-disable-next-line react/no-danger */}
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString }} />
       <Link href={`/${locale}/sessions`} className="text-sm text-violet-600 hover:underline">
         ← {t('backToSessions')}

@@ -3,7 +3,6 @@ import { Readability } from '@mozilla/readability';
 import { JSDOM } from 'jsdom';
 import TurndownService from 'turndown';
 import { mkdirSync } from 'fs';
-import { join } from 'path';
 
 const turndown = new TurndownService({
   headingStyle: 'atx',

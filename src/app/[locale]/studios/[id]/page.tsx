@@ -84,7 +84,6 @@ export default async function StudioDetailPage({
 
   return (
     <div className="max-w-3xl space-y-8">
-      {/* eslint-disable-next-line react/no-danger */}
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString }} />
       <div>
         <Link
