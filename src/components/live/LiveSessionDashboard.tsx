@@ -68,7 +68,7 @@ export function LiveSessionDashboard({ sessionId, sessionTitle }: LiveSessionDas
     } finally {
       setCompleting(false);
     }
-  }, [sessionId, router, t]);
+  }, [sessionId, router, t, locale]);
 
   return (
     <div className="space-y-6">

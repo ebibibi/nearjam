@@ -27,7 +27,7 @@ export async function GET() {
     return ok({ user, profile: null });
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+   
   const { areaLat: _aLat, areaLng: _aLng, ...safeProfile } = profile;
 
   return ok({ profile: safeProfile });
@@ -84,7 +84,7 @@ export async function PUT(req: NextRequest) {
     include: { instruments: true, genres: true },
   });
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+   
   const { areaLat: _l1, areaLng: _l2, ...safeUpdated } = updated!;
   return ok(safeUpdated);
 }

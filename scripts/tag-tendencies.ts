@@ -16,6 +16,8 @@
 import * as dotenv from 'dotenv';
 dotenv.config({ path: '.env.local' });
 
+import { mkdirSync, writeFileSync, unlinkSync } from 'fs';
+import { join } from 'path';
 import { prisma } from '../src/lib/prisma';
 import { execFileSync } from 'child_process';
 
@@ -49,15 +51,12 @@ async function fetchPageText(url: string, maxChars = 3000): Promise<string | nul
 
 /** Call LLM to extract artists and songs — write prompt to temp file to avoid arg/stdin issues */
 function callLLM(prompt: string): string {
-  const fs = require('fs');
-  const path = require('path');
-  const tmpDir = path.join(process.cwd(), '.tmp');
-  fs.mkdirSync(tmpDir, { recursive: true });
-  const tmpFile = path.join(tmpDir, `prompt-${Date.now()}.txt`);
-  fs.writeFileSync(tmpFile, prompt);
+  const tmpDir = join(process.cwd(), '.tmp');
+  mkdirSync(tmpDir, { recursive: true });
+  const tmpFile = join(tmpDir, `prompt-${Date.now()}.txt`);
+  writeFileSync(tmpFile, prompt);
 
   const envPath = `${process.env.HOME}/.npm-global/bin:${process.env.HOME}/.local/bin:${process.env.PATH}`;
-  // Remove CLAUDECODE to allow claude -p nesting from scheduler
   const { CLAUDECODE: _, ...cleanEnv } = process.env;
   const env = { ...cleanEnv, PATH: envPath };
   const cmds = ['claude', 'gemini', 'codex'];
@@ -79,7 +78,7 @@ function callLLM(prompt: string): string {
     }
     return '{"artists":[],"songs":[]}';
   } finally {
-    try { fs.unlinkSync(tmpFile); } catch { /* ignore */ }
+    try { unlinkSync(tmpFile); } catch { /* ignore */ }
   }
 }
 

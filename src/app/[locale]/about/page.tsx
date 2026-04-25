@@ -1,5 +1,6 @@
-import { setRequestLocale, getTranslations } from 'next-intl/server';
+import { setRequestLocale } from 'next-intl/server';
 import type { Metadata } from 'next';
+import Link from 'next/link';
 
 export async function generateMetadata({
   params,
@@ -56,9 +57,9 @@ function AboutEn() {
           <h2 className="mb-3 text-xl font-semibold text-gray-900">Contact</h2>
           <p>
             For questions or feedback, please visit our{' '}
-            <a href="/contact" className="text-violet-600 hover:underline">
+            <Link href="/contact" className="text-violet-600 hover:underline">
               contact page
-            </a>
+            </Link>
             .
           </p>
         </section>
@@ -112,9 +113,9 @@ function AboutJa() {
           <h2 className="mb-3 text-xl font-semibold text-gray-900">お問い合わせ</h2>
           <p>
             ご質問・ご意見は{' '}
-            <a href="/contact" className="text-violet-600 hover:underline">
+            <Link href="/contact" className="text-violet-600 hover:underline">
               お問い合わせページ
-            </a>{' '}
+            </Link>{' '}
             からどうぞ。
           </p>
         </section>
