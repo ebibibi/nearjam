@@ -22,6 +22,7 @@ SCRIPTS_DIR="$NEARJAM_DIR/scripts"
 HISTORY_FILE="$SCRIPTS_DIR/crawl-history.json"
 TMPDIR_LOCAL="$NEARJAM_DIR/.tmp"
 mkdir -p "$TMPDIR_LOCAL"
+export TMPDIR="$TMPDIR_LOCAL"
 EXTRA_QUERIES_FILE="$(mktemp "$TMPDIR_LOCAL/nearjam-extra-queries-XXXXXXXX.json")"
 PROMPT_FILE="$(mktemp "$TMPDIR_LOCAL/nearjam-prompt-XXXXXXXX.txt")"
 LOG_FILE="$(mktemp "$TMPDIR_LOCAL/nearjam-weekly-XXXXXXXX.log")"
@@ -229,6 +230,18 @@ log_section "🔄 Phase 5: 低信頼度URL再試行（サイト更新で改善�
 
 $TS_NODE_CMD scripts/crawl.ts --retry-low \
   2>&1 | tee -a "$LOG_FILE" || log "⚠️  retry-low でエラーが発生（処理を継続）"
+
+# ──────────────────────────────────────────────────────────────
+# Phase 5.3: typicalDayOfWeek バックフィル（曜日がnullのセッションを再抽出）
+# ──────────────────────────────────────────────────────────────
+log_section "📅 Phase 5.3: typicalDayOfWeek バックフィル..."
+
+if [ -n "$LLM_CMD" ]; then
+  $TS_NODE_CMD scripts/backfill-day-of-week.ts \
+    2>&1 | tee -a "$LOG_FILE" || log "⚠️  backfill-day-of-week でエラーが発生（処理を継続）"
+else
+  log "LLM CLI が利用不可のため、バックフィルをスキップ"
+fi
 
 # ──────────────────────────────────────────────────────────────
 # Phase 5.5: アーティスト/曲タグ付け（LLM で HP から抽出）

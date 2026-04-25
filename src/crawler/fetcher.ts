@@ -2,6 +2,8 @@ import { chromium } from '@playwright/test';
 import { Readability } from '@mozilla/readability';
 import { JSDOM } from 'jsdom';
 import TurndownService from 'turndown';
+import { mkdirSync } from 'fs';
+import { join } from 'path';
 
 const turndown = new TurndownService({
   headingStyle: 'atx',
@@ -9,6 +11,13 @@ const turndown = new TurndownService({
 });
 
 const MAX_CHARS = 8000;
+
+function ensureWritableTmpdir(): void {
+  const dir = process.env.TMPDIR ?? '/tmp';
+  try {
+    mkdirSync(dir, { recursive: true });
+  } catch { /* already exists or unrecoverable */ }
+}
 
 // セッション・スケジュール系ページを示すURLパターン
 const SESSION_URL_PATTERNS = [
@@ -100,6 +109,7 @@ function extractSessionLinks(html: string, baseUrl: string): string[] {
  * JavaScriptが多いページも、ナビゲーション等のノイズも除去できる。
  */
 export async function fetchPageAsMarkdown(url: string): Promise<FetchResult> {
+  ensureWritableTmpdir();
   const browser = await chromium.launch({ headless: true });
   try {
     const context = await browser.newContext({
@@ -125,6 +135,7 @@ export async function fetchPageAsMarkdown(url: string): Promise<FetchResult> {
  * ブラウザを1回しか起動しないためfetchPageAsMarkdownより効率的。
  */
 export async function fetchPageWithSessionLinks(url: string): Promise<FetchResultWithLinks> {
+  ensureWritableTmpdir();
   const browser = await chromium.launch({ headless: true });
   try {
     const context = await browser.newContext({
@@ -157,6 +168,7 @@ export async function fetchMultiplePages(
 ): Promise<FetchResult[]> {
   if (urls.length === 0) return [];
 
+  ensureWritableTmpdir();
   const browser = await chromium.launch({ headless: true });
   const results: FetchResult[] = [];
 
