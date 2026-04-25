@@ -106,18 +106,21 @@ export function TodaysSessions({ tendencies, todayDow }: TodaysSessionsProps) {
         </div>
       )}
 
-      {/* 不定期セッション（折りたたみ） */}
+      {/* 不定期セッション */}
       {irregular.length > 0 && (
-        <details className="mt-4">
-          <summary className="text-sm text-gray-500 cursor-pointer hover:text-gray-700">
-            {t('irregularSessions')}（{irregular.length}{locale === 'ja' ? '件' : ''}）
-          </summary>
-          <div className="mt-2 space-y-2">
+        <div className="mt-6">
+          <h3 className="text-base font-bold text-gray-700 mb-3">
+            📅 {t('irregularSessions')}
+            <span className="text-sm font-normal text-gray-400 ml-2">
+              {irregular.length}{locale === 'ja' ? '件' : ' found'}
+            </span>
+          </h3>
+          <div className="space-y-2">
             {irregular.map((s) => (
               <SessionRow key={s.id} tendency={s} locale={locale} tVenue={tVenue} />
             ))}
           </div>
-        </details>
+        </div>
       )}
     </section>
   );
