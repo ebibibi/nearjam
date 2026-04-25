@@ -29,7 +29,7 @@ export default async function HomePage({
     Promise.race([p, new Promise<null>((resolve) => setTimeout(() => resolve(null), ms))]);
 
   // 全 active な SessionTendency を会場情報付きで取得
-  const [allTendencies, stats, topGenres] = await Promise.all([
+  const [allTendencies, stats, topGenres, upcomingSessionCount] = await Promise.all([
     withTimeout(
       prisma.sessionTendency.findMany({
         where: { isActive: true },
@@ -72,6 +72,10 @@ export default async function HomePage({
       }),
       3000
     ).catch(() => [] as string[]),
+    withTimeout(
+      prisma.jamSession.count({ where: { startsAt: { gte: new Date() } } }),
+      3000
+    ).catch(() => 0),
   ]);
 
   const venueCount = stats?.[0] ?? 0;
@@ -99,7 +103,7 @@ export default async function HomePage({
 
       {/* ── Stats（コンパクト） ── */}
       {(venueCount > 0 || tendencyCount > 0) && (
-        <div className="flex gap-4 justify-center text-center">
+        <div className="flex gap-4 justify-center text-center flex-wrap">
           <div className="rounded-lg border bg-white px-4 py-2 shadow-sm">
             <span className="text-xl font-bold text-violet-700">{venueCount}</span>
             <span className="ml-1.5 text-xs text-gray-500">{t('home.statsVenues')}</span>
@@ -108,6 +112,12 @@ export default async function HomePage({
             <span className="text-xl font-bold text-violet-700">{tendencyCount}</span>
             <span className="ml-1.5 text-xs text-gray-500">{t('home.statsRegularSessions')}</span>
           </div>
+          {(upcomingSessionCount ?? 0) > 0 && (
+            <div className="rounded-lg border bg-white px-4 py-2 shadow-sm">
+              <span className="text-xl font-bold text-emerald-600">{upcomingSessionCount}</span>
+              <span className="ml-1.5 text-xs text-gray-500">{t('home.statsUpcomingSessions')}</span>
+            </div>
+          )}
         </div>
       )}
 
@@ -130,6 +140,21 @@ export default async function HomePage({
           ))}
         </div>
       )}
+
+      {/* ── 曲で探すCTA ── */}
+      <Link
+        href={`/${locale}/songs`}
+        className="block rounded-xl border border-amber-200 bg-gradient-to-r from-amber-50 to-orange-50 px-6 py-4 hover:border-amber-300 hover:shadow-md transition-all group"
+      >
+        <div className="flex items-center gap-3">
+          <span className="text-2xl">🎵</span>
+          <div className="flex-1">
+            <h3 className="font-bold text-gray-900 group-hover:text-amber-800">{t('home.findBySong')}</h3>
+            <p className="text-sm text-gray-500 mt-0.5">{t('home.findBySongDesc')}</p>
+          </div>
+          <span className="text-amber-400 text-xl shrink-0 group-hover:translate-x-1 transition-transform">→</span>
+        </div>
+      </Link>
 
       {/* ── 定期セッション一覧（メインコンテンツ！） ── */}
       {allTendencies && allTendencies.length > 0 && (

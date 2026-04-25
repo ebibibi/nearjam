@@ -1,11 +1,17 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
+import dynamic from 'next/dynamic';
 import { GoogleMap, useJsApiLoader, Marker, InfoWindow } from '@react-google-maps/api';
 import { useState } from 'react';
 
+const LeafletMap = dynamic(
+  () => import('./LeafletMap').then((mod) => mod.LeafletMap),
+  { ssr: false, loading: () => <div className="flex items-center justify-center rounded-lg bg-gray-100 h-[400px]"><p className="text-sm text-gray-400">Loading map...</p></div> }
+);
+
 const MAP_CONTAINER_STYLE = { width: '100%', height: '400px' };
-const DEFAULT_CENTER = { lat: 35.6762, lng: 139.6503 }; // Tokyo
+const DEFAULT_CENTER = { lat: 35.6762, lng: 139.6503 };
 
 interface Place {
   id: string;
@@ -22,6 +28,16 @@ interface MapViewProps {
 }
 
 export function MapView({ places, center = DEFAULT_CENTER }: MapViewProps) {
+  const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? '';
+
+  if (!apiKey) {
+    return <LeafletMap places={places} />;
+  }
+
+  return <GoogleMapView places={places} center={center} />;
+}
+
+function GoogleMapView({ places, center = DEFAULT_CENTER }: MapViewProps) {
   const t = useTranslations('maps');
   const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? '';
   const [selectedPlace, setSelectedPlace] = useState<Place | null>(null);
@@ -30,14 +46,6 @@ export function MapView({ places, center = DEFAULT_CENTER }: MapViewProps) {
     id: 'google-map-script',
     googleMapsApiKey: apiKey,
   });
-
-  if (!apiKey) {
-    return (
-      <div className="flex items-center justify-center rounded-lg border border-dashed border-gray-300 bg-gray-50 h-40">
-        <p className="text-sm text-gray-400">{t('mapUnavailable')}</p>
-      </div>
-    );
-  }
 
   if (!isLoaded) {
     return (
