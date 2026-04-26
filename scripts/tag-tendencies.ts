@@ -61,20 +61,22 @@ function callLLM(prompt: string): string {
   const envPath = `${process.env.HOME}/.npm-global/bin:${process.env.HOME}/.local/bin:${process.env.PATH}`;
   const { CLAUDECODE: _, ...cleanEnv } = process.env;
   const env = { ...cleanEnv, PATH: envPath };
-  const cmds = ['claude', 'gemini', 'codex'];
+  const cmds: Array<{ bin: string; args: string[] }> = [
+    { bin: 'gemini', args: ['-p', prompt.substring(0, 4000)] },
+    { bin: 'codex',  args: ['exec', prompt.substring(0, 4000)] },
+    { bin: 'claude', args: ['-p', prompt.substring(0, 4000)] },
+  ];
   try {
-    for (const cmd of cmds) {
+    for (const { bin, args } of cmds) {
       try {
-        execFileSync('which', [cmd], { stdio: 'ignore', env });
-        // Read file content and pass as -p argument (gemini/claude/codex all accept -p "text")
-        const result = execFileSync(cmd, ['-p', prompt.substring(0, 4000)], {
+        execFileSync('which', [bin], { stdio: 'ignore', env });
+        const result = execFileSync(bin, args, {
           encoding: 'utf-8',
           timeout: 45000,
           env,
           stdio: ['pipe', 'pipe', 'pipe'],
         });
         const text = result.trim();
-        // Gemini quota exhaustion — try next LLM
         if (/exhausted|QuotaError|quota.*reset/i.test(text)) continue;
         return text;
       } catch {

@@ -37,13 +37,8 @@ export PATH="$HOME/.npm-global/bin:$HOME/.local/bin:$PATH"
 log() { echo "$*" | tee -a "$LOG_FILE"; }
 log_section() { log ""; log "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"; log "$*"; }
 
-# LLMコマンドを選択（claude -p > gemini -p > codex -p の優先順位）
-# claude優先: Geminiはクォータ枯渇が頻発するため。schedulerからはCLAUDECODE未設定でclaude -p使用可
+# LLMコマンドを選択（gemini -p > codex exec > claude -p の優先順位）
 select_llm_cmd() {
-  if [ -z "${CLAUDECODE:-}" ] && command -v claude &>/dev/null; then
-    echo "claude -p"
-    return
-  fi
   if command -v gemini &>/dev/null; then
     local test_out
     test_out=$(timeout 30 gemini -p "test" 2>&1 || true)
@@ -55,7 +50,11 @@ select_llm_cmd() {
     fi
   fi
   if command -v codex &>/dev/null; then
-    echo "codex -p"
+    echo "codex exec"
+    return
+  fi
+  if [ -z "${CLAUDECODE:-}" ] && command -v claude &>/dev/null; then
+    echo "claude -p"
   else
     echo ""
   fi
