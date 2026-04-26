@@ -37,11 +37,14 @@ export PATH="$HOME/.npm-global/bin:$HOME/.local/bin:$PATH"
 log() { echo "$*" | tee -a "$LOG_FILE"; }
 log_section() { log ""; log "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"; log "$*"; }
 
-# LLMコマンドを選択（gemini -p > claude -p > codex -p の優先順位）
-# gemini優先の理由: ウェブ検索機能が内蔵。claude -pはClaude Code内からネスト不可
+# LLMコマンドを選択（claude -p > gemini -p > codex -p の優先順位）
+# claude優先: Geminiはクォータ枯渇が頻発するため。schedulerからはCLAUDECODE未設定でclaude -p使用可
 select_llm_cmd() {
+  if [ -z "${CLAUDECODE:-}" ] && command -v claude &>/dev/null; then
+    echo "claude -p"
+    return
+  fi
   if command -v gemini &>/dev/null; then
-    # Geminiのクォータチェック（簡易: 実行してみてエラーなら次へ）
     local test_out
     test_out=$(timeout 30 gemini -p "test" 2>&1 || true)
     if echo "$test_out" | grep -qiE "QuotaError|exhausted|capacity|rate.limit|TerminalQuota"; then
@@ -51,10 +54,7 @@ select_llm_cmd() {
       return
     fi
   fi
-  # claude -p は CLAUDECODE 環境変数がセットされていると使えない（ネスト禁止）
-  if [ -z "${CLAUDECODE:-}" ] && command -v claude &>/dev/null; then
-    echo "claude -p"
-  elif command -v codex &>/dev/null; then
+  if command -v codex &>/dev/null; then
     echo "codex -p"
   else
     echo ""
