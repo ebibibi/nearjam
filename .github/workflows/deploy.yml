@@ -21,7 +21,7 @@ jobs:
   # 1. ビルド — Docker イメージをビルドして GHCR に push
   # ──────────────────────────────────────────────
   build:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64]
     permissions:
       contents: read
       packages: write
@@ -90,7 +90,7 @@ jobs:
     name: Deploy to Staging
     needs: [build]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64]
     outputs:
       revision-name: ${{ steps.deploy.outputs.revision-name }}
       staging-url: ${{ steps.deploy.outputs.staging-url }}
@@ -174,7 +174,7 @@ jobs:
   e2e:
     name: E2E Tests (Staging)
     needs: [deploy-staging]
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64]
 
     steps:
       - uses: actions/checkout@v4
@@ -229,7 +229,7 @@ jobs:
   promote:
     name: Promote to Production
     needs: [e2e, deploy-staging]
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64]
 
     steps:
       - name: Azure login
