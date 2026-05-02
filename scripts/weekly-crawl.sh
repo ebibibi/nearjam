@@ -202,7 +202,7 @@ $TS_NODE_CMD scripts/discover.ts \
 # ──────────────────────────────────────────────────────────────
 log_section "🌐 Phase 4: クロール実行..."
 
-MAX_LOOPS=15
+MAX_LOOPS=5
 LOOP=0
 while [ "$LOOP" -lt "$MAX_LOOPS" ]; do
   PENDING=$($TS_NODE_CMD -e "
@@ -228,7 +228,7 @@ done
 # ──────────────────────────────────────────────────────────────
 log_section "🔄 Phase 5: 低信頼度URL再試行（サイト更新で改善する可能性あり）..."
 
-$TS_NODE_CMD scripts/crawl.ts --retry-low \
+$TS_NODE_CMD scripts/crawl.ts --retry-low --limit 30 \
   2>&1 | tee -a "$LOG_FILE" || log "⚠️  retry-low でエラーが発生（処理を継続）"
 
 # ──────────────────────────────────────────────────────────────

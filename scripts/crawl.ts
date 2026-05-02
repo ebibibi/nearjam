@@ -26,11 +26,15 @@ import { saveExtractionResult } from '../src/crawler/saver';
 const args = process.argv.slice(2);
 let targetUrl: string | null = null;
 let minConfidence = 0.4;
+let takeLimit = 50;
 const retryLow = args.includes('--retry-low');
 
 for (let i = 0; i < args.length; i++) {
   if (args[i] === '--min-confidence' && args[i + 1]) {
     minConfidence = parseFloat(args[i + 1]);
+    i++;
+  } else if (args[i] === '--limit' && args[i + 1]) {
+    takeLimit = parseInt(args[i + 1], 10);
     i++;
   } else if (args[i].startsWith('http')) {
     targetUrl = args[i];
@@ -142,7 +146,7 @@ async function runJobQueue(): Promise<void> {
   const jobs = await prisma.autoCollectionJob.findMany({
     where: whereClause,
     orderBy: { nextFetchAt: 'asc' },
-    take: 50,
+    take: takeLimit,
   });
 
   if (jobs.length === 0) {
