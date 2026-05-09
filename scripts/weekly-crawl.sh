@@ -219,7 +219,11 @@ prisma.autoCollectionJob.count({ where: { lastStatus: 'pending_review' } })
   fi
 
   log "[ループ $((LOOP+1))/$MAX_LOOPS] pending=${PENDING}件 — クロール実行中..."
-  $TS_NODE_CMD scripts/crawl.ts 2>&1 | tee -a "$LOG_FILE" || true
+  CRAWL_OUT=$($TS_NODE_CMD scripts/crawl.ts 2>&1 | tee -a "$LOG_FILE" || true)
+  if echo "$CRAWL_OUT" | grep -q "処理するジョブがありません"; then
+    log "処理できるジョブがなくなりました — ループ終了"
+    break
+  fi
   LOOP=$((LOOP+1))
 done
 
@@ -228,7 +232,7 @@ done
 # ──────────────────────────────────────────────────────────────
 log_section "🔄 Phase 5: 低信頼度URL再試行（サイト更新で改善する可能性あり）..."
 
-$TS_NODE_CMD scripts/crawl.ts --retry-low --limit 30 \
+$TS_NODE_CMD scripts/crawl.ts --retry-low --limit 15 \
   2>&1 | tee -a "$LOG_FILE" || log "⚠️  retry-low でエラーが発生（処理を継続）"
 
 # ──────────────────────────────────────────────────────────────
