@@ -192,10 +192,10 @@ fi
 # ──────────────────────────────────────────────────────────────
 log_section "🔍 Phase 3: 会場URL収集中（既存クエリ + LLM追加${EXTRA_COUNT}クエリ）..."
 
-$TS_NODE_CMD scripts/discover.ts \
+timeout 7200 $TS_NODE_CMD scripts/discover.ts \
   --no-crawl \
   --extra-queries-file "$EXTRA_QUERIES_FILE" \
-  2>&1 | tee -a "$LOG_FILE" || log "⚠️  discover.ts でエラーが発生（処理を継続）"
+  2>&1 | tee -a "$LOG_FILE" || log "⚠️  discover.ts でエラー or タイムアウト（2時間上限）。処理を継続"
 
 # ──────────────────────────────────────────────────────────────
 # Phase 4: crawl.ts ループ（pending_review が 0 になるまで）
