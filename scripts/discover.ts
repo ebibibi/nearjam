@@ -131,6 +131,8 @@ function detectAvailableLlms(): string[] {
 
 const AVAILABLE_LLMS = detectAvailableLlms();
 let currentLlmIdx = 0;
+let consecutiveLlmFailures = 0;
+const MAX_CONSECUTIVE_FAILURES = 5;
 
 function getCurrentLlm(): string {
   if (AVAILABLE_LLMS.length === 0) {
@@ -150,7 +152,7 @@ function callLlm(prompt: string): string {
     try {
       const output = execFileSync(llmPath, ['-p', prompt.substring(0, 8000)], {
         encoding: 'utf8',
-        timeout: 90_000,
+        timeout: 30_000,
         env: { ...process.env, PATH: LLM_PATH },
         stdio: ['pipe', 'pipe', 'pipe'],
         maxBuffer: 2 * 1024 * 1024,
@@ -163,6 +165,7 @@ function callLlm(prompt: string): string {
         continue;
       }
 
+      consecutiveLlmFailures = 0;
       return output;
     } catch {
       console.warn(`  ⚠️  ${llm} が実行失敗。次のLLMに切り替え...`);
@@ -171,7 +174,8 @@ function callLlm(prompt: string): string {
     }
   }
 
-  console.warn('  ⚠️  全LLMが応答不能');
+  consecutiveLlmFailures++;
+  console.warn(`  ⚠️  全LLMが応答不能（連続${consecutiveLlmFailures}回）`);
   return '';
 }
 
@@ -304,9 +308,13 @@ async function main(): Promise<void> {
 
   const allQueries = [...SEARCH_QUERIES, ...extraQueries];
 
-  // Phase 1: Gemini で会場URLを検索
+  // Phase 1: LLM で会場URLを検索
   const allVenues: VenueItem[] = [];
   for (const query of allQueries) {
+    if (consecutiveLlmFailures >= MAX_CONSECUTIVE_FAILURES) {
+      console.warn(`  ⚠️  全LLMが${MAX_CONSECUTIVE_FAILURES}回連続で応答不能。残り${allQueries.length - allVenues.length}件をスキップします`);
+      break;
+    }
     console.log(`\n🔍 検索: "${query.slice(0, 40)}..."`);
     const found = searchVenuesWithLlm(query);
     console.log(`  ${found.length} 件取得`);
